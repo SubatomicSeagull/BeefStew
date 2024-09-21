@@ -1,23 +1,31 @@
-#BEEFSTEW.py
+# BEEFSTEW.py
 
 ![BEEFSTEW](./images/beefstew.webp)
-##Authors
-- subatomicseagull
-- mertymor
+## Authors
+- [subatomicseagull](https://github.com/SubatomicSeagull)
+- [mertymor](https://github.com/MertyMor)
 
-##Favourite Food
+## Favourite Food
 - porridge
 
-##Favourite Band
+## Favourite Band
 - Dave Matthews Band
 
-##Requirements
+## Requirements
 - python 3.10
 - discord.py
 - dotenv
 
-##Description
-The little weird creature created for the CosyCraft Discord server. Does very specific things that are funny to very specific people.\n Is terrible as a general-purpose bot.
+## Description
+The little weird creature created for the CosyCraft Discord server. Does very specific things that are funny to very specific people.  
+Is terrible as a general-purpose bot.
 
-##Installation
+## Installation
 Not for you, sorry.
+
+## License
+See the [LICENSE](./LICENSE) file for license information.  
+Terms of Service: [https://www.cosycraft.uk/tos](https://www.cosycraft.uk/tos)  
+Privacy Policy: [https://www.cosycraft.uk/privacy](https://www.cosycraft.uk/privacy)  
+
+
