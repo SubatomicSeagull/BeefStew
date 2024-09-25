@@ -1,7 +1,10 @@
+import re
+
 def get_response(message):
     message_text = str(message).lower()
     response = ""
-    
+
+
     #check for text responses
     if message_text == "":
         return
