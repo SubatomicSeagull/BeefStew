@@ -34,7 +34,7 @@ def main():
 @bot.event
 async def on_ready():
     print(f"{bot.user} is now online, may god help us all...")
-    #registering slash commands
+    # registering slash commands
     await bot.tree.sync()
     
 #/ping command
