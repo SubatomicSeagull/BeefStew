@@ -8,7 +8,7 @@ from typing import Final
 
 #slash command, ping, and reply should all invoke the same code.
 
-def nicknameprint(interaction: discord.Interaction, victim: discord.Member, newname: str): 
+def nicknameprint(victim: discord.Member, newname: str): 
     newname = "**" + newname + "**"
     responses = [
     f"looks like {victim.mention} is going by {newname} now.. good for them!",
