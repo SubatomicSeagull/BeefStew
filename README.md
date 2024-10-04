@@ -1,4 +1,4 @@
-# BEEFSTEW.py
+# BEEFSTEW
 
 ![BEEFSTEW](./src/assets/profile/banner.png)
 ## Authors
