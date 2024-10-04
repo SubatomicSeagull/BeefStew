@@ -20,9 +20,11 @@ async def change_nickname(intormessage, victim: discord.Member, new_name: str):
                     try:
                         await victim.edit(nick=new_name)
                         await interaction.response.send_message(f"**{interaction.user.name}** invoked the rule on **{victim.name}**!\n{nicknameprint(victim, new_name)}")           
-                    except Exception as e:
+                    except discord.Forbidden as e:
                         print(e)
                         await interaction.response.send_message(f"**{interaction.user.name}** tried to invoked the rule on **{victim.name}**!\nbut it didnt work :( next time get some permissions okay?")
+                    except Exception as e:
+                        print(e)
             else:
                 await interaction.response.send_message(f"**{interaction.user.name}** tried to invoked the rule on **{victim.name}**!\nnice try fucker...")
                 
