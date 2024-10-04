@@ -1,37 +1,36 @@
 import socket
 import time
 import json
+import os
 
 class ServerInfo:
     def __init__(self, name, host_ports):
         self.name = name
         self.host_ports = host_ports
 
-#gets the server info from the server_info.json file
+# Gets the server info from the server_info.json file and returns a dictionary
 def read_server_info(file_path):
     with open(file_path, 'r') as json_file:
         data = json.load(json_file)
         
-        names = data['Name']
-        host_ports = data['HostPorts']
+        server_info_dict = {}
         
-        server_info_list = []
+        for i, name in enumerate(data["Name"]):
+            host_ports_list = data["HostPorts"][i]
+            ports = [port.split('/')[0] for port in host_ports_list.keys()]
+            server_info_dict[name] = ports
         
-        for i in range(len(names)):
-            name = names[i]
-            ports = [port.split(':')[0] for port in host_ports[i]]
-            server_info_list.append(ServerInfo(name, ports))
-        
-        return server_info_list
+        return server_info_dict
 
 # Usage
-server_info_list = read_server_info('server_info/server_info.json')
-for server_info in server_info_list:
-    print(f"Name: {server_info.name}, Ports: {server_info.host_ports}")
-
+current_dir = os.path.dirname(os.path.abspath(__file__))
+file_path = os.path.join(current_dir, 'server_info/server_info.json')
+server_info_dict = read_server_info(file_path)
+for name, ports in server_info_dict.items():
+    print(f"Name: {name}, Ports: {ports}")
 
 def geturls():
-        raise NotImplementedError
+    raise NotImplementedError
     
     # read ips json file formatted like:
     # url:{"Tag":"Google", "IP":"172.0.0.1", "Port":"443"}
