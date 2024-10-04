@@ -1,29 +1,24 @@
+import json
+import os
+
+def load_responses(file_path):
+    with open(file_path, 'r') as file:
+        return json.load(file)
+
+# Construct the file path to responses.json
+current_dir = os.path.dirname(__file__)
+file_path = os.path.join(current_dir, 'assets', 'responses.json')
+
+responses = load_responses(file_path)
+
+text_responses = responses['text_responses']
+keyword_responses = responses['keyword_responses']
+emoji_responses = responses['emoji_responses']
+
 def get_response(message):
     message_text = str(message).lower()
     if not message_text:
         return ""
-
-    # Dictionary for text responses
-    text_responses = {
-        "oye": "oye.",
-        "snarf": "snarf >:(",
-        "reveal the banger": "https://x.com/blacklung82/status/1602348576331505664"
-    }
-
-    # Dictionary for keyword responses
-    keyword_responses = {
-        "deadly dice man": "🎲You my friend... have just made.. an.. unlucky gamble...🎲\nhttps://cdn.discordapp.com/attachments/1185154272170623016/1216308263348605049/17100608047072368967661815628.gif?ex=66ee89d7&is=66ed3857&hm=a331b00d199db639dadec8dfd406cb7bf1027c7d968ffcb532ba6cb5954badd4&",
-        "preposition": "prepositions\nhttps://www.youtube.com/watch?v=E0Ag0VKJ51Y"
-    }
-
-    # Dictionary for emoji responses
-    emoji_responses = {
-        "whatsapp": "<:whatsapp:1285617179408076902>",
-        "beefstew": "<:beefstew:1285630081829437614>",
-        "romulus": "<:romulus:1285630098224971786>",
-        "brazil": "<:brazil:1286688098297839696>",
-        "elphaba": "<:beefhusk:1287094093989679124>"
-    }
 
     response = ""
 
