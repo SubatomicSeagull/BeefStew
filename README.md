@@ -1,6 +1,6 @@
 # BEEFSTEW.py
 
-![BEEFSTEW](./images/beefstew.webp)
+![BEEFSTEW](./images/profile/beefstew.webp)
 ## Authors
 - [subatomicseagull](https://github.com/SubatomicSeagull)
 - [mertymor](https://github.com/MertyMor)
