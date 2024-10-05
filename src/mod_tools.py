@@ -35,13 +35,13 @@ def get_ban_message(member: discord.Member, reason: str):
     ]
     return random.choice(ban_messages)
 
-async def kick(interaction: discord.Interaction, member: discord.Member, reason: str, logs_channel: int):
+async def kick_member(interaction: discord.Interaction, member: discord.Member, reason: str):
     if reason == "": reason += "uhh, doing whatever it is they were doing"
     await member.kick(reason=reason)
     #await bot.get_channel(logs_channel).send(random.choice(get_kick_message(member, reason)))
     return
 
-async def ban(interaction: discord.Interaction, member: discord.Member, reason: str, logs_channel: int):
+async def ban_member(interaction: discord.Interaction, member: discord.Member, reason: str):
     if reason == "": reason += "uhh, doing whatever it is they were doing"
     await member.ban(reason=reason)
     #await bot.get_channel(logs_channel).send(random.choice(get_ban_message(member, reason)))

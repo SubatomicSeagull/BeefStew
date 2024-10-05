@@ -1,13 +1,14 @@
 import os
 import re
 from nickname_rule import *
-from mod_tools import kick, ban
+from mod_tools import kick_member
 from dotenv import load_dotenv
 import discord
 from discord import Message
 from discord.ext import commands
 from responses import get_response
 from ping import pingall
+from pfp_manipulations import *
 
 # Load the token from .env
 try:
@@ -27,10 +28,11 @@ def main():
 # Startup
 @bot.event
 async def on_ready():
+    for guild in bot.guilds:
+        await bot.tree.sync(guild=guild)
+    print("Commands synced for all guilds")
     print(f"{bot.user} is now online, may god help us all...")
-    # Registering slash commands
-    await bot.tree.sync()
-
+    
 # /ping command
 @bot.tree.command(name="ping", description="pings CCServer, please be responsible with this one...")
 async def ping(interaction: discord.Interaction):
@@ -48,25 +50,31 @@ async def they_call_you(interaction: discord.Interaction, victim: discord.Member
 # /set log channel command
 @bot.tree.command(name="set_logs_channel", description="where should i spew? (kick/ban messages etc.)")
 async def set_logs_channel(interaction: discord.Interaction): 
+    print(log_channel_id)
     log_channel_id = bot.get_channel(interaction.channel_id)
     print(log_channel_id)
     await interaction.channel.send(f"{interaction.channel.name} is the new logs channel")
     # maybe something to store in the database, ServerID : LogChannelID ???????????????
 
 # /help command
-@bot.tree.command(name="help", description="you dont what to know what i can *really* do...")
-async def help(interaction: discord.Interaction): 
-    raise NotImplementedError
+#@bot.tree.command(name="help", description="you dont what to know what i can *really* do...")
+#async def help(interaction: discord.Interaction): 
+#    raise NotImplementedError
     
 # /kick command
 @bot.tree.command(name="kick", description="foekn get 'em yea")
 async def kick(interaction: discord.Interaction, member: discord.Member, reason: str): 
-    raise NotImplementedError
-# /ban command
-@bot.tree.command(name="ban", description="KILL! KILL! KILL!")
-async def ban(interaction: discord.Interaction, member: discord.Member, reason: str): 
-    raise NotImplementedError
-    
+    await kick_member(interaction, member, reason)
+
+@bot.tree.command(name="boil", description="focken boil yehs")
+async def boil(interaction: discord.Interaction, victim: discord.Member):
+    try:
+        await boil_pfp(interaction, victim)
+        await interaction.channel.send(f"{victim.mention} has been BOILED!!!")
+    except Exception as e:
+        print(e)
+
+
     
     
     
