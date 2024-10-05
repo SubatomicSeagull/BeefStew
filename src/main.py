@@ -1,6 +1,7 @@
 import os
 import re
 from nickname_rule import *
+from mod_tools import kick, ban
 from dotenv import load_dotenv
 import discord
 from discord import Message
@@ -31,19 +32,45 @@ async def on_ready():
     await bot.tree.sync()
 
 # /ping command
-@bot.tree.command(name="ping")
+@bot.tree.command(name="ping", description="pings CCServer, please be responsible with this one...")
 async def ping(interaction: discord.Interaction):
     print("Pinging CCServer...")
     await interaction.response.send_message(f"{interaction.user.mention} pinged CCServer with the following results:\n{pingall()}")
 
 # /they_call_you command
-@bot.tree.command(name = "they_call_you", description = "They call you...")
+@bot.tree.command(name = "they_call_you", description = "invokes the rule...")
 async def they_call_you(interaction: discord.Interaction, victim: discord.Member, new_name: str):
     try:
         await change_nickname(interaction, victim, new_name)
     except discord.HTTPException as e:
         await interaction.response.send_message(f"Failed to change nickname: {e}")
+        
+# /set log channel command
+@bot.tree.command(name="set_logs_channel", description="where should i spew? (kick/ban messages etc.)")
+async def set_logs_channel(interaction: discord.Interaction): 
+    log_channel_id = bot.get_channel(interaction.channel_id)
+    print(log_channel_id)
+    await interaction.channel.send(f"{interaction.channel.name} is the new logs channel")
+    # maybe something to store in the database, ServerID : LogChannelID ???????????????
 
+# /help command
+@bot.tree.command(name="help", description="you dont what to know what i can *really* do...")
+async def help(interaction: discord.Interaction): 
+    raise NotImplementedError
+    
+# /kick command
+@bot.tree.command(name="kick", description="foekn get 'em yea")
+async def kick(interaction: discord.Interaction, member: discord.Member, reason: str): 
+    raise NotImplementedError
+# /ban command
+@bot.tree.command(name="ban", description="KILL! KILL! KILL!")
+async def ban(interaction: discord.Interaction, member: discord.Member, reason: str): 
+    raise NotImplementedError
+    
+    
+    
+    
+    
 # Message listener
 @bot.event
 async def on_message(message: Message):
