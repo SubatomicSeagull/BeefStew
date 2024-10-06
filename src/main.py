@@ -30,6 +30,7 @@ def main():
 async def on_ready():
     for guild in bot.guilds:
         await bot.tree.sync(guild=guild)
+    await bot.tree.sync()
     print("Commands synced for all guilds")
     print(f"{bot.user} is now online, may god help us all...")
     
@@ -42,9 +43,10 @@ async def ping(interaction: discord.Interaction):
 # /they_call_you command
 @bot.tree.command(name = "they_call_you", description = "invokes the rule...")
 async def they_call_you(interaction: discord.Interaction, victim: discord.Member, new_name: str):
+    print(f"attempting to change the nickname of {victim.name} to {new_name}...")
     try:
         await change_nickname(interaction, victim, new_name)
-    except discord.HTTPException as e:
+    except Exception as e:
         await interaction.response.send_message(f"Failed to change nickname: {e}")
         
 # /set log channel command
@@ -57,15 +59,16 @@ async def set_logs_channel(interaction: discord.Interaction):
     # maybe something to store in the database, ServerID : LogChannelID ???????????????
 
 # /help command
-#@bot.tree.command(name="help", description="you dont what to know what i can *really* do...")
-#async def help(interaction: discord.Interaction): 
-#    raise NotImplementedError
+@bot.tree.command(name="help", description="you dont what to know what i can *really* do...")
+async def help(interaction: discord.Interaction): 
+    raise NotImplementedError
     
 # /kick command
 @bot.tree.command(name="kick", description="foekn get 'em yea")
 async def kick(interaction: discord.Interaction, member: discord.Member, reason: str): 
     await kick_member(interaction, member, reason)
 
+# /boil command, doesnt work if the user has a gif as a pfp
 @bot.tree.command(name="boil", description="focken boil yehs")
 async def boil(interaction: discord.Interaction, victim: discord.Member):
     try:
@@ -73,8 +76,12 @@ async def boil(interaction: discord.Interaction, victim: discord.Member):
         await interaction.channel.send(f"{victim.mention} has been BOILED!!!")
     except Exception as e:
         print(e)
+        await interaction.channel.send(f"{interaction.user.mention} tried to boil {victim.name} but it didnt work ://")
 
-
+#test command, change as needed
+@bot.tree.command(name="test", description="test command, might do something, might not, who knows")
+async def test(interaction: discord.Interaction, victim: discord.Member, new_name: str):
+    nicknameprint(victim, new_name)
     
     
     
@@ -85,7 +92,7 @@ async def on_message(message: Message):
     if not message.author.bot and message.content != "":
         
         inline_commands = [
-                                    r"<@(.+?)>\s+they\s+call\s+(?:you|u)\s+(.+)"
+                                    "<@(.+?)>\s+they\s+call\s+(?:you|u)\s+(.+)"
                                   ]
         
         # Check for inline commands and keep track of which command is being compared
@@ -107,7 +114,7 @@ async def on_message(message: Message):
                     newname = str(matched_command.group(2))
                     # Calls the /they_call_you slash command logic
                     try:
-                        await they_call_you(message, victim, newname)
+                        await change_nickname(message, victim, newname)
                     except Exception as e:
                         print(e)
                 # elif index == 1:

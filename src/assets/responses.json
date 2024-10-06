@@ -1,18 +1,71 @@
 {
-    "text_responses": {
-        "oye": "oye.",
-        "snarf": "snarf >:(",
-        "reveal the banger": "https://x.com/blacklung82/status/1602348576331505664"
-    },
-    "keyword_responses": {
-        "deadly dice man": "🎲You my friend... have just made.. an.. unlucky gamble...🎲\nhttps://cdn.discordapp.com/attachments/1185154272170623016/1216308263348605049/17100608047072368967661815628.gif?ex=66ee89d7&is=66ed3857&hm=a331b00d199db639dadec8dfd406cb7bf1027c7d968ffcb532ba6cb5954badd4&",
-        "preposition": "prepositions\nhttps://www.youtube.com/watch?v=E0Ag0VKJ51Y"
-    },
-    "emoji_responses": {
-        "whatsapp": "<:whatsapp:1285617179408076902>",
-        "beefstew": "<:beefstew:1285630081829437614>",
-        "romulus": "<:romulus:1285630098224971786>",
-        "brazil": "<:brazil:1286688098297839696>",
-        "elphaba": "<:beefhusk:1287094093989679124>"
-    }
+  "text_responses": {
+    "oye": "oye.",
+    "snarf": "snarf >:(",
+    "reveal the banger": "https://x.com/blacklung82/status/1602348576331505664"
+  },
+  "keyword_responses": {
+    "deadly dice man": "🎲You my friend... have just made.. an.. unlucky gamble...🎲\nhttps://cdn.discordapp.com/attachments/1185154272170623016/1216308263348605049/17100608047072368967661815628.gif?ex=66ee89d7&is=66ed3857&hm=a331b00d199db639dadec8dfd406cb7bf1027c7d968ffcb532ba6cb5954badd4&",
+    "preposition": "prepositions\nhttps://www.youtube.com/watch?v=E0Ag0VKJ51Y"
+  },
+  "emoji_responses": {
+    "whatsapp": "<:whatsapp:1285617179408076902>",
+    "beefstew": "<:beefstew:1285630081829437614>",
+    "romulus": "<:romulus:1285630098224971786>",
+    "brazil": "<:brazil:1286688098297839696>",
+    "elphaba": "<:beefhusk:1287094093989679124>"
+  },
+  "nickname_change_responses": [
+    "looks like {victim.mention} is going by {new_name} now.. good for them!",
+    "hey {victim.mention}, heard they're calling you {new_name}... your choice i suppose",
+    "{new_name}.... really???",
+    "are you serious... {new_name} is the best you could come up with..?",
+    "uh oh! the rule has been invoked {victim.mention}! you know what that means!!",
+    "{victim.mention} be like 'my name is {new_name} dementia raven way'...",
+    "{victim.mention}, you know the rules...",
+    "i kinda feel sorry for {victim.mention} at this point.. or should i say {new_name}...",
+    "{new_name}, nice one +2",
+    "mfs be on some walter white shit like 'say my name' and their name is literally {new_name}...",
+    "well well well... how the turn tables.. {victim.mention} is now {new_name}",
+    "CONGRATULATIONS {victim.mention}! you have been selected to be the newest {new_name}!",
+    "{victim.mention}... im sorry",
+    "they make me do this im sorry",
+    "r u kidding me...",
+    "IP. 92.28.211.234 N: 43.7462 W: 12.4893 \nSS Number: 6979191519182016\nIPv6: fe80::5dcd::ef69::fb22::d9888%12 \nUPNP:Enabled DMZ: 10.112.42.15 \nMAC:5A:78:3E:7E:00 \nISP: Ucom Universal DNS:8.8.8.8\n ALT DNS: 1.1.1.8.1 \nDNS SUFFIX:Dlink WAN: 100.23.10.15 \nGATEWAY:192.168.0.1 \nSUBNET MASK: 255.255.0.255\nUDP OPEN PORTS: 8080,80 \nTCP OPEN PORTS: 443\nROUTER VENDOR:ERICCSON \nDEVICE VENDOR: WIN32-X \nCONNECTION TYPE: Ethernet ICMP \nHOPS:192168.0.1 192168.1.1 100.73.43.4host-132.12.32.167.ucom.comhost-66.120.12.111.ucom.com36.134.67.189 216.239.78.111 sof02s32-in-f14.1e100.net \nTOTAL HOPS: 8 \nACTIVESERVICES: [HTTP]192.168.3.1:80=>92.28.211.234:80\n[HTTP]192.168.3.1:443=>92.28.211.234:443\n[UDP] 192.168.0.1:788=>192.168.1:6557\n[TCP]192.168.1.1:67891=>92.28.211.234:345\n[TCP]192.168.52.43:7777=>192.168.1.1:7778\n[TCP]192.168.78.12:898=>192.168.89.9:667\nEXTERNAL",
+    "HAHAHHAHAHAHAHAH {new_name} LMAOOO!!! EVERYONE POINT AND LAUGH AT {victim.mention}",
+    "{victim.mention} is now {new_name} na nite pal,,",
+    "{victim.mention} is now {new_name}, as recompense they get 1 free pass to say whatever word they want!",
+    "hey kid, heard they callin' ya {new_name} now...",
+    "they call you {new_name}.",
+    "im so sick of this shit",
+    "wow yeah... they really DO call you {new_name} thats so true",
+    "you dont have to tell me twice, but during the stone age...",
+    "wow! is that {victim.mention}? no... wait, its {new_name}...",
+    "by the power invested in me i now pronounce you to be {new_name}!",
+    "{victim.mention}, be glad its not..like.. idk, {victim.mention}smells.. or like {victim.mention}isgay or something",
+    "really not appropriate guys is it....",
+    "mfw they call you {new_name}: :beefstew:"
+  ],
+
+  "kick_messages": [
+    "**{member.name}** was kicked. see ya, asshole",
+    "**{member.name}** was kicked for **{reason}**, sounds about right",
+    "looks like **{member.name}** wont be joining us for dinner... they **{reason}** and got kicked",
+    "lmao bye **{member.name}**",
+    "**{reason}**... yeah... that'll do it",
+    "**{member.name}** sayonara you weeabo shit",
+    "**{member.name}** fuck off",
+    "**{member.name}** was kicked, but remember, a kick is only temporary, but a ban.. thats for life babey!",
+    "its sooo like **{member.name}** to be kicked for **{reason}**"
+    ],
+
+  "ban_messages": [
+    "**{member.name}** was banned. see ya, asshole",
+    "**{member.name}** was banned for **{reason}**, sounds about right",
+    "**{member.name}** was banned! they wont be **{reason}** again",
+    "OOT!! OOT MAH HOOSE! **{member.name}** BANNED!!",
+    "DING DONG THE WICKED WITCH IS DEAD!!, no not *that* one...**{member.name}**.",
+    "BANNED! **{member.name}** was banned with the reason of **{reason}**.",
+    "erm... youre done...**{member.name}** banned for **{reason}**."
+    ]
 }
