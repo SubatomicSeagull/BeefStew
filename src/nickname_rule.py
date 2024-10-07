@@ -52,6 +52,7 @@ def nicknameprint(victim: discord.Member, new_name: str):
     chosen_response = chosen_response.format(victim=victimtag, new_name=new_name)
     return chosen_response
 
+
 def load_responses(file_path, element):
     with open(file_path, 'r') as file:
         data = json.load(file)

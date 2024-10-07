@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 import discord
 from discord import Message
 from discord.ext import commands
-from responses import get_response
+from responses import get_response, get_insult
 from ping import pingall
 from pfp_manipulations import *
 
@@ -37,6 +37,7 @@ async def on_ready():
 # /ping command
 @bot.tree.command(name="ping", description="pings CCServer, please be responsible with this one...")
 async def ping(interaction: discord.Interaction):
+    await interaction.response.defer()
     print("Pinging CCServer...")
     await interaction.response.send_message(f"{interaction.user.mention} pinged CCServer with the following results:\n{pingall()}")
 
@@ -71,18 +72,46 @@ async def kick(interaction: discord.Interaction, member: discord.Member, reason:
 # /boil command, doesnt work if the user has a gif as a pfp
 @bot.tree.command(name="boil", description="focken boil yehs")
 async def boil(interaction: discord.Interaction, victim: discord.Member):
+    await interaction.response.defer()
     try:
         await boil_pfp(interaction, victim)
-        await interaction.channel.send(f"{victim.mention} has been BOILED!!!")
+        await interaction.followup.send(f"{victim.mention} has been BOILED!!!")
     except Exception as e:
         print(e)
-        await interaction.channel.send(f"{interaction.user.mention} tried to boil {victim.name} but it didnt work ://")
+        await interaction.followup.send(f"{interaction.user.mention} tried to boil {victim.name} but it didnt work :// ({e})")
 
-#test command, change as needed
+# /slander command, doesnt work if the user has a gif as a pfp
+@bot.tree.command(name="slander", description="i cant belive they said that")
+async def slander(interaction: discord.Interaction, victim: discord.Member):
+    try:
+        await add_speech_bubble(interaction, victim)
+         #need the response message to be ephemeral so cant use interaction.followup
+        await interaction.response.send_message(content=f"you slandered {victim.name}, they really just said that huh ://", ephemeral=True)
+    except Exception as e:
+        print(e)
+        await interaction.response.send_message(content=f"{interaction.user.mention} tried to slander {victim.mention}, but it didnt work... ({e})")
+ 
+# /mock command
+@bot.tree.command(name="mock", description="cast vicious mockery on someone")
+async def mock(interaction: discord.Interaction, victim: discord.Member):
+    if victim.id != 1283805971524747304:
+        try:
+            insult = await get_insult()
+            if victim.id == interaction.user.id:
+                await interaction.response.send_message(f"{interaction.user.mention} tried to cast Vicious Mockery on themselves for some reason...\nit still works tho, {interaction.user.mention} {insult} ")
+            else:
+                await interaction.response.send_message(f"{victim.mention} {insult}")
+        except Exception as e:
+            await interaction.response.send_message(f"{interaction.user.mention} tried to cast Vicious Mockery on {victim.mention}... but it failed ({e})")
+    else:
+        await interaction.response.send_message(f"{interaction.user.mention} tried to cast Vicious Mockery on me...BITCH")
+
+# test command, change as needed
 @bot.tree.command(name="test", description="test command, might do something, might not, who knows")
 async def test(interaction: discord.Interaction, victim: discord.Member, new_name: str):
     nicknameprint(victim, new_name)
-    
+
+ 
     
     
     

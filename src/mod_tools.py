@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 import random
+import json
 
 # TBD 
 #   >   need some way to pass in the log channel id
@@ -12,13 +13,13 @@ import random
 async def kick_member(interaction: discord.Interaction, member: discord.Member, reason: str):
     await member.kick(reason=reason)
     # wont work as theres no way of storing the log channel ID yet
-    await bot.get_channel(logs_channel).send(get_kick_message(member, reason))
+    # await bot.get_channel(logs_channel).send(get_kick_message(member, reason))
     return
 
 async def ban_member(interaction: discord.Interaction, member: discord.Member, reason: str):
     await member.ban(reason=reason)
     # wont work as theres no way of storing the log channel ID yet
-    await bot.get_channel(logs_channel).send(get_ban_message(member, reason))
+    # await bot.get_channel(logs_channel).send(get_ban_message(member, reason))
     return
 
 def get_kick_message(member: discord.Member, reason: str): 

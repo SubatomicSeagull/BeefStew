@@ -1,5 +1,6 @@
 import json
 import os
+import random
 
 def load_responses(file_path):
     with open(file_path, 'r') as file:
@@ -38,3 +39,10 @@ def get_response(message):
             response += emoji_responses[word]
 
     return response
+
+
+async def get_insult():
+    with open("src\\assets\\responses.json", 'r') as file:
+        data = json.load(file)
+    insult = random.choice(data["insults"])
+    return insult
