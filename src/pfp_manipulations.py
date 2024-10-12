@@ -13,11 +13,9 @@ async def get_victim_avatar(victim: discord.Member):
     
     #this doesnt work :( if any gif is handled it will throw a NoneType error
     if user_pfp.format == "GIF":
-        print("pfp type is a gif, converting the first frame...")
         user_pfp = user_pfp.seek(0)
         
     user_pfp.convert("RGBA")
-    print("resizing the image to 350x350")
     user_pfp = ImageOps.fit(user_pfp, (350, 350))
     return user_pfp
 

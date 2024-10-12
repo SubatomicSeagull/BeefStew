@@ -9,6 +9,7 @@ from discord.ext import commands
 from responses import get_response, get_insult
 from ping import pingall
 from pfp_manipulations import *
+from help import *
 
 # Load the token from .env
 try:
@@ -35,8 +36,8 @@ async def on_ready():
     print(f"{bot.user} is now online, may god help us all...")
     
 # /ping command
-@bot.tree.command(name="ping", description="pings CCServer, please be responsible with this one...")
-async def ping(interaction: discord.Interaction):
+@bot.tree.command(name="ccping", description="pings CCServer, please be responsible with this one...")
+async def ccping(interaction: discord.Interaction):
     await interaction.response.defer()
     print("Pinging CCServer...")
     await interaction.response.send_message(f"{interaction.user.mention} pinged CCServer with the following results:\n{pingall()}")
@@ -51,8 +52,8 @@ async def they_call_you(interaction: discord.Interaction, victim: discord.Member
         await interaction.response.send_message(f"Failed to change nickname: {e}")
         
 # /set log channel command
-@bot.tree.command(name="set_logs_channel", description="where should i spew? (kick/ban messages etc.)")
-async def set_logs_channel(interaction: discord.Interaction): 
+@bot.tree.command(name="logs", description="where should i spew? (kick/ban messages etc.)")
+async def logs(interaction: discord.Interaction): 
     print(log_channel_id)
     log_channel_id = bot.get_channel(interaction.channel_id)
     print(log_channel_id)
@@ -62,7 +63,9 @@ async def set_logs_channel(interaction: discord.Interaction):
 # /help command
 @bot.tree.command(name="help", description="you dont what to know what i can *really* do...")
 async def help(interaction: discord.Interaction): 
-    raise NotImplementedError
+    #doesnt work - needs interation delay and also clicking the button for the same page you are on give interation failure
+    view = HelpEmbed()
+    await interaction.channel.send(embed=discord.Embed(title="Help - Page 0", description="List of commands for Page 0"), view=view)
     
 # /kick command
 @bot.tree.command(name="kick", description="foekn get 'em yea")
