@@ -63,10 +63,19 @@ async def logs(interaction: discord.Interaction):
 # /help command
 @bot.tree.command(name="help", description="you dont what to know what i can *really* do...")
 async def help(interaction: discord.Interaction): 
-    #doesnt work - needs interation delay and also clicking the button for the same page you are on give interation failure
     view = HelpEmbed()
-    await interaction.channel.send(embed=discord.Embed(title="Help - Page 0", description="List of commands for Page 0"), view=view)
-    
+    page0embed = discord.Embed(title="Beefstew Help", description="You don't want to know what I can *really* do...", color=discord.Color.lighter_grey())
+    page0embed.set_thumbnail(url=bot.user.avatar.url)
+    page0embed.add_field(name="",value="⠀", inline=False)
+    page0embed.add_field(name="Commands:",value="", inline=False)
+    page0embed.add_field(name="",value="Click on the buttons below for command lists", inline=False)
+    page0embed.add_field(name="",value="⠀", inline=False)
+    page0embed.add_field(name="\nOther info:\n",value="", inline=False)
+    page0embed.add_field(name="", value="Privacy Policy", inline=True)
+    page0embed.add_field(name="", value="⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀Terms of Service", inline=True)
+    page0embed.add_field(name="", value="[cosycraft.uk/privacy](https://www.cosycraft.uk/privacy)⠀⠀⠀⠀⠀⠀⠀[cosycraft/tos](https://www.cosycraft.com/tos)", inline=False)
+    await interaction.response.send_message(embed=page0embed, view=view)
+
 # /kick command
 @bot.tree.command(name="kick", description="foekn get 'em yea")
 async def kick(interaction: discord.Interaction, member: discord.Member, reason: str): 
