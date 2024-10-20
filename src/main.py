@@ -1,12 +1,12 @@
 import os
 import re
 from nickname_rule import *
-from mod_tools import kick_member
+from mod_tools import *
 from dotenv import load_dotenv
 import discord
 from discord import Message
 from discord.ext import commands
-from responses import get_response, get_insult
+from responses import get_response, vicious_mockery
 from ping import pingall
 from pfp_manipulations import *
 from help import *
@@ -50,15 +50,28 @@ async def they_call_you(interaction: discord.Interaction, victim: discord.Member
         await change_nickname(interaction, victim, new_name)
     except Exception as e:
         await interaction.response.send_message(f"Failed to change nickname: {e}")
+        interaction.response.is_done(True)
         
 # /set log channel command
 @bot.tree.command(name="logs", description="where should i spew? (kick/ban messages etc.)")
-async def logs(interaction: discord.Interaction): 
-    print(log_channel_id)
-    log_channel_id = bot.get_channel(interaction.channel_id)
-    print(log_channel_id)
-    await interaction.channel.send(f"{interaction.channel.name} is the new logs channel")
-    # maybe something to store in the database, ServerID : LogChannelID ???????????????
+async def logs(interaction: discord.Interaction):
+    await interaction.response.defer()
+    
+    current_guild_id = read_guild_id()
+    current_channel_id = read_log_channel(current_guild_id)
+    
+    new_guild_id = interaction.guild_id
+    new_channel_id = interaction.channel_id
+    
+    current_channel = await bot.fetch_channel(current_channel_id)
+    new_channel = await bot.fetch_channel(new_channel_id)
+    try:
+        await write_guild_id(new_guild_id, new_channel_id)
+        await interaction.followup.send(f"Log channel has been set to {new_channel.mention}")
+    except Exception as e:
+        print(e)
+        await interaction.followup.send(f"Couldn't set the log channel here: {e}. The current log channel is {current_channel.mention}")
+
 
 # /help command
 @bot.tree.command(name="help", description="you dont what to know what i can *really* do...")
@@ -81,47 +94,44 @@ async def help(interaction: discord.Interaction):
 async def kick(interaction: discord.Interaction, member: discord.Member, reason: str): 
     await kick_member(interaction, member, reason)
 
-# /boil command, doesnt work if the user has a gif as a pfp
+# /boil command
 @bot.tree.command(name="boil", description="focken boil yehs")
 async def boil(interaction: discord.Interaction, victim: discord.Member):
     await interaction.response.defer()
     try:
-        await boil_pfp(interaction, victim)
-        await interaction.followup.send(f"{victim.mention} has been BOILED!!!")
+        boiled_pfp = await boil_pfp(victim)
+        await interaction.followup.send(file=discord.File(fp=boiled_pfp, filename=f"{victim.name} boiled.png"))
+        boiled_pfp.close()
     except Exception as e:
         print(e)
         await interaction.followup.send(f"{interaction.user.mention} tried to boil {victim.name} but it didnt work :// ({e})")
 
-# /slander command, doesnt work if the user has a gif as a pfp
+# /slander command
 @bot.tree.command(name="slander", description="i cant belive they said that")
-async def slander(interaction: discord.Interaction, victim: discord.Member):
+async def slander(interaction: discord.Interaction, victim: discord.Member):   
+    await interaction.response.defer()
     try:
-        await add_speech_bubble(interaction, victim)
-         #need the response message to be ephemeral so cant use interaction.followup
-        await interaction.response.send_message(content=f"you slandered {victim.name}, they really just said that huh ://", ephemeral=True)
+        slandered_pfp = await add_speech_bubble(victim)
+        await interaction.followup.send(file=discord.File(fp=slandered_pfp, filename=f"{victim.name} slandered.png"))
+        slandered_pfp.close()
     except Exception as e:
         print(e)
-        await interaction.response.send_message(content=f"{interaction.user.mention} tried to slander {victim.mention}, but it didnt work... ({e})")
+        await interaction.followup.send(content=f"{interaction.user.mention} tried to slander {victim.mention}, but it didnt work :// ({e})")
  
 # /mock command
 @bot.tree.command(name="mock", description="cast vicious mockery on someone")
 async def mock(interaction: discord.Interaction, victim: discord.Member):
-    if victim.id != 1283805971524747304:
-        try:
-            insult = await get_insult()
-            if victim.id == interaction.user.id:
-                await interaction.response.send_message(f"{interaction.user.mention} tried to cast Vicious Mockery on themselves for some reason...\nit still works tho, {interaction.user.mention} {insult} ")
-            else:
-                await interaction.response.send_message(f"{victim.mention} {insult}")
-        except Exception as e:
-            await interaction.response.send_message(f"{interaction.user.mention} tried to cast Vicious Mockery on {victim.mention}... but it failed ({e})")
-    else:
-        await interaction.response.send_message(f"{interaction.user.mention} tried to cast Vicious Mockery on me...BITCH")
+    interaction.response.defer()
+    interaction.channel.send(vicious_mockery())
 
 # test command, change as needed
 @bot.tree.command(name="test", description="test command, might do something, might not, who knows")
 async def test(interaction: discord.Interaction, victim: discord.Member, new_name: str):
     nicknameprint(victim, new_name)
+    
+@bot.tree.command(name="hello", description="test command, might do something, might not, who knows")
+async def hello(interaction: discord.Interaction):
+    await interaction.channel.send("Hello with prefix command!")
 
  
     
@@ -165,7 +175,7 @@ async def on_message(message: Message):
                 response = str(get_response(message.content))
                 if response != "":
                     await message.reply(response)
-
+    await bot.process_commands(message)
 # Entrypoint
 if __name__ == "__main__":
     main()

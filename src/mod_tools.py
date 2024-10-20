@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import random
 import json
+import os
 
 # TBD 
 #   >   need some way to pass in the log channel id
@@ -38,3 +39,36 @@ def load_responses(file_path, element):
     with open(file_path, 'r') as file:
         data = json.load(file)
     return data[element]
+
+def read_log_channel(guild_id):
+    current_dir = os.path.dirname(__file__)
+    file_path = os.path.join(current_dir, 'assets', 'guild_config.json')
+
+    with open(file_path, "r") as file:
+        data = json.load(file)
+        
+    if guild_id == data["guild"]["id"]:
+         return data["guild"]["channel_id"]
+    else:
+        return "" 
+        
+def read_guild_id():
+    current_dir = os.path.dirname(__file__)
+    file_path = os.path.join(current_dir, 'assets', 'guild_config.json')
+
+    with open(file_path, "r") as file:
+        data = json.load(file)
+    return data["guild"]["id"]
+
+async def write_guild_id(guild_id, channel_id):
+    current_dir = os.path.dirname(__file__)
+    file_path = os.path.join(current_dir, 'assets', 'guild_config.json')
+    
+    data = {"guild": {}}
+    data["guild"]["id"] = str(guild_id)
+    print(f"wrote {guild_id} in guild:id")
+    data["guild"]["channel_id"] = str(channel_id)
+    print(f"wrote {channel_id} in guild:channel_id")
+    
+    with open(file_path, 'w') as file:
+        json.dump(data, file, indent=4)

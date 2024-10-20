@@ -47,3 +47,16 @@ async def get_insult():
         data = json.load(file)
     insult = random.choice(data["insults"])
     return insult
+
+async def vicious_mockery(interaction: discord.Interaction, victim: discord.Member):
+    if victim.id != 1283805971524747304:
+        try:
+            insult = await get_insult()
+            if victim.id == interaction.user.id:
+                return(f"{interaction.user.mention} tried to cast Vicious Mockery on themselves for some reason...\nit still works tho, {interaction.user.mention} {insult} ")
+            else:
+                return(f"{victim.mention} {insult}")
+        except Exception as e:
+            return (f"{interaction.user.mention} tried to cast Vicious Mockery on {victim.mention}... but it failed ({e})")
+    else:
+        return(f"{interaction.user.mention} tried to cast Vicious Mockery on me...BITCH")
