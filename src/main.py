@@ -4,12 +4,13 @@ from nickname_rule import *
 from mod_tools import *
 from dotenv import load_dotenv
 import discord
-from discord import Message
+from discord import Message, app_commands
 from discord.ext import commands
 from responses import get_response, vicious_mockery
 from ping import pingall
 from pfp_manipulations import *
 from help import *
+
 
 # Load the token from .env
 try:
@@ -21,6 +22,8 @@ except Exception as e:
 intents = discord.Intents.all()
 intents.message_content = True
 bot = commands.Bot(command_prefix="/", intents=intents)
+kicked_members = set()
+banned_members = set()
 
 # Login with token
 def main():
@@ -79,6 +82,7 @@ async def help(interaction: discord.Interaction):
     view = HelpEmbed()
     page0embed = discord.Embed(title="Beefstew Help", description="You don't want to know what I can *really* do...", color=discord.Color.lighter_grey())
     page0embed.set_thumbnail(url=bot.user.avatar.url)
+    page0embed.set_author(name="Beefstew", icon_url=bot.user.avatar.url)
     page0embed.add_field(name="",value="⠀", inline=False)
     page0embed.add_field(name="Commands:",value="", inline=False)
     page0embed.add_field(name="",value="Click on the buttons below for command lists", inline=False)
@@ -92,7 +96,47 @@ async def help(interaction: discord.Interaction):
 # /kick command
 @bot.tree.command(name="kick", description="foekn get 'em yea")
 async def kick(interaction: discord.Interaction, member: discord.Member, reason: str): 
-    await kick_member(interaction, member, reason)
+    if interaction.user.id == member.id:
+        await interaction.response.send_message("u cant kick youself idiot, the leave button is right there", ephemeral=True)
+        return
+    if member.id == bot.user.id:
+        await interaction.response.send_message("you cant get rid of me that easily...", ephemeral=True)
+        return
+    if not interaction.user.guild_permissions.kick_members:
+        await interaction.response.send_message("yeah yeah nice try", ephemeral=True)
+        return
+    try:    
+        kicked_members.add(member.id)
+        channel = await bot.fetch_channel(read_log_channel(read_guild_id()))
+        await channel.send(embed=await kick_message_embed(interaction.user, member, reason, bot.user.avatar.url, interaction.guild.name))
+        await interaction.response.send_message(f"You kicked {member.name}.", ephemeral=True)
+        await member.kick(reason=reason)
+        print("s")
+    except Exception as e:
+        print(e)
+        await interaction.response.send_message(f"Couldn't kick user {member.name} because {e}", ephemeral=True)
+
+# /ban command 
+@bot.tree.command(name="ban", description="KILL! KILL! KILL! KILL!!!!!")
+async def ban(interaction: discord.Interaction, member: discord.Member, reason: str): 
+    if interaction.user.id == member.id:
+        await interaction.response.send_message("You can't ban youself idiot, the leave button is right there", ephemeral=True)
+        return
+    if member.id == bot.user.id:
+        await interaction.response.send_message("you cant get rid of me that easily...", ephemeral=True)
+        return
+    if not interaction.user.guild_permissions.ban_members:
+        await interaction.response.send_message("yeah yeah nice try", ephemeral=True)
+        return
+    try:
+        banned_members.add(member.id)    
+        channel = await bot.fetch_channel(read_log_channel(read_guild_id()))
+        await channel.send(embed=await ban_message_embed(interaction.user, member, reason, bot.user.avatar.url, interaction.guild.name))
+        await interaction.response.send_message(f"You banned {member.name}.", ephemeral=True)
+        await member.ban(reason=reason)
+    except Exception as e:
+        print(e)
+        await interaction.response.send_message(f"Couldn't ban user {member.name} because {e}", ephemeral=True)
 
 # /boil command
 @bot.tree.command(name="boil", description="focken boil yehs")
@@ -122,21 +166,13 @@ async def slander(interaction: discord.Interaction, victim: discord.Member):
 @bot.tree.command(name="mock", description="cast vicious mockery on someone")
 async def mock(interaction: discord.Interaction, victim: discord.Member):
     interaction.response.defer()
-    interaction.channel.send(vicious_mockery())
+    interaction.followup.send(vicious_mockery())
 
 # test command, change as needed
 @bot.tree.command(name="test", description="test command, might do something, might not, who knows")
 async def test(interaction: discord.Interaction, victim: discord.Member, new_name: str):
     nicknameprint(victim, new_name)
-    
-@bot.tree.command(name="hello", description="test command, might do something, might not, who knows")
-async def hello(interaction: discord.Interaction):
-    await interaction.channel.send("Hello with prefix command!")
 
- 
-    
-    
-    
 # Message listener
 @bot.event
 async def on_message(message: Message):
@@ -176,6 +212,53 @@ async def on_message(message: Message):
                 if response != "":
                     await message.reply(response)
     await bot.process_commands(message)
+
+@bot.event
+async def on_member_join(member: discord.Member):
+     channel = await bot.fetch_channel((read_log_channel(read_guild_id())))
+     await channel.send(embed=await join_message_embed(member, bot.user.avatar.url,member.guild.name))
+
+@bot.event
+async def on_member_remove(member: discord.Member):
+    if member.id in kicked_members:
+        kicked_members.remove(member.id)
+        return
+    
+    if member.id in banned_members:
+       banned_members.remove(member.id)
+       return
+    channel = await bot.fetch_channel((read_log_channel(read_guild_id())))
+    await channel.send(embed=await leave_message_embed(member, bot.user.avatar.url, member.guild.name))
+
+@bot.event
+async def on_message_edit(before, after):
+    if before.author == bot.user:
+        return
+    channel = await bot.fetch_channel((read_log_channel(read_guild_id())))  # Replace with your log channel ID
+    embed = discord.Embed(title="Message Edited", color=discord.Color.yellow())
+    embed.add_field(name="",value=f"{after.author.mention} edited a message in {after.channel.mention} - [Jump to message](https://discord.com/channels/{after.guild.id}/{after.channel.id}/{after.id})", inline=False)
+    embed.add_field(name="Original", value=f"```{before.content}```", inline=False)
+    embed.add_field(name="Edited", value=f"```{after.content}```", inline=False)
+    embed.add_field(name="", value=f"{after.edited_at.strftime('%d/%m/%Y %H:%M')}")
+    embed.add_field(name="", value="", inline=False)
+    embed.set_author(name="Beefstew", icon_url=bot.user.avatar.url)
+    embed.add_field(name="", value=f"{after.author.guild.name} - {datetime.now().strftime('%d/%m/%Y %H:%M')}") 
+    await channel.send(embed=embed)
+    
+@bot.event
+async def on_message_delete(message):
+    if message.author == bot.user:
+        return
+    channel = await bot.fetch_channel((read_log_channel(read_guild_id())))  # Replace with your log channel ID
+    embed = discord.Embed(title="Message Deleted", color=discord.Color.orange())
+    embed.add_field(name="",value=f"{message.author.mention}'s message was deleted in {message.channel.mention}", inline=False)
+    embed.add_field(name="Message", value=f"```{message.content}```", inline=False)
+    embed.add_field(name="", value="", inline=False)
+    embed.set_author(name="Beefstew", icon_url=bot.user.avatar.url)
+    embed.add_field(name="", value=f"{message.author.guild.name} - {datetime.now().strftime('%d/%m/%Y %H:%M')}") 
+    await channel.send(embed=embed)
+
+
 # Entrypoint
 if __name__ == "__main__":
     main()

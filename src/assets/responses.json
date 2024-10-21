@@ -61,7 +61,6 @@
     "behold a most noisy cuck!",
     "miserable pile of secretion...",
     "villanous prick.",
-    "back to the anus that spat you out!",
     "twit. twat. twerp.",
     "thine eyes, pools of tepid piss...",
     "poxy pissard pervert",
@@ -88,29 +87,30 @@
     "FUCK YOU FUCK YOU FUCK YOU DIE DIE DIE DIE DIE",
     "die.",
     "https://jobs.army.mod.uk/apply/",
+    "https://people.mcdonalds.co.uk/opportunities/restaurant",
     "cockwomble",
     "i envy the people who havent met you."
   ],
 
   "kick_messages": [
-    "**{member.name}** was kicked. see ya, asshole",
-    "**{member.name}** was kicked for **{reason}**, sounds about right",
-    "looks like **{member.name}** wont be joining us for dinner... they **{reason}** and got kicked",
-    "lmao bye **{member.name}**",
+    "**<@{member.id}>** was kicked. see ya, asshole",
+    "**<@{member.id}>** was kicked for **{reason}**, sounds about right",
+    "looks like **<@{member.id}>** wont be joining us for dinner... they **{reason}** and got kicked",
+    "lmao bye **<@{member.id}>**",
     "**{reason}**... yeah... that'll do it",
-    "**{member.name}** sayonara you weeabo shit",
-    "**{member.name}** fuck off",
-    "**{member.name}** was kicked, but remember, a kick is only temporary, but a ban.. thats for life babey!",
-    "its sooo like **{member.name}** to be kicked for **{reason}**"
+    "**<@{member.id}>** sayonara you weeabo shit",
+    "**<@{member.id}>** fuck off",
+    "**<@{member.id}>** was kicked, but remember, a kick is only temporary, but a ban.. thats for life babey!",
+    "its sooo like **<@{member.id}>** to be kicked for **{reason}**"
     ],
 
   "ban_messages": [
-    "**{member.name}** was banned. see ya, asshole",
-    "**{member.name}** was banned for **{reason}**, sounds about right",
-    "**{member.name}** was banned! they wont be **{reason}** again",
-    "OOT!! OOT MAH HOOSE! **{member.name}** BANNED!!",
-    "DING DONG THE WICKED WITCH IS DEAD!!, no not *that* one...**{member.name}**.",
-    "BANNED! **{member.name}** was banned with the reason of **{reason}**.",
-    "erm... youre done...**{member.name}** banned for **{reason}**."
+    "**<@{member.id}>** was banned. see ya, asshole",
+    "**<@{member.id}>** was banned for **{reason}**, sounds about right",
+    "**<@{member.id}>** was banned! they wont be **{reason}** again",
+    "OOT!! OOT MAH HOOSE! **<@{member.id}>** BANNED!!",
+    "DING DONG THE WICKED WITCH IS DEAD!!, no not *that* one...**<@{member.id}>**.",
+    "BANNED! **<@{member.id}>** was banned with the reason of **{reason}**.",
+    "erm... youre done...**<@{member.id}>** banned for **{reason}**."
     ]
 }
