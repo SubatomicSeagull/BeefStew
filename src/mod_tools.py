@@ -74,6 +74,70 @@ async def leave_message_embed(user: discord.Member, icon_url, guild_name):
         leaveembed.add_field(name="", value=f"{guild_name} - {datetime.now().strftime('%d/%m/%Y %H:%M')}")      
         return leaveembed
 
+async def create_mute_role(guild: discord.Guild):
+    try:
+        print("defining the persmissions")
+        permissions = discord.Permissions()    
+        permissions.update(
+            kick_members=False,
+            ban_members=False,
+            manage_channels=False,
+            manage_guild=False,
+            add_reactions=True,
+            view_audit_log=False,
+            read_messages=True,
+            send_messages=False,
+            manage_messages=False,
+            embed_links=False,
+            attach_files=False,
+            read_message_history=True,
+            mention_everyone=False,
+            use_external_emojis=True,
+            connect=True,
+            speak=False,
+            mute_members=False,
+            deafen_members=False,
+            move_members=False,
+            use_voice_activation=True,
+            change_nickname=True,
+            manage_nicknames=False,
+            manage_roles=False,
+            manage_webhooks=False,
+            manage_emojis= False
+        )    
+        print("creating the role")
+        mute_role = await guild.create_role(name="BeefMute", permissions=permissions,)
+        print(f"elevating the role to position {(len(mute_role.guild.roles)-3)}")
+        await mute_role.edit(position=(len(mute_role.guild.roles)-2))
+    except discord.Forbidden:
+        print("Tried to create the mute role, but no permissions")
+        
+async def add_mute_role(interaction: discord.Interaction, member: discord.Member):
+    print("adding a mute role")
+    guild = member.guild
+    mute_role = discord.utils.get(guild.roles, name="BeefMute")
+    if mute_role is None:
+        print("no mute role, creating one")
+        await create_mute_role(guild=guild)
+    try:
+        print("adding role to user")
+        await member.add_roles(mute_role)
+    except discord.Forbidden:
+        await interaction.channel.send(f"couldnt mute {member.name} because i dont have permission :(")
+        
+async def remove_mute_role(interaction: discord.Interaction, member: discord.Member):
+    guild = member.guild
+    mute_role = discord.utils.get(guild.roles, name="BeefMute")
+    if mute_role is None:
+        await create_mute_role(guild=guild)
+    try:
+      await member.remove_roles(mute_role)
+    except discord.Forbidden:
+        await interaction.channel.send(f"couldnt unmute {member.name} because i dont have permission :(")
+    except Exception as e:
+        await interaction.channel.send(f"couldnt unmute {member.name} because {e}")
+    
+
 def load_responses(file_path, element):
     with open(file_path, 'r') as file:
         data = json.load(file)

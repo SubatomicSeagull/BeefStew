@@ -21,7 +21,7 @@ except Exception as e:
 # Create client and intents objects
 intents = discord.Intents.all()
 intents.message_content = True
-bot = commands.Bot(command_prefix="/", intents=intents)
+bot = commands.Bot(command_prefix="beef", intents=intents)
 kicked_members = set()
 banned_members = set()
 
@@ -137,6 +137,26 @@ async def ban(interaction: discord.Interaction, member: discord.Member, reason: 
     except Exception as e:
         print(e)
         await interaction.response.send_message(f"Couldn't ban user {member.name} because {e}", ephemeral=True)
+
+#no handling if someone want to mute themselves or a mod or a bot yet
+@bot.tree.command(name="mute", description="SHHHHHHHH!!")
+async def mute(interaction: discord.Interaction, member: discord.Member): 
+    if discord.utils.get(member.guild.roles, name="BeefMute") not in member.roles:
+        await add_mute_role(interaction, member)
+        await member.edit(mute=True)
+        await interaction.response.send_message(f"{member.mention} was muted", ephemeral=True)
+    else:
+        await interaction.response.send_message(f"{member.mention} is already muted", ephemeral=True)
+
+@bot.tree.command(name="unmute", description="you may speak")
+async def unmute(interaction: discord.Interaction, member: discord.Member):    
+    if discord.utils.get(member.guild.roles, name="BeefMute") in member.roles:
+        await remove_mute_role(interaction, member)
+        await member.edit(mute=False)
+        await interaction.response.send_message(f"{member.mention} was unmuted", ephemeral=True)
+    else:
+        await interaction.response.send_message(f"{member.mention} isn't muted", ephemeral=True)
+
 
 # /boil command
 @bot.tree.command(name="boil", description="focken boil yehs")
