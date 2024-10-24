@@ -49,28 +49,39 @@ async def ccping(interaction: discord.Interaction):
 # /they_call_you command
 @bot.tree.command(name = "they_call_you", description = "invokes the rule...")
 async def they_call_you(interaction: discord.Interaction, victim: discord.Member, new_name: str):
-    print(f"attempting to change the nickname of {victim.name} to {new_name}...")
     try:
         await change_nickname(interaction, victim, new_name)
     except Exception as e:
         await interaction.response.send_message(f"Failed to change nickname: {e}")
-        interaction.response.is_done(True)
         
 # /set log channel command
 @bot.tree.command(name="set_logs", description="where should i spew? (kick/ban messages etc.)")
 async def set_logs(interaction: discord.Interaction):
-    return
+    await interaction.response.defer()
+    if not interaction.user.guild_permissions.administrator:
+        await interaction.response.send_message("yeah yeah nice try", ephemeral=True)
+        return
+    if not guild_written(interaction.guild.id): 
+        write_guild(interaction.guild.id)
+    write_log_channel(interaction.guild.id, interaction.channel.id)
+    await interaction.followup.send(f"{interaction.channel.mention} is the new logs channel.", ephemeral=True)
 
 # /set info channel command
 @bot.tree.command(name="set_info", description="where should i spew? (kick/ban messages etc.)")
 async def set_info(interaction: discord.Interaction):
-    return
+    await interaction.response.defer()
+    if not interaction.user.guild_permissions.administrator:
+        await interaction.response.send_message("yeah yeah nice try", ephemeral=True)
+        return
+    if not guild_written(interaction.guild.id): 
+        write_guild(interaction.guild.id)
+    write_info_channel(interaction.guild.id, interaction.channel.id)
+    await interaction.followup.send(f"{interaction.channel.mention} is the new info channel.", ephemeral=True)
 
 
 # /help command
 @bot.tree.command(name="help", description="you dont what to know what i can *really* do...")
 async def help(interaction: discord.Interaction):
-    return
     view = HelpEmbed()
     page0embed = discord.Embed(title="Beefstew Help", description="You don't want to know what I can *really* do...", color=discord.Color.lighter_grey())
     page0embed.set_thumbnail(url=bot.user.avatar.url)
@@ -138,21 +149,21 @@ async def mute(interaction: discord.Interaction, member: discord.Member):
     if member.id == bot.user.id:
         await interaction.response.send_message("you cant silence me bitch", ephemeral=True)
         return
-    if interaction.user.guild_permissions.administrator:
+    if not interaction.user.guild_permissions.administrator:
+        await interaction.response.send_message("yeah yeah nice try", ephemeral=True)
+        return
+    try:
+        await member.edit(mute=True)
+    except Exception as e:
+        print("Target user is not in a voice channel, consider re-muting if they join.")
+    if discord.utils.get(member.guild.roles, name="BeefMute") not in member.roles:
         try:
-            await member.edit(mute=True)
-        except Exception as e:
-            print("Target user is not in a voice channel, consider re-muting if they join.")
-        if discord.utils.get(member.guild.roles, name="BeefMute") not in member.roles:
-            try:
-                await add_mute_role(interaction, member)
-                await interaction.response.send_message(f"{member.mention} was muted", ephemeral=True)
-            except discord.Forbidden:
-                await interaction.response.send_message("umm.. no i dont think so")
-        else:
-            await interaction.response.send_message(f"{member.mention} is already muted", ephemeral=True)
+            await add_mute_role(interaction, member)
+            await interaction.response.send_message(f"{member.mention} was muted", ephemeral=True)
+        except discord.Forbidden:
+            await interaction.response.send_message("umm.. no i dont think so")
     else:
-        await interaction.response.send_message(f"nuh-uh!", ephemeral=True)
+        await interaction.response.send_message(f"{member.mention} is already muted", ephemeral=True)
         
         
 @bot.tree.command(name="unmute", description="you may speak...")
@@ -163,22 +174,21 @@ async def unmute(interaction: discord.Interaction, member: discord.Member):
     if member.id == bot.user.id:
         await interaction.response.send_message("you cant silence me bitch", ephemeral=True)
         return
-    if interaction.user.guild_permissions.administrator:
+    if not interaction.user.guild_permissions.administrator:
+        await interaction.response.send_message("yeah yeah nice try", ephemeral=True)
+        return        
+    try:
+        await member.edit(mute=False)
+    except Exception as e:
+        print("Target user is not in a voice channel, consider re-muting if they join.")
+    if discord.utils.get(member.guild.roles, name="BeefMute") in member.roles:
         try:
-            await member.edit(mute=False)
-        except Exception as e:
-            print("Target user is not in a voice channel, consider re-muting if they join.")
-        if discord.utils.get(member.guild.roles, name="BeefMute") in member.roles:
-            try:
-                await remove_mute_role(interaction, member)
-                await interaction.response.send_message(f"{member.mention} was unmuted", ephemeral=True)
-            except discord.Forbidden:
-                await interaction.response.send_message("umm.. no i dont think so")
-        else:
-            await interaction.response.send_message(f"{member.mention} is already unmuted", ephemeral=True)
+            await remove_mute_role(interaction, member)
+            await interaction.response.send_message(f"{member.mention} was unmuted", ephemeral=True)
+        except discord.Forbidden:
+            await interaction.response.send_message("umm.. no i dont think so")
     else:
-        await interaction.response.send_message(f"nuh-uh!", ephemeral=True)
-
+        await interaction.response.send_message(f"{member.mention} is already unmuted", ephemeral=True)
 
 # /boil command
 @bot.tree.command(name="boil", description="focken boil yehs")

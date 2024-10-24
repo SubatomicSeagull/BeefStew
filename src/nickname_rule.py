@@ -1,6 +1,6 @@
 import random
 import discord
-import json
+from jsonhandling import load_element
 
 #nickname rule, handles logic for they call you slash command
 async def change_nickname(intormessage, victim: discord.Member, new_name: str):
@@ -46,14 +46,8 @@ async def change_nickname(intormessage, victim: discord.Member, new_name: str):
 def nicknameprint(victim: discord.Member, new_name: str): 
     new_name = "**" + new_name + "**"
     victimtag = type('Victim', (object,), {"mention": victim.mention})()
-    responses = load_responses("src\\assets\\responses.json", "nickname_change_responses")
+    responses = load_element("src\\assets\\responses.json", "nickname_change_responses")
         
     chosen_response = random.choice(responses)
     chosen_response = chosen_response.format(victim=victimtag, new_name=new_name)
     return chosen_response
-
-
-def load_responses(file_path, element):
-    with open(file_path, 'r') as file:
-        data = json.load(file)
-    return data[element]
