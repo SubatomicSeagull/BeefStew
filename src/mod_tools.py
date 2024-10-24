@@ -1,8 +1,8 @@
 import discord
+from discord import Message, app_commands
 from discord.ext import commands
 import random
-import json
-import os
+from jsonhandling import load_responses
 from datetime import datetime
 
 # TBD 
@@ -76,7 +76,7 @@ async def leave_message_embed(user: discord.Member, icon_url, guild_name):
 
 async def create_mute_role(guild: discord.Guild):
     try:
-        print("defining the persmissions")
+        print("Creating Mute Role: Defining the permissions...")
         permissions = discord.Permissions()    
         permissions.update(
             kick_members=False,
@@ -105,22 +105,59 @@ async def create_mute_role(guild: discord.Guild):
             manage_webhooks=False,
             manage_emojis= False
         )    
-        print("creating the role")
+        print("Creating Mute Role: creating the role")
         mute_role = await guild.create_role(name="BeefMute", permissions=permissions,)
-        print(f"elevating the role to position {(len(mute_role.guild.roles)-3)}")
+        print(f"Creating Mute Role: elevating the role to position {(len(mute_role.guild.roles)-3)}")
         await mute_role.edit(position=(len(mute_role.guild.roles)-2))
+        
+        print("Creating Mute Role: creating override permissions")
+        overwrite = discord.PermissionOverwrite()
+        overwrite.kick_members=False
+        overwrite.ban_members=False
+        overwrite.manage_channels=False
+        overwrite.manage_guild=False
+        overwrite.add_reactions=True
+        overwrite.view_audit_log=False
+        overwrite.read_messages=True
+        overwrite.send_messages=False
+        overwrite.manage_messages=False
+        overwrite.embed_links=False
+        overwrite.attach_files=False
+        overwrite.read_message_history=True
+        overwrite.mention_everyone=False
+        overwrite.use_external_emojis=True
+        overwrite.connect=True
+        overwrite.speak=False
+        overwrite.mute_members=False
+        overwrite.deafen_members=False
+        overwrite.move_members=False
+        overwrite.use_voice_activation=True
+        overwrite.change_nickname=True
+        overwrite.manage_nicknames=False
+        overwrite.manage_roles=False
+        overwrite.manage_webhooks=False
+        overwrite.manage_emojis= False   
+        
+        for channel in guild.channels:
+            print(f"Creating Mute Role: setting permission overrides in {channel.name}")
+            try:
+                await channel.set_permissions(mute_role, overwrite=overwrite)
+            except discord.Forbidden:
+                print(f"Failed to set permissions in {channel.name}. Missing permissions.")
+            except discord.HTTPException as e:
+                print(f"Failed to set permissions in {channel.name}: {e}")
+                
     except discord.Forbidden:
         print("Tried to create the mute role, but no permissions")
         
 async def add_mute_role(interaction: discord.Interaction, member: discord.Member):
-    print("adding a mute role")
     guild = member.guild
     mute_role = discord.utils.get(guild.roles, name="BeefMute")
     if mute_role is None:
-        print("no mute role, creating one")
+        print("Mute: no mute role, creating one")
         await create_mute_role(guild=guild)
     try:
-        print("adding role to user")
+        print("Mute: adding role to user")
         await member.add_roles(mute_role)
     except discord.Forbidden:
         await interaction.channel.send(f"couldnt mute {member.name} because i dont have permission :(")
@@ -136,42 +173,4 @@ async def remove_mute_role(interaction: discord.Interaction, member: discord.Mem
         await interaction.channel.send(f"couldnt unmute {member.name} because i dont have permission :(")
     except Exception as e:
         await interaction.channel.send(f"couldnt unmute {member.name} because {e}")
-    
 
-def load_responses(file_path, element):
-    with open(file_path, 'r') as file:
-        data = json.load(file)
-    return data[element]
-
-def read_log_channel(guild_id):
-    current_dir = os.path.dirname(__file__)
-    file_path = os.path.join(current_dir, 'assets', 'guild_config.json')
-
-    with open(file_path, "r") as file:
-        data = json.load(file)
-        
-    if guild_id == data["guild"]["id"]:
-         return data["guild"]["channel_id"]
-    else:
-        return "" 
-        
-def read_guild_id():
-    current_dir = os.path.dirname(__file__)
-    file_path = os.path.join(current_dir, 'assets', 'guild_config.json')
-
-    with open(file_path, "r") as file:
-        data = json.load(file)
-    return data["guild"]["id"]
-
-async def write_guild_id(guild_id, channel_id):
-    current_dir = os.path.dirname(__file__)
-    file_path = os.path.join(current_dir, 'assets', 'guild_config.json')
-    
-    data = {"guild": {}}
-    data["guild"]["id"] = str(guild_id)
-    print(f"wrote {guild_id} in guild:id")
-    data["guild"]["channel_id"] = str(channel_id)
-    print(f"wrote {channel_id} in guild:channel_id")
-    
-    with open(file_path, 'w') as file:
-        json.dump(data, file, indent=4)
