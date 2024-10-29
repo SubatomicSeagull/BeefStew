@@ -6,7 +6,6 @@ from io import BytesIO
 
 
 async def get_victim_avatar(victim: discord.Member):  
-    print("retriving victim display avatar")
     avatar_url = victim.display_avatar.url
     response = requests.get(avatar_url)
     user_pfp = Image.open(BytesIO(response.content))
@@ -52,6 +51,28 @@ async def add_speech_bubble(victim: discord.Member):
     final_image.paste(user_pfp, (0,0))
     
     # write the image to BytesIO buffer
+    image_binary = BytesIO()
+    final_image.save(image_binary, 'PNG')
+    image_binary.seek(0)
+    return image_binary
+
+async def drain_overlay(victim: discord.Member):
+    avatar = await get_victim_avatar(victim)
+    new_size = (int(avatar.width * 0.5), int(avatar.height * 0.5))
+    user_pfp = avatar.resize(new_size, Image.Resampling.BILINEAR)
+    
+    template = Image.open(".\\src\\assets\\pfp_manipulation\\drain.png")
+
+    base_width, base_height = user_pfp.size
+    overlay_width, overlay_height = template.size
+
+    x = (overlay_width - base_width) // 1 -200
+    y = (overlay_height - base_height) // 1 -150
+
+    final_image = Image.new("RGBA", template.size, (0, 0, 0))
+    final_image.paste(user_pfp, (x,y))
+    final_image.paste(template, (0,0), template)
+    
     image_binary = BytesIO()
     final_image.save(image_binary, 'PNG')
     image_binary.seek(0)

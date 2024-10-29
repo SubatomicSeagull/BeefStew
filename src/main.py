@@ -26,11 +26,11 @@ bot = commands.Bot(command_prefix="beef", intents=intents)
 kicked_members = set()
 banned_members = set()
 
-# Login with token
+
 def main():
     bot.run(os.getenv("TOKEN"))
 
-# Startup
+# startup
 @bot.event
 async def on_ready():
     for guild in bot.guilds:
@@ -77,7 +77,6 @@ async def set_info(interaction: discord.Interaction):
         write_guild(interaction.guild.id)
     write_info_channel(interaction.guild.id, interaction.channel.id)
     await interaction.followup.send(f"{interaction.channel.mention} is the new info channel.", ephemeral=True)
-
 
 # /help command
 @bot.tree.command(name="help", description="you dont what to know what i can *really* do...")
@@ -141,6 +140,7 @@ async def ban(interaction: discord.Interaction, member: discord.Member, reason: 
         print(e)
         await interaction.response.send_message(f"Couldn't ban user {member.name} because {e}", ephemeral=True)
 
+# /mute command
 @bot.tree.command(name="mute", description="SHHHHHHHH!!")
 async def mute(interaction: discord.Interaction, member: discord.Member):
     if interaction.user.id == member.id:
@@ -164,8 +164,8 @@ async def mute(interaction: discord.Interaction, member: discord.Member):
             await interaction.response.send_message("umm.. no i dont think so")
     else:
         await interaction.response.send_message(f"{member.mention} is already muted", ephemeral=True)
-        
-        
+
+# /unmute command
 @bot.tree.command(name="unmute", description="you may speak...")
 async def unmute(interaction: discord.Interaction, member: discord.Member):
     if interaction.user.id == member.id:
@@ -196,6 +196,7 @@ async def boil(interaction: discord.Interaction, victim: discord.Member):
     await interaction.response.defer()
     try:
         boiled_pfp = await boil_pfp(victim)
+        await interaction.channel.send(f"{victim.mention} WAS BOILED!!!!")
         await interaction.followup.send(file=discord.File(fp=boiled_pfp, filename=f"{victim.name} boiled.png"))
         boiled_pfp.close()
     except Exception as e:
@@ -222,10 +223,29 @@ async def mock(interaction: discord.Interaction, victim: discord.Member):
 
 # test command, change as needed
 @bot.tree.command(name="test", description="test command, might do something, might not, who knows")
-async def test(interaction: discord.Interaction, victim: discord.Member, new_name: str):
-    nicknameprint(victim, new_name)
+async def test(interaction: discord.Interaction, victim: discord.Member):
+    await interaction.response.send_message("pussy pussy wow cringe pussy")
 
-# Message listener
+# down the drain command
+@bot.tree.command(name="down_the_drain", description="yeah sorry we dropped them in there we cant get them out ://")
+async def down_the_drain(interaction: discord.Interaction, victim: discord.Member):
+    await interaction.response.defer()
+    try:
+        drain_pfp = await drain_overlay(victim)
+        await interaction.channel.send(f"yeah sorry we dropped {victim.mention} in there we cant get them out ://")
+        await interaction.followup.send(file=discord.File(fp=drain_pfp, filename=f"{victim.name} dropped down the drain.png"))
+        drain_pfp.close()
+    except Exception as e:
+        print(e)
+        await interaction.followup.send(f"{interaction.user.mention} tried to drop {victim.name} down the drain but it didnt work :// ({e})")
+
+
+
+
+
+
+
+# message listener
 @bot.event
 async def on_message(message: Message):
     if not message.author.bot and message.content != "":
@@ -265,23 +285,25 @@ async def on_message(message: Message):
                     await message.reply(response)
     await bot.process_commands(message)
 
+# member join event listener
 @bot.event
 async def on_member_join(member: discord.Member):
      channel = await bot.fetch_channel((read_log_channel(member.guild.id)))
      await channel.send(embed=await join_message_embed(member, bot.user.avatar.url,member.guild.name))
 
+# member leave event listener
 @bot.event
 async def on_member_remove(member: discord.Member):
     if member.id in kicked_members:
         kicked_members.remove(member.id)
         return
-    
     if member.id in banned_members:
        banned_members.remove(member.id)
        return
     channel = await bot.fetch_channel((read_log_channel(member.guild.id)))
     await channel.send(embed=await leave_message_embed(member, bot.user.avatar.url, member.guild.name))
 
+# message edit event listener
 @bot.event
 async def on_message_edit(before, after):
     if before.author == bot.user:
@@ -296,7 +318,8 @@ async def on_message_edit(before, after):
     embed.set_author(name="Beefstew", icon_url=bot.user.avatar.url)
     embed.add_field(name="", value=f"{after.author.guild.name} - {datetime.now().strftime('%d/%m/%Y %H:%M')}") 
     await channel.send(embed=embed)
-    
+
+# message delete event listener
 @bot.event
 async def on_message_delete(message):
     if message.author == bot.user:
@@ -310,7 +333,6 @@ async def on_message_delete(message):
     embed.add_field(name="", value=f"{message.author.guild.name} - {datetime.now().strftime('%d/%m/%Y %H:%M')}") 
     await channel.send(embed=embed)
 
-
-# Entrypoint
+# entrypoint
 if __name__ == "__main__":
     main()
