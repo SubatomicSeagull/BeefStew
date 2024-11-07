@@ -225,7 +225,7 @@ async def mock(interaction: discord.Interaction, victim: discord.Member):
 @bot.tree.command(name="test", description="test command, might do something, might not, who knows")
 async def test(interaction: discord.Interaction, victim: discord.Member):
     await interaction.response.send_message("pussy pussy wow cringe pussy")
-
+    
 # down the drain command
 @bot.tree.command(name="down_the_drain", description="yeah sorry we dropped them in there we cant get them out ://")
 async def down_the_drain(interaction: discord.Interaction, victim: discord.Member):
@@ -244,12 +244,10 @@ async def down_the_drain(interaction: discord.Interaction, victim: discord.Membe
 
 
 
-
 # message listener
 @bot.event
 async def on_message(message: Message):
     if not message.author.bot and message.content != "":
-        
         inline_commands = [
                                     "<@(.+?)>\s+they\s+call\s+(?:you|u)\s+(.+)"
                                   ]

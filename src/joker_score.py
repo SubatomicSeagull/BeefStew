@@ -1,4 +1,5 @@
 from data import db_connection
+import asyncio
 
 # keeps track of a users individual joke score
 # joke score is added or taken away through either a /+2 /-2 command with the person they are scoring as an argument,
@@ -24,14 +25,21 @@ class Joker:
         self.member_name = member_name,
         self.joke_score = joke_score
 
-def retrieve_joke_score(user_id):
-    return int(db_connection.run_command(f"SELECT joke_score FROM user_joker_score WHERE user_id = '{user_id}';"))
+async def retrieve_joke_score(user_id):
+    joke_score = await (db_connection.db_read(f"SELECT joke_score FROM user_joker_score WHERE user_id = '{user_id}';"))
+    score = joke_score[0][0]
+    return int(score)
 
-def change_joke_score(user_id, value):
-    raise NotImplementedError
+async def change_joke_score(user_id, value):
+    await db_connection.db_write(f"UPDATE user_joker_score SET joke_score = joke_score + {value} WHERE user_id = '{user_id}';")
 
-def clear_joke_score(user_id):
-    raise NotImplementedError
+async def clear_joke_score(user_id):
+    await db_connection.db_write(f"UPDATE user_joker_score SET joke_score = 0 WHERE user_id = '{user_id}';")
 
-
-retrieve_joke_score(1283805971524747304)
+async def test():
+    print(f"the joke score for userID 1283805971524747304: {await retrieve_joke_score(1283805971524747304)}")
+    await change_joke_score(1283805971524747304, -1)
+    print(f"the joke score for userID 1283805971524747304: {await retrieve_joke_score(1283805971524747304)}")
+    await clear_joke_score(1283805971524747304)
+    print(f"the joke score for userID 1283805971524747304: {await retrieve_joke_score(1283805971524747304)}")
+asyncio.run(test())
