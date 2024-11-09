@@ -6,11 +6,12 @@ from dotenv import load_dotenv
 import discord
 from discord import Message, app_commands
 from discord.ext import commands
-from responses import get_response, vicious_mockery
+from responses import *
 from ping import pingall
 from pfp_manipulations import *
 from help import *
 from jsonhandling import *
+from joker_score import *
 
 
 # Load the token from .env
@@ -22,7 +23,7 @@ except Exception as e:
 # Create client and intents objects
 intents = discord.Intents.all()
 intents.message_content = True
-bot = commands.Bot(command_prefix="beef", intents=intents)
+bot = commands.Bot(command_prefix="/", intents=intents)
 kicked_members = set()
 banned_members = set()
 
@@ -39,61 +40,9 @@ async def on_ready():
     print("Commands synced for all guilds")
     print(f"{bot.user} is now online, may god help us all...")
     
-# /ping command
-@bot.tree.command(name="ccping", description="pings CCServer, please be responsible with this one...")
-async def ccping(interaction: discord.Interaction):
-    await interaction.response.defer()
-    print("Pinging CCServer...")
-    await interaction.response.send_message(f"{interaction.user.mention} pinged CCServer with the following results:\n{pingall()}")
-
-# /they_call_you command
-@bot.tree.command(name = "they_call_you", description = "invokes the rule...")
-async def they_call_you(interaction: discord.Interaction, victim: discord.Member, new_name: str):
-    try:
-        await change_nickname(interaction, victim, new_name)
-    except Exception as e:
-        await interaction.response.send_message(f"Failed to change nickname: {e}")
-        
-# /set log channel command
-@bot.tree.command(name="set_logs", description="where should i spew? (kick/ban messages etc.)")
-async def set_logs(interaction: discord.Interaction):
-    await interaction.response.defer()
-    if not interaction.user.guild_permissions.administrator:
-        await interaction.response.send_message("yeah yeah nice try", ephemeral=True)
-        return
-    if not guild_written(interaction.guild.id): 
-        write_guild(interaction.guild.id)
-    write_log_channel(interaction.guild.id, interaction.channel.id)
-    await interaction.followup.send(f"{interaction.channel.mention} is the new logs channel.", ephemeral=True)
-
-# /set info channel command
-@bot.tree.command(name="set_info", description="where should i spew? (kick/ban messages etc.)")
-async def set_info(interaction: discord.Interaction):
-    await interaction.response.defer()
-    if not interaction.user.guild_permissions.administrator:
-        await interaction.response.send_message("yeah yeah nice try", ephemeral=True)
-        return
-    if not guild_written(interaction.guild.id): 
-        write_guild(interaction.guild.id)
-    write_info_channel(interaction.guild.id, interaction.channel.id)
-    await interaction.followup.send(f"{interaction.channel.mention} is the new info channel.", ephemeral=True)
-
-# /help command
-@bot.tree.command(name="help", description="you dont what to know what i can *really* do...")
-async def help(interaction: discord.Interaction):
-    view = HelpEmbed()
-    page0embed = discord.Embed(title="Beefstew Help", description="You don't want to know what I can *really* do...", color=discord.Color.lighter_grey())
-    page0embed.set_thumbnail(url=bot.user.avatar.url)
-    page0embed.set_author(name="Beefstew", icon_url=bot.user.avatar.url)
-    page0embed.add_field(name="",value="⠀", inline=False)
-    page0embed.add_field(name="Commands:",value="", inline=False)
-    page0embed.add_field(name="",value="Click on the buttons below for command lists", inline=False)
-    page0embed.add_field(name="",value="⠀", inline=False)
-    page0embed.add_field(name="\nOther info:\n",value="", inline=False)
-    page0embed.add_field(name="", value="Privacy Policy", inline=True)
-    page0embed.add_field(name="", value="⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀Terms of Service", inline=True)
-    page0embed.add_field(name="", value="[cosycraft.uk/privacy](https://www.cosycraft.uk/privacy)⠀⠀⠀⠀⠀⠀⠀[cosycraft/tos](https://www.cosycraft.com/tos)", inline=False)
-    await interaction.response.send_message(embed=page0embed, view=view)
+#=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
+# MODERATION
+#=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
 
 # /kick command
 @bot.tree.command(name="kick", description="foekn get 'em yea")
@@ -190,6 +139,115 @@ async def unmute(interaction: discord.Interaction, member: discord.Member):
     else:
         await interaction.response.send_message(f"{member.mention} is already unmuted", ephemeral=True)
 
+
+#=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
+# UTILITIES
+#=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
+
+# /ping command
+@bot.tree.command(name="ccping", description="pings CCServer, please be responsible with this one...")
+async def ccping(interaction: discord.Interaction):
+    await interaction.response.defer()
+    print("Pinging CCServer...")
+    await interaction.response.send_message(f"{interaction.user.mention} pinged CCServer with the following results:\n{pingall()}")
+        
+# /set log channel command
+@bot.tree.command(name="set_logs", description="where should i spew? (kick/ban messages etc.)")
+async def set_logs(interaction: discord.Interaction):
+    await interaction.response.defer()
+    if not interaction.user.guild_permissions.administrator:
+        await interaction.response.send_message("yeah yeah nice try", ephemeral=True)
+        return
+    if not guild_written(interaction.guild.id): 
+        write_guild(interaction.guild.id)
+    write_log_channel(interaction.guild.id, interaction.channel.id)
+    await interaction.followup.send(f"{interaction.channel.mention} is the new logs channel.", ephemeral=True)
+
+# /set info channel command
+@bot.tree.command(name="set_info", description="where should i spew? (kick/ban messages etc.)")
+async def set_info(interaction: discord.Interaction):
+    await interaction.response.defer()
+    if not interaction.user.guild_permissions.administrator:
+        await interaction.response.send_message("yeah yeah nice try", ephemeral=True)
+        return
+    if not guild_written(interaction.guild.id): 
+        write_guild(interaction.guild.id)
+    write_info_channel(interaction.guild.id, interaction.channel.id)
+    await interaction.followup.send(f"{interaction.channel.mention} is the new info channel.", ephemeral=True)
+
+# /help command
+@bot.tree.command(name="help", description="you dont what to know what i can *really* do...")
+async def help(interaction: discord.Interaction):
+    view = HelpEmbed()
+    page0embed = discord.Embed(title="Beefstew Help", description="You don't want to know what I can *really* do...", color=discord.Color.lighter_grey())
+    page0embed.set_thumbnail(url=bot.user.avatar.url)
+    page0embed.set_author(name="Beefstew", icon_url=bot.user.avatar.url)
+    page0embed.add_field(name="",value="⠀", inline=False)
+    page0embed.add_field(name="Commands:",value="", inline=False)
+    page0embed.add_field(name="",value="Click on the buttons below for command lists", inline=False)
+    page0embed.add_field(name="",value="⠀", inline=False)
+    page0embed.add_field(name="\nOther info:\n",value="", inline=False)
+    page0embed.add_field(name="", value="Privacy Policy", inline=True)
+    page0embed.add_field(name="", value="⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀Terms of Service", inline=True)
+    page0embed.add_field(name="", value="[cosycraft.uk/privacy](https://www.cosycraft.uk/privacy)⠀⠀⠀⠀⠀⠀⠀[cosycraft/tos](https://www.cosycraft.com/tos)", inline=False)
+    await interaction.response.send_message(embed=page0embed, view=view)
+
+#=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
+# INVOKATIONS
+#=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
+
+# /they_call_you command
+@bot.tree.command(name = "they_call_you", description = "invokes the rule...")
+async def they_call_you(interaction: discord.Interaction, victim: discord.Member, new_name: str):
+    try:
+        await change_nickname(interaction, victim, new_name)
+    except Exception as e:
+        await interaction.response.send_message(f"Failed to change nickname: {e}")
+
+@bot.tree.command(name= "plus2", description="good one buddy")
+async def plus2(interaction: discord.Interaction, joker: discord.Member):
+    await interaction.response.defer()
+    if not await is_registered(joker):
+        await register_user(joker)
+    try:
+        mult = await get_multilplier(joker)
+        await increment_joke_score(joker, 2, mult)
+        await interaction.followup.send(await get_joke_response_positive(joker))
+    except Exception as e:
+        await interaction.followup.send(f"couldnt +2 {joker.name} :( ({e}))")
+
+@bot.tree.command(name= "minus2", description="*tugs on collar* yikes...")
+async def minus2(interaction: discord.Interaction, joker: discord.Member):
+    await interaction.response.defer()
+    if not await is_registered(joker):
+        await register_user(joker)
+    try:
+        mult = await get_multilplier(joker)
+        await increment_joke_score(joker, -2, mult)
+        await interaction.followup.send(await get_joke_response_negative(joker))
+    except Exception as e:
+        await interaction.followup.send(f"couldnt +2 {joker.name} :( ({e}))")
+        
+@bot.tree.command(name= "score", description="how funny are you")
+async def score(interaction: discord.Interaction, joker: discord.Member):
+    await interaction.response.defer()
+    if not await is_registered(joker):
+        await register_user(joker)
+    try:
+        score = await retrieve_joke_score(joker)
+        await interaction.followup.send(f"{joker.mention}'s joker score: **{score}**!")
+    except Exception as e:
+        await interaction.followup.send(f"couldnt find {joker.name}'s score :( ({e}))")
+        
+@bot.command()
+async def score_reset(ctx, joker: discord.Member):
+    await clear_joke_score(joker)
+    print(f"{joker.name} score reset.")
+
+#=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
+# VISAGE
+#=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
+ 
 # /boil command
 @bot.tree.command(name="boil", description="focken boil yehs")
 async def boil(interaction: discord.Interaction, victim: discord.Member):
@@ -214,19 +272,8 @@ async def slander(interaction: discord.Interaction, victim: discord.Member):
     except Exception as e:
         print(e)
         await interaction.followup.send(content=f"{interaction.user.mention} tried to slander {victim.mention}, but it didnt work :// ({e})")
- 
-# /mock command
-@bot.tree.command(name="mock", description="cast vicious mockery on someone")
-async def mock(interaction: discord.Interaction, victim: discord.Member):
-    interaction.response.defer()
-    interaction.followup.send(vicious_mockery())
 
-# test command, change as needed
-@bot.tree.command(name="test", description="test command, might do something, might not, who knows")
-async def test(interaction: discord.Interaction, victim: discord.Member):
-    await interaction.response.send_message("pussy pussy wow cringe pussy")
-    
-# down the drain command
+#/down the drain command
 @bot.tree.command(name="down_the_drain", description="yeah sorry we dropped them in there we cant get them out ://")
 async def down_the_drain(interaction: discord.Interaction, victim: discord.Member):
     await interaction.response.defer()
@@ -238,10 +285,22 @@ async def down_the_drain(interaction: discord.Interaction, victim: discord.Membe
     except Exception as e:
         print(e)
         await interaction.followup.send(f"{interaction.user.mention} tried to drop {victim.name} down the drain but it didnt work :// ({e})")
+ 
+#=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
+# INCANTATIONS
+#=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
 
+# /mock command
+@bot.tree.command(name="mock", description="cast vicious mockery on someone")
+async def mock(interaction: discord.Interaction, victim: discord.Member):
+    interaction.response.defer()
+    interaction.followup.send(vicious_mockery())
 
-
-
+# test command, change as needed
+@bot.tree.command(name="test", description="test command, might do something, might not, who knows")
+async def test(interaction: discord.Interaction, victim: discord.Member):
+    await register_user(victim)
+    
 
 
 # message listener

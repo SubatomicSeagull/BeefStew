@@ -2,6 +2,7 @@ import json
 import os
 import random
 import discord
+from jsonhandling import load_element
 
 def load_responses(file_path):
     with open(file_path, 'r') as file:
@@ -60,3 +61,19 @@ async def vicious_mockery(interaction: discord.Interaction, victim: discord.Memb
             return (f"{interaction.user.mention} tried to cast Vicious Mockery on {victim.mention}... but it failed ({e})")
     else:
         return(f"{interaction.user.mention} tried to cast Vicious Mockery on me...BITCH")
+    
+async def get_joke_response_positive(member: discord.Member):     
+    jokertag = type('Joker', (object,), {"mention": member.mention})()
+    responses = load_element("src\\assets\\responses.json", "joke_responses_positive")
+        
+    chosen_response = random.choice(responses)
+    chosen_response = chosen_response.format(joker=jokertag)
+    return chosen_response
+
+async def get_joke_response_negative( member: discord.Member):     
+    jokertag = type('Joker', (object,), {"mention": member.mention})()
+    responses = load_element("src\\assets\\responses.json", "joke_responses_negative")
+        
+    chosen_response = random.choice(responses)
+    chosen_response = chosen_response.format(joker=jokertag)
+    return chosen_response

@@ -4,7 +4,7 @@ import os
 from psycopg2 import sql
 
 
-async def db_read(command: str):
+async def read(command: str):
     try:
         load_dotenv()
     except Exception as e:
@@ -15,8 +15,7 @@ async def db_read(command: str):
             dbname="beefstew",
             user="postgres",
             password=os.getenv("DBPASS"),
-            #when public add host to .env
-            host="192.168.1.114",
+            host=os.getenv("DBHOST"),
             port="5432"
         )
         
@@ -24,7 +23,7 @@ async def db_read(command: str):
        
         cursor.execute(command)
         record = cursor.fetchall()
-         
+        
         cursor.close()
         connection.close()
 
@@ -33,7 +32,7 @@ async def db_read(command: str):
         return
     return record
 
-async def db_write(command: str):
+async def write(command: str):
     try:
         load_dotenv()
     except Exception as e:
