@@ -8,7 +8,6 @@ import asyncio
 
 
 #todo
-# find a way to store each users individual score
 # make it so that they cant adjust their own score
 # make it so that they cant adjust beefstew's score
 # sanitisation for slash command arguments, is the person they pinged a real user?

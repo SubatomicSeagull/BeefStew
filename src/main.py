@@ -300,21 +300,23 @@ async def mock(interaction: discord.Interaction, victim: discord.Member):
 @bot.tree.command(name="test", description="test command, might do something, might not, who knows")
 async def test(interaction: discord.Interaction, victim: discord.Member):
     await register_user(victim)
-    
-
 
 # message listener
 @bot.event
 async def on_message(message: Message):
     if not message.author.bot and message.content != "":
         inline_commands = [
-                                    "<@(.+?)>\s+they\s+call\s+(?:you|u)\s+(.+)"
+                                    "<@(.+?)>\s+they\s+call\s+(?:you|u)\s+(.+)",
+                                    "<@[^>]+>\s*(\+2|plus\s*2)|(\+2|plus\s*2)\s*<@[^>]+>",
+                                    "<@[^>]+>\s*(\-2|minus\s*2)|(\-2|minus\s*2)\s*<@[^>]+>"
                                   ]
         
         # Check for inline commands and keep track of which command is being compared
         for index, pattern in enumerate(inline_commands):
             matched_command = re.match(pattern, message.content)
+            print(f"{message.content} vs {inline_commands[index]}, {matched_command}")
             if matched_command:
+                print("checking expressions")
                 if index == 0:
                     # Don't run the command if it's being invoked in a DM
                     if isinstance(message.channel, discord.DMChannel):
@@ -333,10 +335,20 @@ async def on_message(message: Message):
                         await change_nickname(message, victim, newname)
                     except Exception as e:
                         print(e)
-                # elif index == 1:
-        
+                elif index == 1:
+                    if not await is_registered(message.author):
+                        await register_user(message.author)
+                    try:
+                        mult = await get_multilplier(message.author)
+                        await increment_joke_score(message.author, 2, mult)
+                        await message.channel.send(await get_joke_response_positive(message.author))
+                    except Exception as e:
+                        await message.channel.send(f"couldnt +2 {message.author.name} :( ({e}))")
+                elif index == 2:
+                    return
             # Not an inline command, check the message against a list of possible responses, then reply with that
             else:
+                print(f"'{message.content}' is not a command")
                 response = str(get_response(message.content))
                 if response != "":
                     await message.reply(response)
