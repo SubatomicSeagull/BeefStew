@@ -1,15 +1,9 @@
 import psycopg2
-from dotenv import load_dotenv
 import os
 from psycopg2 import sql
 
 
-async def read(command: str):
-    try:
-        load_dotenv()
-    except Exception as e:
-        print("Dotenv load failed, either dotenv is not installed or there is no .env file.")
-    
+async def connect_to_db():    
     try:
         connection = psycopg2.connect(
             dbname="beefstew",
@@ -18,13 +12,21 @@ async def read(command: str):
             host=os.getenv("DBHOST"),
             port="5432"
         )
-        
-        cursor = connection.cursor()
+        return connection
+    except (Exception, psycopg2.Error) as error:
+        print("Error while connecting to PostgreSQL:", error)
+        return
+
+async def read(command: str):
+    try:
+        connection = await connect_to_db()
+        if connection == None:
+            return
        
-        cursor.execute(command)
-        record = cursor.fetchall()
-        
-        cursor.close()
+        with connection.cursor() as cursor: 
+            cursor.execute(command)
+            record = cursor.fetchall()
+            
         connection.close()
 
     except (Exception, psycopg2.Error) as error:
@@ -34,29 +36,16 @@ async def read(command: str):
 
 async def write(command: str):
     try:
-        load_dotenv()
-    except Exception as e:
-        print("Dotenv load failed, either dotenv is not installed or there is no .env file.")
-    
-    try:
-        connection = psycopg2.connect(
-            dbname="beefstew",
-            user="postgres",
-            password=os.getenv("DBPASS"),
-            #when public add host to .env
-            host="192.168.1.114",
-            port="5432"
-        )
+        connection = await connect_to_db()
+        if connection == None:
+            return
         
-        cursor = connection.cursor()
-        cursor.execute(command)
+        with connection.cursor() as cursor:
+            cursor.execute(command)
         
         connection.commit()
-        
-        cursor.close()
         connection.close()
         
     except (Exception, psycopg2.Error) as error:
         print("Error while connecting to PostgreSQL:", error)
         return
-        
