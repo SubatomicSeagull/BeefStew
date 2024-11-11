@@ -2,7 +2,6 @@ import psycopg2
 import os
 from psycopg2 import sql
 
-
 async def connect_to_db():    
     try:
         connection = psycopg2.connect(
