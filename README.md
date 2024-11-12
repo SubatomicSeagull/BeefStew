@@ -1,15 +1,15 @@
-# BEEFSTEW
+# PORKSTEAKS
 
-![BEEFSTEW](./src/assets/profile/banner.png)
+![PORKSTEAKS](./psbanner.png)
 ## Authors
 - [subatomicseagull](https://github.com/SubatomicSeagull)
 - [mertymor](https://github.com/MertyMor)
 
 ## Favourite Food
-- porridge
+- Grapes
 
 ## Favourite Band
-- Dave Matthews Band
+- Simon and Garfunkle
 
 ## Requirements
 - python 3.10
@@ -17,7 +17,7 @@
 - dotenv
 
 ## Description
-The little weird creature created for the CosyCraft Discord server. Does very specific things that are funny to very specific people.  
+Brother of the little weird creature created for the CosyCraft Discord server. Also a weird little creature. Does very specific things that are funny to very specific people.  
 Is terrible as a general-purpose bot.
 
 ## Installation
