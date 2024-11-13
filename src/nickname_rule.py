@@ -46,7 +46,7 @@ async def change_nickname(intormessage, victim: discord.Member, new_name: str):
 def nicknameprint(victim: discord.Member, new_name: str): 
     new_name = "**" + new_name + "**"
     victimtag = type('Victim', (object,), {"mention": victim.mention})()
-    responses = load_element("src\\assets\\responses.json", "nickname_change_responses")
+    responses = load_element("responses.json", "nickname_change_responses")
         
     chosen_response = random.choice(responses)
     chosen_response = chosen_response.format(victim=victimtag, new_name=new_name)

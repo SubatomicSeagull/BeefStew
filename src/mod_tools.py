@@ -28,7 +28,7 @@ async def kick_message_embed(mod: discord.Member, member: discord.Member, reason
 
 def get_kick_message(member: discord.Member, reason: str): 
     membername = type('Member', (object,), {"id": member.id})()
-    responses = load_element("src\\assets\\responses.json", "kick_messages")    
+    responses = load_element("responses.json", "kick_messages")    
     chosen_response = random.choice(responses).format(member=membername, reason=reason)
     return chosen_response
 
@@ -49,7 +49,7 @@ async def ban_message_embed(mod: discord.Member, member: discord.Member, reason:
     
 def get_ban_message(member: discord.Member, reason: str): 
     membername = type('Member', (object,), {"id": member.name})()
-    responses = load_element("src\\assets\\responses.json", "ban_messages")    
+    responses = load_element("responses.json", "ban_messages")    
     chosen_response = random.choice(responses).format(member=membername, reason=reason)
     return chosen_response
 

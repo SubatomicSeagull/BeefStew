@@ -1,17 +1,20 @@
 import os
 import re
-from nickname_rule import *
-from mod_tools import *
+
 from dotenv import load_dotenv
 import discord
-from discord import Message, app_commands
+from discord import Message
 from discord.ext import commands
+
+from nickname_rule import *
+from mod_tools import *
 from responses import *
 from ping import pingall
 from pfp_manipulations import *
 from help import *
-from jsonhandling import *
+from json_handling import *
 from joker_score import *
+from guilds import *
 
 
 # Load the token from .env
