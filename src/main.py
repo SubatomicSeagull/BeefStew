@@ -19,6 +19,7 @@ try:
     load_dotenv()
 except Exception as e:
     print("Dotenv load failed, either dotenv is not installed or there is no .env file.")
+    postgres.log_error(e)
 
 # Create client and intents objects
 intents = discord.Intents.all()
@@ -65,6 +66,7 @@ async def kick(interaction: discord.Interaction, member: discord.Member, reason:
         print("s")
     except Exception as e:
         print(e)
+        postgres.log_error(e)
         await interaction.response.send_message(f"Couldn't kick user {member.name} because {e}", ephemeral=True)
 
 # /ban command 
@@ -87,6 +89,7 @@ async def ban(interaction: discord.Interaction, member: discord.Member, reason: 
         await member.ban(reason=reason)
     except Exception as e:
         print(e)
+        postgres.log_error(e)
         await interaction.response.send_message(f"Couldn't ban user {member.name} because {e}", ephemeral=True)
 
 # /mute command
@@ -104,6 +107,7 @@ async def mute(interaction: discord.Interaction, member: discord.Member):
     try:
         await member.edit(mute=True)
     except Exception as e:
+        postgres.log_error(e)
         print("Target user is not in a voice channel, consider re-muting if they join.")
     if discord.utils.get(member.guild.roles, name="BeefMute") not in member.roles:
         try:
@@ -129,6 +133,7 @@ async def unmute(interaction: discord.Interaction, member: discord.Member):
     try:
         await member.edit(mute=False)
     except Exception as e:
+        postgres.log_error(e)
         print("Target user is not in a voice channel, consider re-muting if they join.")
     if discord.utils.get(member.guild.roles, name="BeefMute") in member.roles:
         try:
@@ -202,6 +207,7 @@ async def they_call_you(interaction: discord.Interaction, victim: discord.Member
     try:
         await change_nickname(interaction, victim, new_name)
     except Exception as e:
+        postgres.log_error(e)
         await interaction.response.send_message(f"Failed to change nickname: {e}")
 
 @bot.tree.command(name= "plus2", description="good one buddy")
@@ -214,6 +220,7 @@ async def plus2(interaction: discord.Interaction, joker: discord.Member):
         await increment_joke_score(joker, 2, mult)
         await interaction.followup.send(await get_joke_response_positive(joker))
     except Exception as e:
+        postgres.log_error(e)
         await interaction.followup.send(f"couldnt +2 {joker.name} :( ({e}))")
 
 @bot.tree.command(name= "minus2", description="*tugs on collar* yikes...")
@@ -226,6 +233,7 @@ async def minus2(interaction: discord.Interaction, joker: discord.Member):
         await increment_joke_score(joker, -2, mult)
         await interaction.followup.send(await get_joke_response_negative(joker))
     except Exception as e:
+        postgres.log_error(e)
         await interaction.followup.send(f"couldnt +2 {joker.name} :( ({e}))")
         
 @bot.tree.command(name= "score", description="how funny are you")
@@ -237,6 +245,7 @@ async def score(interaction: discord.Interaction, joker: discord.Member):
         score = await retrieve_joke_score(joker)
         await interaction.followup.send(f"{joker.mention}'s joker score: **{score}**!")
     except Exception as e:
+        postgres.log_error(e)
         await interaction.followup.send(f"couldnt find {joker.name}'s score :( ({e}))")
         
 @bot.command()
@@ -258,6 +267,7 @@ async def boil(interaction: discord.Interaction, victim: discord.Member):
         await interaction.followup.send(file=discord.File(fp=boiled_pfp, filename=f"{victim.name} boiled.png"))
         boiled_pfp.close()
     except Exception as e:
+        postgres.log_error(e)
         print(e)
         await interaction.followup.send(f"{interaction.user.mention} tried to boil {victim.name} but it didnt work :// ({e})")
 
@@ -270,6 +280,7 @@ async def slander(interaction: discord.Interaction, victim: discord.Member):
         await interaction.followup.send(file=discord.File(fp=slandered_pfp, filename=f"{victim.name} slandered.png"))
         slandered_pfp.close()
     except Exception as e:
+        postgres.log_error(e)
         print(e)
         await interaction.followup.send(content=f"{interaction.user.mention} tried to slander {victim.mention}, but it didnt work :// ({e})")
 
@@ -283,6 +294,7 @@ async def down_the_drain(interaction: discord.Interaction, victim: discord.Membe
         await interaction.followup.send(file=discord.File(fp=drain_pfp, filename=f"{victim.name} dropped down the drain.png"))
         drain_pfp.close()
     except Exception as e:
+        postgres.log_error(e)
         print(e)
         await interaction.followup.send(f"{interaction.user.mention} tried to drop {victim.name} down the drain but it didnt work :// ({e})")
  
@@ -326,6 +338,7 @@ async def on_message(message: Message):
                     try:
                         victim = message.guild.get_member(int(matched_command.group(1)))
                     except Exception as e:
+                        postgres.log_error(e)
                         print(e)
                         await message.channel.send(f"**{message.author.name}** tried to invoked the rule on.... wha... who?")
                         break                            
@@ -334,6 +347,7 @@ async def on_message(message: Message):
                     try:
                         await change_nickname(message, victim, newname)
                     except Exception as e:
+                        postgres.log_error(e)
                         print(e)
                 elif index == 1:
                     if not await is_registered(message.author):
@@ -343,6 +357,7 @@ async def on_message(message: Message):
                         await increment_joke_score(message.author, 2, mult)
                         await message.channel.send(await get_joke_response_positive(message.author))
                     except Exception as e:
+                        postgres.log_error(e)
                         await message.channel.send(f"couldnt +2 {message.author.name} :( ({e}))")
                 elif index == 2:
                     return

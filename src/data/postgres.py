@@ -14,30 +14,36 @@ async def connect_to_db():
         return connection
     except (Exception, psycopg2.Error) as error:
         print("Error while connecting to PostgreSQL:", error)
+        log_error(error)
         return
 
 async def read(command: str):
     try:
         connection = await connect_to_db()
         if connection == None:
-            return
+            return None
        
         with connection.cursor() as cursor: 
             cursor.execute(command)
             record = cursor.fetchall()
             
         connection.close()
-
+        
     except (Exception, psycopg2.Error) as error:
         print("Error while connecting to PostgreSQL:", error)
+        log_error(error)
         return
+    
+    finally:
+        connection.close()
+        
     return record
 
 async def write(command: str):
     try:
         connection = await connect_to_db()
         if connection == None:
-            return
+            return None
         
         with connection.cursor() as cursor:
             cursor.execute(command)
@@ -47,4 +53,26 @@ async def write(command: str):
         
     except (Exception, psycopg2.Error) as error:
         print("Error while connecting to PostgreSQL:", error)
-        return
+        log_error(error)
+        return None
+    
+    finally:
+        connection.close()
+
+async def log_error(error_message: str):
+    try:
+        connection = await connect_to_db()
+        if connection is None:
+            return
+
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "INSERT INTO error_logs (error_message) VALUES (%s)",
+                (error_message,)
+            )
+
+        connection.commit()
+        connection.close()
+
+    except (Exception, psycopg2.Error) as error:
+        print("Error while logging error to PostgreSQL:", error)
