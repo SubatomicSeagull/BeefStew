@@ -2,7 +2,7 @@ import discord
 from discord import Message, app_commands
 from discord.ext import commands
 import random
-from jsonhandling import load_element
+from json_handling import load_element
 from datetime import datetime
 
 # TBD 

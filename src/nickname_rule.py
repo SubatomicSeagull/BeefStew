@@ -1,6 +1,6 @@
 import random
 import discord
-from jsonhandling import load_element
+from json_handling import load_element
 
 #nickname rule, handles logic for they call you slash command
 async def change_nickname(intormessage, victim: discord.Member, new_name: str):
