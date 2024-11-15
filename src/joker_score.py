@@ -1,6 +1,6 @@
 from data import postgres
 import discord
-import asyncio
+from responses import get_joke_response_positive, get_joke_response_negative
 
 # keeps track of a users individual joke score
 # joke score is added or taken away through either a /+2 /-2 command with the person they are scoring as an argument,
@@ -22,9 +22,20 @@ async def retrieve_joke_score(user: discord.Member):
     score = joke_score[0][0]
     return int(score)
     
-async def increment_joke_score(user: discord.Member, value, multiplier):
-    score = value * multiplier
-    await postgres.write(f"UPDATE user_joker_score SET joke_score = joke_score + {score} WHERE user_id = '{user.id}';")
+async def change_joke_score(user: discord.Member, value):
+    if not await is_registered(user):
+        await register_user(user)
+    try:
+        mult = await get_multilplier(user)
+        score = value * mult
+        await postgres.write(f"UPDATE user_joker_score SET joke_score = joke_score + {score} WHERE user_id = '{user.id}';")
+        if score > 0: 
+            return (await get_joke_response_positive(user))
+        else:
+            return (await get_joke_response_negative(user))
+    except Exception as e:
+        postgres.log_error(e)
+    return (f"couldnt change score for {user.name} :( ({e}))")
 
 async def clear_joke_score(user: discord.Member):
     await postgres.write(f"UPDATE user_joker_score SET joke_score = 0 WHERE user_id = '{user.id}';")

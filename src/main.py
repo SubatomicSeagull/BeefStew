@@ -216,28 +216,12 @@ async def they_call_you(interaction: discord.Interaction, victim: discord.Member
 @bot.tree.command(name= "plus2", description="good one buddy")
 async def plus2(interaction: discord.Interaction, joker: discord.Member):
     await interaction.response.defer()
-    if not await is_registered(joker):
-        await register_user(joker)
-    try:
-        mult = await get_multilplier(joker)
-        await increment_joke_score(joker, 2, mult)
-        await interaction.followup.send(await get_joke_response_positive(joker))
-    except Exception as e:
-        postgres.log_error(e)
-        await interaction.followup.send(f"couldnt +2 {joker.name} :( ({e}))")
+    await interaction.followup.send(await change_joke_score(joker, 2))
 
 @bot.tree.command(name= "minus2", description="*tugs on collar* yikes...")
 async def minus2(interaction: discord.Interaction, joker: discord.Member):
     await interaction.response.defer()
-    if not await is_registered(joker):
-        await register_user(joker)
-    try:
-        mult = await get_multilplier(joker)
-        await increment_joke_score(joker, -2, mult)
-        await interaction.followup.send(await get_joke_response_negative(joker))
-    except Exception as e:
-        postgres.log_error(e)
-        await interaction.followup.send(f"couldnt +2 {joker.name} :( ({e}))")
+    await interaction.followup.send(await change_joke_score(joker, -2)) 
         
 @bot.tree.command(name= "score", description="how funny are you")
 async def score(interaction: discord.Interaction, joker: discord.Member):
@@ -319,13 +303,17 @@ async def test(interaction: discord.Interaction, victim: discord.Member):
 # message listener
 @bot.event
 async def on_message(message: Message):
+    
     if not message.author.bot and message.content != "":
         inline_commands = [
                                     "<@(.+?)>\s+they\s+call\s+(?:you|u)\s+(.+)",
                                     "<@[^>]+>\s*(\+2|plus\s*2)|(\+2|plus\s*2)\s*<@[^>]+>",
                                     "<@[^>]+>\s*(\-2|minus\s*2)|(\-2|minus\s*2)\s*<@[^>]+>"
                                   ]
-        
+        message_author = message.author
+        if message.reference:
+            replied_message = await message.channel.fetch_message(message.reference.message_id)
+            message_author = replied_message.author
         # Check for inline commands and keep track of which command is being compared
         for index, pattern in enumerate(inline_commands):
             matched_command = re.match(pattern, message.content)
@@ -353,17 +341,10 @@ async def on_message(message: Message):
                         postgres.log_error(e)
                         print(e)
                 elif index == 1:
-                    if not await is_registered(message.author):
-                        await register_user(message.author)
-                    try:
-                        mult = await get_multilplier(message.author)
-                        await increment_joke_score(message.author, 2, mult)
-                        await message.channel.send(await get_joke_response_positive(message.author))
-                    except Exception as e:
-                        postgres.log_error(e)
-                        await message.channel.send(f"couldnt +2 {message.author.name} :( ({e}))")
+                    await message.channel.send(await change_joke_score(message_author, 2)) 
                 elif index == 2:
-                    return
+                    await message.channel.send(await change_joke_score(message_author, -2)) 
+                    
             # Not an inline command, check the message against a list of possible responses, then reply with that
             else:
                 print(f"'{message.content}' is not a command")
