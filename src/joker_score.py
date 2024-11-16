@@ -34,8 +34,8 @@ async def change_joke_score(user: discord.Member, value):
         else:
             return (await get_joke_response_negative(user))
     except Exception as e:
-        postgres.log_error(e)
-    return (f"couldnt change score for {user.name} :( ({e}))")
+        await postgres.log_error(e)
+        return (f"couldnt change score for {user.name} :( ({e}))")
 
 async def clear_joke_score(user: discord.Member):
     await postgres.write(f"UPDATE user_joker_score SET joke_score = 0 WHERE user_id = '{user.id}';")

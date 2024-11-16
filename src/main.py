@@ -157,7 +157,7 @@ async def unmute(interaction: discord.Interaction, member: discord.Member):
 async def ccping(interaction: discord.Interaction):
     await interaction.response.defer()
     print("Pinging CCServer...")
-    await interaction.response.send_message(f"{interaction.user.mention} pinged CCServer with the following results:\n{pingall()}")
+    await interaction.followup.send(f"{interaction.user.mention} pinged CCServer with the following results:\n{pingall()}")
         
 # /set log channel command
 @bot.tree.command(name="set_logs", description="where should i spew? (kick/ban messages etc.)")
@@ -186,6 +186,7 @@ async def set_info(interaction: discord.Interaction):
 # /help command
 @bot.tree.command(name="help", description="you dont what to know what i can *really* do...")
 async def help(interaction: discord.Interaction):
+    await interaction.response.defer()
     view = HelpEmbed()
     page0embed = discord.Embed(title="Beefstew Help", description="You don't want to know what I can *really* do...", color=discord.Color.lighter_grey())
     page0embed.set_thumbnail(url=bot.user.avatar.url)
@@ -198,7 +199,7 @@ async def help(interaction: discord.Interaction):
     page0embed.add_field(name="", value="Privacy Policy", inline=True)
     page0embed.add_field(name="", value="⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀Terms of Service", inline=True)
     page0embed.add_field(name="", value="[cosycraft.uk/privacy](https://www.cosycraft.uk/privacy)⠀⠀⠀⠀⠀⠀⠀[cosycraft/tos](https://www.cosycraft.com/tos)", inline=False)
-    await interaction.response.send_message(embed=page0embed, view=view)
+    await interaction.channel.send(embed=page0embed, view=view)
 
 #=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
 # INVOKATIONS
@@ -239,6 +240,11 @@ async def score(interaction: discord.Interaction, joker: discord.Member):
 async def score_reset(ctx, joker: discord.Member):
     await clear_joke_score(joker)
     print(f"{joker.name} score reset.")
+    
+@bot.command()
+async def score_alter(ctx, joker: discord.Member, value):
+    await change_joke_score(joker, value)
+    print(f"{value} points to {joker.name} .")
 
 #=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
 # VISAGE
@@ -292,8 +298,8 @@ async def down_the_drain(interaction: discord.Interaction, victim: discord.Membe
 # /mock command
 @bot.tree.command(name="mock", description="cast vicious mockery on someone")
 async def mock(interaction: discord.Interaction, victim: discord.Member):
-    interaction.response.defer()
-    interaction.followup.send(vicious_mockery())
+    await interaction.response.defer()
+    await interaction.followup.send(await vicious_mockery(interaction, victim))
 
 # test command, change as needed
 @bot.tree.command(name="test", description="test command, might do something, might not, who knows")
@@ -305,53 +311,95 @@ async def test(interaction: discord.Interaction, victim: discord.Member):
 async def on_message(message: Message):
     
     if not message.author.bot and message.content != "":
-        inline_commands = [
-                                    "<@(.+?)>\s+they\s+call\s+(?:you|u)\s+(.+)",
-                                    "<@[^>]+>\s*(\+2|plus\s*2)|(\+2|plus\s*2)\s*<@[^>]+>",
-                                    "<@[^>]+>\s*(\-2|minus\s*2)|(\-2|minus\s*2)\s*<@[^>]+>"
-                                  ]
-        message_author = message.author
-        if message.reference:
-            replied_message = await message.channel.fetch_message(message.reference.message_id)
-            message_author = replied_message.author
-        # Check for inline commands and keep track of which command is being compared
-        for index, pattern in enumerate(inline_commands):
-            matched_command = re.match(pattern, message.content)
-            print(f"{message.content} vs {inline_commands[index]}, {matched_command}")
-            if matched_command:
-                print("checking expressions")
-                if index == 0:
-                    # Don't run the command if it's being invoked in a DM
-                    if isinstance(message.channel, discord.DMChannel):
-                        await message.channel.send("we are literally in DMs rn bro who tf name u trying to change")
-                        break
-                    # Derives the new name and retrieves the victim user ID from the input string
-                    try:
-                        victim = message.guild.get_member(int(matched_command.group(1)))
-                    except Exception as e:
-                        postgres.log_error(e)
-                        print(e)
-                        await message.channel.send(f"**{message.author.name}** tried to invoked the rule on.... wha... who?")
-                        break                            
-                    newname = str(matched_command.group(2))
-                    # Calls the /they_call_you slash command logic
-                    try:
-                        await change_nickname(message, victim, newname)
-                    except Exception as e:
-                        postgres.log_error(e)
-                        print(e)
-                elif index == 1:
-                    await message.channel.send(await change_joke_score(message_author, 2)) 
-                elif index == 2:
-                    await message.channel.send(await change_joke_score(message_author, -2)) 
-                    
-            # Not an inline command, check the message against a list of possible responses, then reply with that
-            else:
-                print(f"'{message.content}' is not a command")
-                response = str(get_response(message.content))
-                if response != "":
-                    await message.reply(response)
+        print(message.content)
+        
+    if message.mentions:
+        user = message.mentions[0]
+        if isinstance(message.channel, discord.DMChannel):
+            await message.channel.send("we are literally in DMs rn bro u cant do that here...")
+            return
+        
+        if any(phrase in message.content.lower() for phrase in ["+2", "plus 2", "plus two"]):
+            print(f"+2 to {user.name}")
+            await message.channel.send(await change_joke_score(user, 2)) 
+            return
+           
+        elif any(phrase in message.content.lower() for phrase in ["-2", "minus 2", "minus two"]):
+            await message.channel.send(await change_joke_score(user, -2)) 
+            return
+        
+        elif any(phrase in message.content.lower() for phrase in ["they call you", "they call u"]):
+            print(f"'they call you' used on {user.name}")
+            #TODO seperate the new nickname from after the "you" in "they call you" then run nicknamerule
+            newname = "testname"
+            try:
+                await change_nickname(message, user, newname)
+            except Exception as e:
+                postgres.log_error(e)
+
+    response = str(get_response(message.content))
+    if response != "":
+        await message.reply(response)
+        return
+    
     await bot.process_commands(message)
+    return
+    
+    
+    
+    
+    
+    
+    
+    
+    # if not message.author.bot and message.content != "":
+    #     inline_commands = [
+    #                                 "<@(.+?)>\s+they\s+call\s+(?:you|u)\s+(.+)",
+    #                                 "<@[^>]+>\s*(\+2|plus\s*2)|(\+2|plus\s*2)\s*<@[^>]+>",
+    #                                 "<@[^>]+>\s*(\-2|minus\s*2)|(\-2|minus\s*2)\s*<@[^>]+>"
+    #                               ]
+    #     message_author = message.author
+    #     if message.reference:
+    #         replied_message = await message.channel.fetch_message(message.reference.message_id)
+    #         message_author = replied_message.author
+    #     # Check for inline commands and keep track of which command is being compared
+    #     for index, pattern in enumerate(inline_commands):
+    #         matched_command = re.match(pattern, message.content)
+    #         print(f"{message.content} vs {inline_commands[index]}, {matched_command}")
+    #         if matched_command:
+    #             print("checking expressions")
+    #             if index == 0:
+    #                 # Don't run the command if it's being invoked in a DM
+    #                 if isinstance(message.channel, discord.DMChannel):
+    #                     await message.channel.send("we are literally in DMs rn bro who tf name u trying to change")
+    #                     break
+    #                 # Derives the new name and retrieves the victim user ID from the input string
+    #                 try:
+    #                     victim = message.guild.get_member(int(matched_command.group(1)))
+    #                 except Exception as e:
+    #                     postgres.log_error(e)
+    #                     print(e)
+    #                     await message.channel.send(f"**{message.author.name}** tried to invoked the rule on.... wha... who?")
+    #                     break                            
+    #                 newname = str(matched_command.group(2))
+    #                 # Calls the /they_call_you slash command logic
+    #                 try:
+    #                     await change_nickname(message, victim, newname)
+    #                 except Exception as e:
+    #                     postgres.log_error(e)
+    #                     print(e)
+    #             elif index == 1:
+    #                 await message.channel.send(await change_joke_score(message_author, 2)) 
+    #             elif index == 2:
+    #                 await message.channel.send(await change_joke_score(message_author, -2)) 
+                    
+    #         # Not an inline command, check the message against a list of possible responses, then reply with that
+    #         else:
+    #             print(f"'{message.content}' is not a command")
+    #             response = str(get_response(message.content))
+    #             if response != "":
+    #                 await message.reply(response)
+    # await bot.process_commands(message)
 
 # member join event listener
 @bot.event
