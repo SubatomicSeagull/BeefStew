@@ -22,7 +22,10 @@ async def retrieve_joke_score(user: discord.Member):
     score = joke_score[0][0]
     return int(score)
     
-async def change_joke_score(user: discord.Member, value):
+async def change_joke_score(self: discord.Member, user: discord.Member, value):
+    if self.id == user.id:
+        return "cant do that lol lmao loser" 
+    
     if not await is_registered(user):
         await register_user(user)
     try:

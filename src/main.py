@@ -217,12 +217,12 @@ async def they_call_you(interaction: discord.Interaction, victim: discord.Member
 @bot.tree.command(name= "plus2", description="good one buddy")
 async def plus2(interaction: discord.Interaction, joker: discord.Member):
     await interaction.response.defer()
-    await interaction.followup.send(await change_joke_score(joker, 2))
+    await interaction.followup.send(await change_joke_score(interaction.user, joker, 2))
 
 @bot.tree.command(name= "minus2", description="*tugs on collar* yikes...")
 async def minus2(interaction: discord.Interaction, joker: discord.Member):
     await interaction.response.defer()
-    await interaction.followup.send(await change_joke_score(joker, -2)) 
+    await interaction.followup.send(await change_joke_score(interaction.user, joker, -2)) 
         
 @bot.tree.command(name= "score", description="how funny are you")
 async def score(interaction: discord.Interaction, joker: discord.Member):
@@ -243,7 +243,7 @@ async def score_reset(ctx, joker: discord.Member):
     
 @bot.command()
 async def score_alter(ctx, joker: discord.Member, value):
-    await change_joke_score(joker, value)
+    await change_joke_score(ctx.user, joker, value)
     print(f"{value} points to {joker.name} .")
 
 #=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
@@ -321,11 +321,11 @@ async def on_message(message: Message):
         
         if any(phrase in message.content.lower() for phrase in ["+2", "plus 2", "plus two"]):
             print(f"+2 to {user.name}")
-            await message.channel.send(await change_joke_score(user, 2)) 
+            await message.channel.send(await change_joke_score(message.author, user, 2)) 
             return
            
         elif any(phrase in message.content.lower() for phrase in ["-2", "minus 2", "minus two"]):
-            await message.channel.send(await change_joke_score(user, -2)) 
+            await message.channel.send(await change_joke_score(message.author, user, -2)) 
             return
         
         elif any(phrase in message.content.lower() for phrase in ["they call you", "they call u"]):
@@ -389,9 +389,9 @@ async def on_message(message: Message):
     #                     postgres.log_error(e)
     #                     print(e)
     #             elif index == 1:
-    #                 await message.channel.send(await change_joke_score(message_author, 2)) 
+    #                 await message.channel.send(await change_joke_score(message.author, message_author, 2)) 
     #             elif index == 2:
-    #                 await message.channel.send(await change_joke_score(message_author, -2)) 
+    #                 await message.channel.send(await change_joke_score(message.author, message_author, -2)) 
                     
     #         # Not an inline command, check the message against a list of possible responses, then reply with that
     #         else:
