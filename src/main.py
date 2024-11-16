@@ -311,95 +311,46 @@ async def test(interaction: discord.Interaction, victim: discord.Member):
 async def on_message(message: Message):
     
     if not message.author.bot and message.content != "":
-        print(message.content)
-        
-    if message.mentions:
-        user = message.mentions[0]
-        if isinstance(message.channel, discord.DMChannel):
-            await message.channel.send("we are literally in DMs rn bro u cant do that here...")
-            return
-        
-        if any(phrase in message.content.lower() for phrase in ["+2", "plus 2", "plus two"]):
-            print(f"+2 to {user.name}")
-            await message.channel.send(await change_joke_score(message.author, user, 2)) 
-            return
-           
-        elif any(phrase in message.content.lower() for phrase in ["-2", "minus 2", "minus two"]):
-            await message.channel.send(await change_joke_score(message.author, user, -2)) 
-            return
-        
-        elif any(phrase in message.content.lower() for phrase in ["they call you", "they call u"]):
-            print(f"'they call you' used on {user.name}")
-            #TODO seperate the new nickname from after the "you" in "they call you" then run nicknamerule
-            newname = "testname"
-            try:
-                await change_nickname(message, user, newname)
-            except Exception as e:
-                postgres.log_error(e)
-
-    response = str(get_response(message.content))
-    if response != "":
-        await message.reply(response)
-        return
-    
-    await bot.process_commands(message)
-    return
-    
-    
-    
-    
-    
-    
-    
-    
-    # if not message.author.bot and message.content != "":
-    #     inline_commands = [
-    #                                 "<@(.+?)>\s+they\s+call\s+(?:you|u)\s+(.+)",
-    #                                 "<@[^>]+>\s*(\+2|plus\s*2)|(\+2|plus\s*2)\s*<@[^>]+>",
-    #                                 "<@[^>]+>\s*(\-2|minus\s*2)|(\-2|minus\s*2)\s*<@[^>]+>"
-    #                               ]
-    #     message_author = message.author
-    #     if message.reference:
-    #         replied_message = await message.channel.fetch_message(message.reference.message_id)
-    #         message_author = replied_message.author
-    #     # Check for inline commands and keep track of which command is being compared
-    #     for index, pattern in enumerate(inline_commands):
-    #         matched_command = re.match(pattern, message.content)
-    #         print(f"{message.content} vs {inline_commands[index]}, {matched_command}")
-    #         if matched_command:
-    #             print("checking expressions")
-    #             if index == 0:
-    #                 # Don't run the command if it's being invoked in a DM
-    #                 if isinstance(message.channel, discord.DMChannel):
-    #                     await message.channel.send("we are literally in DMs rn bro who tf name u trying to change")
-    #                     break
-    #                 # Derives the new name and retrieves the victim user ID from the input string
-    #                 try:
-    #                     victim = message.guild.get_member(int(matched_command.group(1)))
-    #                 except Exception as e:
-    #                     postgres.log_error(e)
-    #                     print(e)
-    #                     await message.channel.send(f"**{message.author.name}** tried to invoked the rule on.... wha... who?")
-    #                     break                            
-    #                 newname = str(matched_command.group(2))
-    #                 # Calls the /they_call_you slash command logic
-    #                 try:
-    #                     await change_nickname(message, victim, newname)
-    #                 except Exception as e:
-    #                     postgres.log_error(e)
-    #                     print(e)
-    #             elif index == 1:
-    #                 await message.channel.send(await change_joke_score(message.author, message_author, 2)) 
-    #             elif index == 2:
-    #                 await message.channel.send(await change_joke_score(message.author, message_author, -2)) 
+        if message.mentions or message.reference:
+            
+            if message.reference:
+                replied_message = await message.channel.fetch_message(message.reference.message_id)
+                user = replied_message.author
+            else:
+                user = message.mentions[0]
+            
+            if isinstance(message.channel, discord.DMChannel):
+                await message.channel.send("we are literally in DMs rn bro u cant do that here...")
+                return
+            
+            if any(phrase in message.content.lower() for phrase in ["+2", "plus 2", "plus two"]):
+                await message.channel.send(await change_joke_score(message.author, user, 2)) 
+                return
+            
+            elif any(phrase in message.content.lower() for phrase in ["-2", "minus 2", "minus two"]):
+                await message.channel.send(await change_joke_score(message.author, user, -2)) 
+                return
+            
+            elif any(phrase in message.content.lower() for phrase in ["they call you", "they call u"]):  
+                if " u " in message.content.lower():
+                    nickname_split = message.content.split(" u ", 1)
+                elif " you " in message.content.lower():
+                    nickname_split = message.content.split(" you ", 1)
                     
-    #         # Not an inline command, check the message against a list of possible responses, then reply with that
-    #         else:
-    #             print(f"'{message.content}' is not a command")
-    #             response = str(get_response(message.content))
-    #             if response != "":
-    #                 await message.reply(response)
-    # await bot.process_commands(message)
+                if len(nickname_split) > 1:
+                    newname = nickname_split[1].strip()
+                    try:
+                        await change_nickname(message, user, newname)
+                    except Exception as e:
+                        await postgres.log_error(e)
+
+        response = str(get_response(message.content))
+        if response != "":
+            await message.reply(response)
+            return
+
+        await bot.process_commands(message)
+        return
 
 # member join event listener
 @bot.event
