@@ -4,3 +4,4 @@ python-dotenv
 Pillow
 requests
 psycopg2
+paramiko

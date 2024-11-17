@@ -2,21 +2,6 @@ from data import postgres
 import discord
 from responses import get_joke_response_positive, get_joke_response_negative
 
-# keeps track of a users individual joke score
-# joke score is added or taken away through either a /+2 /-2 command with the person they are scoring as an argument,
-# or when someone replies to a message with +2 or -2,
-
-
-#todo
-# make it so that they cant adjust their own score
-# make it so that they cant adjust beefstew's score
-# sanitisation for slash command arguments, is the person they pinged a real user?
-# add a way to see a users current score
-# add a collection of phrases to say when the score is adjusted
-# needs functionaliy to check the person who's message was replied to
-
-#both the reply and slash command should invoke the same code
-
 async def retrieve_joke_score(user: discord.Member):
     joke_score = await (postgres.read(f"SELECT joke_score FROM user_joker_score WHERE user_id = '{user.id}';"))
     score = joke_score[0][0]

@@ -23,11 +23,11 @@ def read_server_info(file_path):
         return server_info_dict
 
 # Usage
-current_dir = os.path.dirname(os.path.abspath(__file__))
-file_path = os.path.join(current_dir, 'server_info/server_info.json')
-server_info_dict = read_server_info(file_path)
-for name, ports in server_info_dict.items():
-    print(f"Name: {name}, Ports: {ports}")
+# current_dir = os.path.dirname(os.path.abspath(__file__))
+# file_path = os.path.join(current_dir, 'server_info/server_info.json')
+# server_info_dict = read_server_info(file_path)
+# for name, ports in server_info_dict.items():
+#     print(f"Name: {name}, Ports: {ports}")
 
 def geturls():
     raise NotImplementedError
@@ -96,3 +96,5 @@ def pingall():
     #average all the response times
     response_message = response_message + (f"Average response time: {response_time}ms.")
     return response_message
+
+
