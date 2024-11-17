@@ -161,6 +161,10 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-src\server_info\containers.json
-src\server_info\server_info.json
-src\assets\guild_config.json
+/src/server_info/containers.json
+/src/server_info/server_info.json
+/src/assets/guild_config.json
+
+containers.json
+guild_config.json
+server_info.json
