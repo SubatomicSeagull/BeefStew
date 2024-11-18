@@ -166,9 +166,9 @@ async def set_logs(interaction: discord.Interaction):
     if not interaction.user.guild_permissions.administrator:
         await interaction.followup.send("yeah yeah nice try", ephemeral=True)
         return
-    if not check_guild(interaction.guild.id): 
-        add_guild(interaction.guild.id)
-    update_guild_log_channel(interaction.guild.id, interaction.channel.id)
+    if not await guild_exists(interaction.guild.id): 
+        await add_guild(interaction.guild.id)
+    await update_guild_log_channel(interaction.guild.id, interaction.channel.id)
     await interaction.followup.send(f"{interaction.channel.mention} is the new logs channel.", ephemeral=True)
 
 # /set info channel command
@@ -178,9 +178,9 @@ async def set_info(interaction: discord.Interaction):
     if not interaction.user.guild_permissions.administrator:
         await interaction.response.send_message("yeah yeah nice try", ephemeral=True)
         return
-    if not check_guild(interaction.guild.id): 
-        add_guild(interaction.guild.id)
-    update_guild_info_channel(interaction.guild.id, interaction.channel.id)
+    if not await guild_exists(interaction.guild.id): 
+        await add_guild(interaction.guild.id)
+    await update_guild_info_channel(interaction.guild.id, interaction.channel.id)
     await interaction.followup.send(f"{interaction.channel.mention} is the new info channel.", ephemeral=True)
 
 # /help command
