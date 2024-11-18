@@ -1,28 +1,43 @@
 from json_handling import load_element, save_element, update_element
+from data import postgres as db
 
-def guild_written(guild):
-    data = load_element("guild_config.json", str(guild))
-    return data is not None
+def check_guild(guild):
+    existing_guild = db.read(f"SELECT * FROM guilds WHERE guild_id = {guild}")
+    if existing_guild is not None:
+        return True
+    else:
+        return False
 
-def write_guild(guild):
-    new_guild_entry = {
-        "log_channel_id": "",
-        "info_channel_id": ""
-    }
-    save_element("guild_config.json", str(guild), new_guild_entry)
+def add_guild(guild):
+    try:
+        db.write(f"INSERT INTO guilds (guild_id) VALUES ({guild})")
+        return True
+    except Exception as e:
+        print(e)
+        db.log_error(e)
+        return False
 
-def read_log_channel(guild):
-    data = load_element("guild_config.json", str(guild))
-    return data["log_channel_id"]
+def read_guild_log_channel(guild):
+    return db.read(f"SELECT log_channel_id FROM guilds WHERE guild_id = {guild}")
 
-def read_info_channel(guild):
-    data = load_element("guild_config.json", str(guild))
-    return data["info_channel_id"]
+def read_guild_info_channel(guild):
+    return db.read(f"SELECT info_channel_id FROM guilds WHERE guild_id = {guild}")
 
-def write_log_channel(guild, channel_id):
-    update_element("guild_config.json", 
-                   f"{guild}.log_channel_id", str(channel_id))
-
-def write_info_channel(guild, channel_id):
-    update_element("guild_config.json", 
-                   f"{guild}.info_channel_id", str(channel_id))
+def update_guild_log_channel(guild, channel_id):
+    try:
+        db.write(f"UPDATE guilds SET log_channel_id = {channel_id} WHERE guild_id = {guild}")
+        return True
+    except Exception as e:
+        print(e)
+        db.log_error(e)
+        return False
+    
+def update_guild_info_channel(guild, channel_id):
+    try:
+        db.write(f"UPDATE guilds SET info_channel_id = {channel_id} WHERE guild_id = {guild}")
+        return True
+    except Exception as e:
+        print(e)
+        db.log_error(e)
+        return False
+    

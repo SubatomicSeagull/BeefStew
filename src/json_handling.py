@@ -9,6 +9,8 @@ def load_element(file_name, element):
     file_path = os.path.join(ASSETS_FOLDER, file_name)
     with open(file_path, 'r') as file:
         data = json.load(file)
+    if element not in data:
+        return None
     return data[element]
 
 def save_element(file_name, element, value):
@@ -37,12 +39,17 @@ def update_element(file_name, element, value):
     file_path = os.path.join(ASSETS_FOLDER, file_name)
     with open(file_path, 'r') as file:
         data = json.load(file)
-    if element in data:
-        data[element] = value
-        with open(file_path, 'w') as file:
-            json.dump(data, file, indent=4)
-        return True
-    return False
+    
+    keys = element.split('.')
+    d = data
+    for key in keys[:-1]:
+        d = d.setdefault(key, {})
+    
+    d[keys[-1]] = value
+    
+    with open(file_path, 'w') as file:
+        json.dump(data, file, indent=4)
+    return True
 
 def containers_json_reformat():
 
@@ -100,4 +107,4 @@ def containers_json_insert_port(data, name, port):
     updated_data.update(data)
     return updated_data
 
-containers_json_reformat()
+# containers_json_reformat()

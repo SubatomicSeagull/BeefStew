@@ -62,7 +62,7 @@ async def kick(interaction: discord.Interaction, member: discord.Member, reason:
         return
     try:    
         kicked_members.add(member.id)
-        channel = await bot.fetch_channel(read_log_channel(interaction.guild.id))
+        channel = await bot.fetch_channel(read_guild_log_channel(interaction.guild.id))
         await channel.send(embed=await kick_message_embed(interaction.user, member, reason, bot.user.avatar.url, interaction.guild.name))
         await interaction.response.send_message(f"You kicked {member.name}.", ephemeral=True)
         await member.kick(reason=reason)
@@ -86,7 +86,7 @@ async def ban(interaction: discord.Interaction, member: discord.Member, reason: 
         return
     try:
         banned_members.add(member.id)    
-        channel = await bot.fetch_channel(read_log_channel(interaction.guild.id))
+        channel = await bot.fetch_channel(read_guild_log_channel(interaction.guild.id))
         await channel.send(embed=await ban_message_embed(interaction.user, member, reason, bot.user.avatar.url, interaction.guild.name))
         await interaction.response.send_message(f"You banned {member.name}.", ephemeral=True)
         await member.ban(reason=reason)
@@ -164,11 +164,11 @@ async def ccping(interaction: discord.Interaction):
 async def set_logs(interaction: discord.Interaction):
     await interaction.response.defer()
     if not interaction.user.guild_permissions.administrator:
-        await interaction.response.send_message("yeah yeah nice try", ephemeral=True)
+        await interaction.followup.send("yeah yeah nice try", ephemeral=True)
         return
-    if not guild_written(interaction.guild.id): 
-        write_guild(interaction.guild.id)
-    write_log_channel(interaction.guild.id, interaction.channel.id)
+    if not check_guild(interaction.guild.id): 
+        add_guild(interaction.guild.id)
+    update_guild_log_channel(interaction.guild.id, interaction.channel.id)
     await interaction.followup.send(f"{interaction.channel.mention} is the new logs channel.", ephemeral=True)
 
 # /set info channel command
@@ -178,9 +178,9 @@ async def set_info(interaction: discord.Interaction):
     if not interaction.user.guild_permissions.administrator:
         await interaction.response.send_message("yeah yeah nice try", ephemeral=True)
         return
-    if not guild_written(interaction.guild.id): 
-        write_guild(interaction.guild.id)
-    write_info_channel(interaction.guild.id, interaction.channel.id)
+    if not check_guild(interaction.guild.id): 
+        add_guild(interaction.guild.id)
+    update_guild_info_channel(interaction.guild.id, interaction.channel.id)
     await interaction.followup.send(f"{interaction.channel.mention} is the new info channel.", ephemeral=True)
 
 # /help command
@@ -355,7 +355,7 @@ async def on_message(message: Message):
 # member join event listener
 @bot.event
 async def on_member_join(member: discord.Member):
-     channel = await bot.fetch_channel((read_log_channel(member.guild.id)))
+     channel = await bot.fetch_channel((read_guild_log_channel(member.guild.id)))
      await channel.send(embed=await join_message_embed(member, bot.user.avatar.url,member.guild.name))
 
 # member leave event listener
@@ -367,7 +367,7 @@ async def on_member_remove(member: discord.Member):
     if member.id in banned_members:
        banned_members.remove(member.id)
        return
-    channel = await bot.fetch_channel((read_log_channel(member.guild.id)))
+    channel = await bot.fetch_channel((read_guild_log_channel(member.guild.id)))
     await channel.send(embed=await leave_message_embed(member, bot.user.avatar.url, member.guild.name))
 
 # message edit event listener
@@ -375,7 +375,7 @@ async def on_member_remove(member: discord.Member):
 async def on_message_edit(before, after):
     if before.author == bot.user:
         return
-    channel = await bot.fetch_channel((read_log_channel(before.guild.id)))  # Replace with your log channel ID
+    channel = await bot.fetch_channel((read_guild_log_channel(before.guild.id)))  # Replace with your log channel ID
     embed = discord.Embed(title="Message Edited", color=discord.Color.yellow())
     embed.add_field(name="",value=f"{after.author.mention} edited a message in {after.channel.mention} - [Jump to message](https://discord.com/channels/{after.guild.id}/{after.channel.id}/{after.id})", inline=False)
     embed.add_field(name="Original", value=f"```{before.content}```", inline=False)
@@ -391,7 +391,7 @@ async def on_message_edit(before, after):
 async def on_message_delete(message):
     if message.author == bot.user:
         return
-    channel = await bot.fetch_channel((read_log_channel(message.guild.id)))  # Replace with your log channel ID
+    channel = await bot.fetch_channel((read_guild_log_channel(message.guild.id)))  # Replace with your log channel ID
     embed = discord.Embed(title="Message Deleted", color=discord.Color.orange())
     embed.add_field(name="",value=f"{message.author.mention}'s message was deleted in {message.channel.mention}", inline=False)
     embed.add_field(name="Message", value=f"```{message.content}```", inline=False)
