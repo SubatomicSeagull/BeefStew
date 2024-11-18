@@ -375,7 +375,7 @@ async def on_member_remove(member: discord.Member):
 async def on_message_edit(before, after):
     if before.author == bot.user:
         return
-    channel = await bot.fetch_channel((read_guild_log_channel(before.guild.id)))  # Replace with your log channel ID
+    channel = await bot.fetch_channel((await read_guild_log_channel(before.guild.id)))  # Replace with your log channel ID
     embed = discord.Embed(title="Message Edited", color=discord.Color.yellow())
     embed.add_field(name="",value=f"{after.author.mention} edited a message in {after.channel.mention} - [Jump to message](https://discord.com/channels/{after.guild.id}/{after.channel.id}/{after.id})", inline=False)
     embed.add_field(name="Original", value=f"```{before.content}```", inline=False)
@@ -391,7 +391,7 @@ async def on_message_edit(before, after):
 async def on_message_delete(message):
     if message.author == bot.user:
         return
-    channel = await bot.fetch_channel((read_guild_log_channel(message.guild.id)))  # Replace with your log channel ID
+    channel = await bot.fetch_channel((await read_guild_log_channel(message.guild.id)))  # Replace with your log channel ID
     embed = discord.Embed(title="Message Deleted", color=discord.Color.orange())
     embed.add_field(name="",value=f"{message.author.mention}'s message was deleted in {message.channel.mention}", inline=False)
     embed.add_field(name="Message", value=f"```{message.content}```", inline=False)

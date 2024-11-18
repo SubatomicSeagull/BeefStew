@@ -1,4 +1,3 @@
-from json_handling import load_element, save_element, update_element
 from data import postgres as db
 
 async def guild_exists(guild: int):
@@ -18,10 +17,12 @@ async def add_guild(guild):
         return False
 
 async def read_guild_log_channel(guild: int):
-    return await db.read("SELECT log_channel_id FROM guilds WHERE guild_id = %s", (guild,))
+    guild = await db.read("SELECT log_channel_id FROM guilds WHERE guild_id = %s", (guild,))
+    return guild[0][0]
 
 async def read_guild_info_channel(guild: int):
-    return await db.read("SELECT info_channel_id FROM guilds WHERE guild_id = %s", (guild,))
+    guild = await db.read("SELECT info_channel_id FROM guilds WHERE guild_id = %s", (guild,))
+    return guild[0][0]
 
 async def update_guild_log_channel(guild: int, channel_id: int):
     try:
