@@ -66,8 +66,8 @@ def containers_json_reformat():
     #add sftp port
     final_data = containers_json_insert_port(simplified_ports_list, "SFTP", 22)
     
-    with open("src\server_info\containers_fixed.json", "w", encoding="utf-8") as f:
-        json.dump(final_data, f, indent=4) 
+    with open("src\server_info\hosts.json", "w", encoding="utf-8") as file:
+        json.dump(final_data, file, indent=4) 
     
 def containers_json_simplify(data):
     simplified = {}
@@ -107,4 +107,4 @@ def containers_json_insert_port(data, name, port):
     updated_data.update(data)
     return updated_data
 
-# containers_json_reformat()
+containers_json_reformat()

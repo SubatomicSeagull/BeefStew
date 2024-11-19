@@ -2,6 +2,8 @@ import socket
 import time
 import json
 import os
+from server_info.server_interactions import retrive_containers_json
+from json_handling import containers_json_reformat
 
 class ServerInfo:
     def __init__(self, name, host_ports):
@@ -50,7 +52,7 @@ async def check(host,port,timeout):
        return True
 
 #pings a given host on a given port, and averages the response time and returns a message
-def host_ping(host, port, timeout, retries):
+def ping_host(host, port, timeout, retries):
     t0 = time.time()
     response_message = ""
     sum = 0
@@ -76,25 +78,47 @@ def host_ping(host, port, timeout, retries):
     else:
         return 0
 
-def pingall():
-    #change so that it counts the number of ips to ping
-    ipcount = 7
-    #change so that it is an average of all the response times, if a response time is 0 assume the server did not respond
-    response_time = 12
-    response_message = (f"Pinged CCServer with {ipcount} results:\n")
-    
-    #repalce with a loop for each ip in the list ping it and return its average response time
-    #then append a message to the response ( "{Name} is {online/offline}")
-    response_message = response_message + "- ✅ CCServer is Online\n"
-    response_message = response_message + "- ✅ BeefStew is Online\n"
-    response_message = response_message + "- ✅ SFTP is Online (files.cosycraft.uk)\n"
-    response_message = response_message + "- ✅ Origins-1.20.2 is Online (origins.cosycraft.uk)\n"
-    response_message = response_message + "- ❌ Origins_Experimental is Offline (experimental.cosycraft.uk)\n"
-    response_message = response_message + "- ❌ Vanilla-1.21 is Offline (vanilla.cosycraft.uk)\n"
-    response_message = response_message + "- ✅ MustardVirus is Online (virus.cosycraft.uk)\n"
-    
-    #average all the response times
-    response_message = response_message + (f"Average response time: {response_time}ms.")
-    return response_message
+ # ping embed constructor
+def pingembed():
 
-
+    #check to see if hosts.json exists, 
+    # if not, check to see if it can format containers.json,
+    # if not, retrive containers.json and format it
+    try:
+        with open("src\server_info\hosts.json", "r", encoding="utf-8") as file:
+            data = json.load(file)
+    except Exception as e:     
+        try:
+            with open("src\server_info\containers.json", "r", encoding="utf-8-sig") as f:
+                rawcontainers = json.load(f)
+        except Exception as e:
+            retrive_containers_json()
+            
+        containers_json_reformat()
+            
+    
+    
+    total_response_time = 0
+    host_count = 0
+    
+    #embed headder
+    
+    #pingembed = discord.Embed(title=f"Pinged CCServer with {host_count} results:", description="", color=discord.Color.lighter_grey())
+    #pingembed.set_thumbnail(url=avatarurl) # change to ccserver icon, actaully figure out how to add local files this time plz
+    #pingembed.set_author(name="Beefstew", icon_url=avatarurl)
+    
+    for i, host, in enumerate(data):
+        print(f"for {host} ping ip on port {data[host]}")
+    
+    #for each host in hosts.json, run ping_host()
+        #start timer, ping the host
+        # if its successful: 
+            #stop the timer and add the time taken to ping the host truncated in ms to 2 dp to the total response time
+            #generate a new string like "✅ {hostname} is Online \n" and add it to the embed body"
+        # if its not successful:
+            #stop the timer, dont add it to the total response time
+            #generate a new string like "❌ {hostname} is Offline \n" and add it to the embed body"
+        #average the response time and add it to the bottom of the embed
+        #return the embed
+        
+pingembed()

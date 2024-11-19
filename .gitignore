@@ -162,9 +162,11 @@ cython_debug/
 #.idea/
 
 /src/server_info/containers.json
+/src/server_info/hosts.json
 /src/server_info/server_info.json
 /src/assets/guild_config.json
 
 containers.json
 guild_config.json
 server_info.json
+hosts.json
