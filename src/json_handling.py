@@ -106,5 +106,3 @@ def containers_json_insert_port(data, name, port):
     updated_data = OrderedDict({name: port})
     updated_data.update(data)
     return updated_data
-
-containers_json_reformat()

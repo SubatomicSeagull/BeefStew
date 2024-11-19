@@ -9,7 +9,7 @@ from discord.ext import commands
 from nickname_rule import *
 from mod_tools import *
 from responses import *
-from ping import pingall
+from server_info.ping import pingembed
 from pfp_manipulations import *
 from help import *
 from json_handling import *
@@ -156,8 +156,8 @@ async def unmute(interaction: discord.Interaction, member: discord.Member):
 @bot.tree.command(name="ccping", description="pings CCServer, please be responsible with this one...")
 async def ccping(interaction: discord.Interaction):
     await interaction.response.defer()
-    print("Pinging CCServer...")
-    await interaction.followup.send(f"{interaction.user.mention} pinged CCServer with the following results:\n{pingall()}")
+    embed = await pingembed(interaction, bot.user.avatar.url, interaction.channel.guild.name)
+    await interaction.followup.send(embed=embed)
         
 # /set log channel command
 @bot.tree.command(name="set_logs", description="where should i spew? (kick/ban messages etc.)")
@@ -304,7 +304,8 @@ async def mock(interaction: discord.Interaction, victim: discord.Member):
 # test command, change as needed
 @bot.tree.command(name="test", description="test command, might do something, might not, who knows")
 async def test(interaction: discord.Interaction, victim: discord.Member):
-    await register_user(victim)
+    await interaction.response.defer()
+    await interaction.followup.send(embed=pingembed(interaction, bot.user.avatar.url, interaction.channel.guild.name))
 
 # message listener
 @bot.event
