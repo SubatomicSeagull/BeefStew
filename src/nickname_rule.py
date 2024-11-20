@@ -18,7 +18,7 @@ async def change_nickname(intormessage, victim: discord.Member, new_name: str):
                         await interaction.response.send_message(f"**{interaction.user.name}** invoked the rule on **{victim.name}**!\n{nicknameprint(victim, new_name)}")           
                     except discord.Forbidden as e:
                         print(e)
-                        await interaction.response.send_message(f"**{interaction.user.name}** tried to invoked the rule on **{victim.name}**!\nbut it didnt work :( next time get some permissions okay?")
+                        await interaction.response.send_message(f"**{interaction.user.name}** tried to invoked the rule on **{victim.name}**!\nbut it didnt work :( next time get some permissions pal")
                     except Exception as e:
                         print(e)
             else:
@@ -42,12 +42,12 @@ async def change_nickname(intormessage, victim: discord.Member, new_name: str):
                 await message.channel.send(f"**{message.author.name}** tried to invoked the rule on **{victim.name}**!\nnice try fucker...")
 
 
-
-def nicknameprint(victim: discord.Member, new_name: str): 
-    new_name = "**" + new_name + "**"
-    victimtag = type('Victim', (object,), {"mention": victim.mention})()
+#test this
+def nicknameprint(victim: discord.Member): 
+    victim_name = type('Victim', (object,), {"mention": victim.name})()
+    victim_tag = type('Victim', (object,), {"tag": victim.mention})()
     responses = load_element("responses.json", "nickname_change_responses")
         
     chosen_response = random.choice(responses)
-    chosen_response = chosen_response.format(victim=victimtag, new_name=new_name)
+    chosen_response = chosen_response.format(victim_name=victim_name, victim_tag=victim_tag)
     return chosen_response

@@ -22,8 +22,10 @@ class HelpEmbed(discord.ui.View):
         page2embed = discord.Embed(title="Help - Utilities", description="TOOLS!! i need my TOOLS!!!!!", color=discord.Color.lighter_grey())
         page2embed.add_field(name="Commands:",value="", inline=False)
         page2embed.add_field(name="", value="`/ccping`: pings ccserver, be sensible with this one", inline=False)
-        page2embed.add_field(name="", value="`/ccinfo`: retrieve current info about CCServer", inline=False)
-        page2embed.add_field(name="", value="`/logs`: sets the current channel as the logs channel", inline=False)
+        #page2embed.add_field(name="", value="`/ccinfo`: retrieve current info about CCServer", inline=False)
+        page2embed.add_field(name="", value="`/set_logs`: sets the current channel as the logs channel", inline=False)
+        page2embed.add_field(name="", value="`/set_info`: sets the current channel as the info channel", inline=False)
+        page2embed.add_field(name="", value="`/set_quotes`: sets the current channel as the quotes channel", inline=False)
         page2embed.add_field(name="", value="`/test`: <- jamie delete this", inline=False)
         await interaction.response.edit_message(embed=page2embed)
             
@@ -41,6 +43,9 @@ class HelpEmbed(discord.ui.View):
         page4embed = discord.Embed(title="Help - Invocations", description="let ye who is without sin cast the first stone", color=discord.Color.lighter_grey())
         page4embed.add_field(name="Commands:",value="", inline=False)
         page4embed.add_field(name="", value="`[@victim] they call you [nickname]`: invoke the rule...", inline=False)
+        page4embed.add_field(name="", value="`[@victim] +2`: good joke <:beefsmile:1308701407007739974>", inline=False)
+        page4embed.add_field(name="", value="`[@victim] -2`: bad joke <:beefhusk:1287094093989679124>", inline=False)
+        page4embed.add_field(name="", value="`/score`: how funny r u?", inline=False)
         await interaction.response.edit_message(embed=page4embed)
         
     @discord.ui.button(label="Visage", style=discord.ButtonStyle.primary)    
@@ -50,4 +55,5 @@ class HelpEmbed(discord.ui.View):
         page5embed.add_field(name="Commands:",value="", inline=False)
         page5embed.add_field(name="", value="`/boil`: boils the user", inline=False)
         page5embed.add_field(name="", value="`/slander`: i cant belive they just said that...", inline=False)
+        page5embed.add_field(name="", value="`/drain`: yea we dropped them down there they got stucl ://", inline=False)
         await interaction.response.edit_message(embed=page5embed)
