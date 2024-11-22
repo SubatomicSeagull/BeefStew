@@ -1,6 +1,6 @@
-# BEEFSTEW.py
+# BEEFSTEW
 
-![BEEFSTEW](./images/beefstew.webp)
+![BEEFSTEW](./src/assets/profile/banner.png)
 ## Authors
 - [subatomicseagull](https://github.com/SubatomicSeagull)
 - [mertymor](https://github.com/MertyMor)
