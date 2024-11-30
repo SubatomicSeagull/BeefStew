@@ -60,16 +60,17 @@ async def kick(interaction: discord.Interaction, member: discord.Member, reason:
     if not interaction.user.guild_permissions.kick_members:
         await interaction.response.send_message("yeah yeah nice try", ephemeral=True)
         return
+    
     try:    
         kicked_members.add(member.id)
-        channel = await bot.fetch_channel(read_guild_log_channel(interaction.guild.id))
+        channelid = await read_guild_log_channel(interaction.guild.id)
+        channel = await bot.fetch_channel(channelid)
         await channel.send(embed=await kick_message_embed(interaction.user, member, reason, bot.user.avatar.url, interaction.guild.name))
         await interaction.response.send_message(f"You kicked {member.name}.", ephemeral=True)
         await member.kick(reason=reason)
         print("s")
     except Exception as e:
         print(e)
-        postgres.log_error(e)
         await interaction.response.send_message(f"Couldn't kick user {member.name} because {e}", ephemeral=True)
 
 # /ban command 
@@ -84,20 +85,21 @@ async def ban(interaction: discord.Interaction, member: discord.Member, reason: 
     if not interaction.user.guild_permissions.ban_members:
         await interaction.response.send_message("you really think im gonna let u do that?", ephemeral=True)
         return
+    
     try:
         banned_members.add(member.id)    
-        channel = await bot.fetch_channel(read_guild_log_channel(interaction.guild.id))
+        channelid = await read_guild_log_channel(interaction.guild.id)
+        channel = await bot.fetch_channel(channelid)
         await channel.send(embed=await ban_message_embed(interaction.user, member, reason, bot.user.avatar.url, interaction.guild.name))
         await interaction.response.send_message(f"You banned {member.name}.", ephemeral=True)
         await member.ban(reason=reason)
     except Exception as e:
-        print(e)
-        postgres.log_error(e)
+        await postgres.log_error(e)
         await interaction.response.send_message(f"Couldn't ban user {member.name} because {e}", ephemeral=True)
 
 # /mute command
 @bot.tree.command(name="mute", description="SHHHHHHHH!!")
-async def mute(interaction: discord.Interaction, member: discord.Member):
+async def mute(interaction: discord.Interaction, member: discord.Member): 
     if interaction.user.id == member.id:
         await interaction.response.send_message("mute yourself? just stop talking lol", ephemeral=True)
         return
@@ -107,43 +109,48 @@ async def mute(interaction: discord.Interaction, member: discord.Member):
     if not interaction.user.guild_permissions.administrator:
         await interaction.response.send_message("yeah yeah nice try", ephemeral=True)
         return
+    
     try:
         await member.edit(mute=True)
     except Exception as e:
-        postgres.log_error(e)
         print("Target user is not in a voice channel, consider re-muting if they join.")
+    
     if discord.utils.get(member.guild.roles, name="BeefMute") not in member.roles:
         try:
             await add_mute_role(interaction, member)
             await interaction.response.send_message(f"{member.mention} was muted", ephemeral=True)
+            return
+        
         except discord.Forbidden:
-            await interaction.response.send_message("umm.. no i dont think so")
+            await interaction.response.send_message("umm.. no i dont think so", ephemeral=True)
+            return
     else:
         await interaction.response.send_message(f"{member.mention} is already muted", ephemeral=True)
+        return
 
 # /unmute command
 @bot.tree.command(name="unmute", description="you may speak...")
 async def unmute(interaction: discord.Interaction, member: discord.Member):
     if interaction.user.id == member.id:
-        await interaction.response.send_message("mute yourself? just stop talking lol", ephemeral=True)
+        await interaction.response.send_message("yeah yeah nice try", ephemeral=True)
         return
     if member.id == bot.user.id:
-        await interaction.response.send_message("you cant silence me bitch", ephemeral=True)
+        await interaction.response.send_message("you cant un-silence me bitch", ephemeral=True)
         return
     if not interaction.user.guild_permissions.administrator:
         await interaction.response.send_message("yeah yeah nice try", ephemeral=True)
         return        
+    
     try:
         await member.edit(mute=False)
     except Exception as e:
-        postgres.log_error(e)
         print("Target user is not in a voice channel, consider re-muting if they join.")
     if discord.utils.get(member.guild.roles, name="BeefMute") in member.roles:
         try:
             await remove_mute_role(interaction, member)
             await interaction.response.send_message(f"{member.mention} was unmuted", ephemeral=True)
         except discord.Forbidden:
-            await interaction.response.send_message("umm.. no i dont think so")
+            await interaction.response.send_message("umm.. no i dont think so", ephemeral=True)
     else:
         await interaction.response.send_message(f"{member.mention} is already unmuted", ephemeral=True)
 
@@ -156,37 +163,55 @@ async def unmute(interaction: discord.Interaction, member: discord.Member):
 @bot.tree.command(name="ccping", description="pings CCServer, please be responsible with this one...")
 async def ccping(interaction: discord.Interaction):
     await interaction.response.defer()
+    
+    if isinstance(interaction.channel, discord.DMChannel):
+        await interaction.followup.send("we are literally in DMs rn bro u cant do that here...")
+        return
+            
     embed = await pingembed(interaction, bot.user.avatar.url, interaction.channel.guild.name)
     await interaction.followup.send(embed=embed)
         
 # /set log channel command
 @bot.tree.command(name="set_logs", description="where should i spew? (kick/ban messages etc.)")
 async def set_logs(interaction: discord.Interaction):
-    await interaction.response.defer()
+    
+    if isinstance(interaction.channel, discord.DMChannel):
+        await interaction.channel.send("we are literally in DMs rn bro u cant do that here...")
+        return
+    
     if not interaction.user.guild_permissions.administrator:
-        await interaction.followup.send("yeah yeah nice try", ephemeral=True)
+        await interaction.response.send_message("yeah yeah nice try", ephemeral=True)
         return
     if not await guild_exists(interaction.guild.id): 
         await add_guild(interaction.guild.id)
     await update_guild_log_channel(interaction.guild.id, interaction.channel.id)
-    await interaction.followup.send(f"{interaction.channel.mention} is the new logs channel.", ephemeral=True)
+    await interaction.response.send_message(f"{interaction.channel.mention} is the new logs channel.", ephemeral=True)
 
 # /set info channel command
 @bot.tree.command(name="set_info", description="where should i spew? (kick/ban messages etc.)")
 async def set_info(interaction: discord.Interaction):
-    await interaction.response.defer()
+    
+    if isinstance(interaction.channel, discord.DMChannel):
+        await interaction.channel.send("we are literally in DMs rn bro u cant do that here...")
+        return
+    
     if not interaction.user.guild_permissions.administrator:
         await interaction.response.send_message("yeah yeah nice try", ephemeral=True)
         return
     if not await guild_exists(interaction.guild.id): 
         await add_guild(interaction.guild.id)
     await update_guild_info_channel(interaction.guild.id, interaction.channel.id)
-    await interaction.followup.send(f"{interaction.channel.mention} is the new info channel.", ephemeral=True)
+    await interaction.response.send_message(f"{interaction.channel.mention} is the new info channel.", ephemeral=True)
 
 # /help command
 @bot.tree.command(name="help", description="you dont what to know what i can *really* do...")
 async def help(interaction: discord.Interaction):
     await interaction.response.defer()
+    
+    if isinstance(interaction.channel, discord.DMChannel):
+        await interaction.followup.send("we are literally in DMs rn bro u cant do that here...")
+        return
+    
     view = HelpEmbed()
     page0embed = discord.Embed(title="Beefstew Help", description="You don't want to know what I can *really* do...", color=discord.Color.lighter_grey())
     page0embed.set_thumbnail(url=bot.user.avatar.url)
@@ -208,6 +233,11 @@ async def help(interaction: discord.Interaction):
 # /they_call_you command
 @bot.tree.command(name = "they_call_you", description = "invokes the rule...")
 async def they_call_you(interaction: discord.Interaction, victim: discord.Member, new_name: str):
+    
+    if isinstance(interaction.channel, discord.DMChannel):
+        await interaction.channel.send("we are literally in DMs rn bro u cant do that here...")
+        return
+    
     try:
         await change_nickname(interaction, victim, new_name)
     except Exception as e:
@@ -217,16 +247,32 @@ async def they_call_you(interaction: discord.Interaction, victim: discord.Member
 @bot.tree.command(name= "plus2", description="good one buddy")
 async def plus2(interaction: discord.Interaction, joker: discord.Member):
     await interaction.response.defer()
+    
+    if isinstance(interaction.channel, discord.DMChannel):
+        await interaction.followup.send("we are literally in DMs rn bro u cant do that here...")
+        return
+    
     await interaction.followup.send(await change_joke_score(interaction.user, joker, 2))
 
 @bot.tree.command(name= "minus2", description="*tugs on collar* yikes...")
 async def minus2(interaction: discord.Interaction, joker: discord.Member):
     await interaction.response.defer()
+    
+    if isinstance(interaction.channel, discord.DMChannel):
+        await interaction.followup.send("we are literally in DMs rn bro u cant do that here...")
+        return
+    
     await interaction.followup.send(await change_joke_score(interaction.user, joker, -2)) 
         
 @bot.tree.command(name= "score", description="how funny are you")
-async def score(interaction: discord.Interaction, joker: discord.Member):
+async def score(interaction: discord.Interaction, joker: discord.User):
     await interaction.response.defer()
+    
+    if isinstance(interaction.channel, discord.DMChannel):
+        await interaction.followup.send("we are literally in DMs rn bro u cant do that here...")
+        return
+    
+    
     if not await is_registered(joker):
         await register_user(joker)
     try:
@@ -238,11 +284,20 @@ async def score(interaction: discord.Interaction, joker: discord.Member):
         
 @bot.command()
 async def score_reset(ctx, joker: discord.Member):
+    
+    if isinstance(ctx.channel, discord.DMChannel):
+        await ctx.channel.send("we are literally in DMs rn bro u cant do that here...")
+        return
+    
+    if not ctx.author.guild_permissions.administrator:
+        return
     await clear_joke_score(joker)
     print(f"{joker.name} score reset.")
     
 @bot.command()
 async def score_alter(ctx, joker: discord.Member, value):
+    if not ctx.author.guild_permissions.administrator:
+        return
     await change_joke_score(ctx.user, joker, value)
     print(f"{value} points to {joker.name} .")
 
@@ -356,8 +411,9 @@ async def on_message(message: Message):
 # member join event listener
 @bot.event
 async def on_member_join(member: discord.Member):
-     channel = await bot.fetch_channel((read_guild_log_channel(member.guild.id)))
-     await channel.send(embed=await join_message_embed(member, bot.user.avatar.url,member.guild.name))
+    channelid = await read_guild_log_channel(member.guild.id)
+    channel = await bot.fetch_channel(channelid)
+    await channel.send(embed=await join_message_embed(member, bot.user.avatar.url,member.guild.name))
 
 # member leave event listener
 @bot.event
@@ -368,7 +424,8 @@ async def on_member_remove(member: discord.Member):
     if member.id in banned_members:
        banned_members.remove(member.id)
        return
-    channel = await bot.fetch_channel((read_guild_log_channel(member.guild.id)))
+    channelid = await read_guild_log_channel(member.guild.id)
+    channel = await bot.fetch_channel(channelid)
     await channel.send(embed=await leave_message_embed(member, bot.user.avatar.url, member.guild.name))
 
 # message edit event listener
