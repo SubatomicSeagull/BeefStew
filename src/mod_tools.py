@@ -108,7 +108,7 @@ async def create_mute_role(guild: discord.Guild):
         print("Creating Mute Role: creating the role")
         mute_role = await guild.create_role(name="BeefMute", permissions=permissions,)
         print(f"Creating Mute Role: elevating the role to position {(len(mute_role.guild.roles)-3)}")
-        await mute_role.edit(position=(len(mute_role.guild.roles)-2))
+        await mute_role.edit(position=(len(mute_role.guild.roles)-3))
         
         print("Creating Mute Role: creating override permissions")
         overwrite = discord.PermissionOverwrite()
@@ -156,21 +156,25 @@ async def add_mute_role(interaction: discord.Interaction, member: discord.Member
     if mute_role is None:
         print("Mute: no mute role, creating one")
         await create_mute_role(guild=guild)
+        mute_role = discord.utils.get(guild.roles, name="BeefMute")
     try:
         print("Mute: adding role to user")
         await member.add_roles(mute_role)
-    except discord.Forbidden:
-        await interaction.channel.send(f"couldnt mute {member.name} because i dont have permission :(")
+    except discord.Forbidden as e:
+        await interaction.channel.send(f"couldnt mute {member.name} because i dont have permission {e} :(", ephemeral=True)
         
 async def remove_mute_role(interaction: discord.Interaction, member: discord.Member):
     guild = member.guild
     mute_role = discord.utils.get(guild.roles, name="BeefMute")
     if mute_role is None:
         await create_mute_role(guild=guild)
+        mute_role = discord.utils.get(guild.roles, name="BeefMute")
     try:
       await member.remove_roles(mute_role)
-    except discord.Forbidden:
-        await interaction.channel.send(f"couldnt unmute {member.name} because i dont have permission :(")
+    except discord.Forbidden as e:
+        await interaction.channel.send(f"couldnt unmute {member.name} because i dont have permission {e} :(", ephemeral=True)
+        return
     except Exception as e:
         await interaction.channel.send(f"couldnt unmute {member.name} because {e}")
+        return
 
