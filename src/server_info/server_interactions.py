@@ -11,7 +11,7 @@ def retrive_containers_json():
         ssh_client.connect(hostname=os.getenv("DBHOST"), port=22, username=os.getenv("SFTPUSERNAME"), password=os.getenv("SFTPPASS"))
         sftp = ssh_client.open_sftp()
         
-        sftp.get(os.getenv("SFTPREMOTEDIR"), "src\\server_info\\containers.json")
+        sftp.get(os.getenv("SFTPREMOTEDIR"), ((os.path.dirname(os.path.abspath(__file__))), "server_info", "containers.json"))
         
         sftp.close()
         ssh_client.close()          

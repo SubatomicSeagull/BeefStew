@@ -52,8 +52,9 @@ def update_element(file_name, element, value):
     return True
 
 def containers_json_reformat():
-
-    with open("src\server_info\containers.json", "r", encoding="utf-8-sig") as file:
+    hosts_path = os.path.join((os.path.dirname(os.path.abspath(__file__))), "server_info", "hosts.json")
+    containers_path = os.path.join((os.path.dirname(os.path.abspath(__file__))), "server_info", "containers.json")
+    with open(containers_path, "r", encoding="utf-8-sig") as file:
         data = json.load(file)
         
     reformat = {}
@@ -66,7 +67,7 @@ def containers_json_reformat():
     #add sftp port
     final_data = containers_json_insert_port(simplified_ports_list, "SFTP", 22)
     
-    with open("src\server_info\hosts.json", "w", encoding="utf-8") as file:
+    with open(hosts_path, "w", encoding="utf-8") as file:
         json.dump(final_data, file, indent=4) 
     
 def containers_json_simplify(data):
