@@ -47,20 +47,6 @@ async def ping_host(host, port, timeout, retries):
 
  # ping embed constructor
 async def pingembed(interaction: discord.Interaction, icon_url, guild_name):
-
-    try:
-        with open("src\server_info\hosts.json", "r", encoding="utf-8") as file:
-            data = json.load(file)
-    except Exception as e:
-        try:
-            with open("src\server_info\containers.json", "r", encoding="utf-8-sig") as f:
-                rawcontainers = json.load(f)
-        except Exception as e:
-            retrive_containers_json()
-            containers_json_reformat()
-            os.remove("src\server_info\containers.json")
-            with open("src\server_info\hosts.json", "r", encoding="utf-8") as file:
-                data = json.load(file)
     
     total_response_time = 0
     host_count = len(data)
@@ -69,7 +55,19 @@ async def pingembed(interaction: discord.Interaction, icon_url, guild_name):
     pingembed = discord.Embed(title=f"Pinged CCServer with {host_count} results:", description="", color=discord.Color.lighter_grey())
     pingembed.set_thumbnail(url=icon_url) # change to ccserver icon, actaully figure out how to add local files this time plz
     pingembed.set_author(name="Beefstew", icon_url=icon_url)
-
+    
+    hosts_path = os.path.join((os.path.dirname(os.path.abspath(__file__))), "server_info", "hosts.json")
+    
+    if not os.path.exists(hosts_path):
+        generate_hosts_file()
+            
+    #if the hosts file is older than one day, update it
+    if time.time() - os.path.getmtime(hosts_path) / 86400 > 1:
+        generate_hosts_file()
+    
+    with open(hosts_path, "r", encoding="utf-8") as file:
+            data = json.load(file)
+    
     #ping each host:port
     for i, host, in enumerate(data):
         
@@ -85,3 +83,8 @@ async def pingembed(interaction: discord.Interaction, icon_url, guild_name):
     pingembed.add_field(name="", value=f"{guild_name} - {datetime.now().strftime('%d/%m/%Y %H:%M')}")
     
     return pingembed
+
+def generate_hosts_file():
+    retrive_containers_json()
+    containers_json_reformat()
+    os.remove(os.path.join((os.path.dirname(os.path.abspath(__file__))), "server_info", "containers.json"))

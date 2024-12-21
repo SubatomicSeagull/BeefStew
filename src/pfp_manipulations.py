@@ -3,6 +3,7 @@ from discord.ext import commands
 from PIL import Image, ImageOps
 import requests
 from io import BytesIO
+import os
 
 
 async def get_victim_avatar(victim: discord.Member):  
@@ -13,12 +14,14 @@ async def get_victim_avatar(victim: discord.Member):
     user_pfp = ImageOps.fit(user_pfp, (350, 350))
     return user_pfp
 
+
+
 async def boil_pfp(victim: discord.Member):   
     avatar = await get_victim_avatar(victim)
     user_pfp = Image.new("RGBA", avatar.size, (255,255,255))
     user_pfp.paste(avatar, (0,0))
     # reading the boil template
-    template = Image.open(".\\src\\assets\\pfp_manipulation\\boiling_pan_1.png")
+    template = Image.open(os.path.join((os.path.dirname(os.path.abspath(__file__))), "assets", "pfp_manipulation", "boiling_pan_1.png"))
     # creating the tint image
     tint = Image.new("RGBA",user_pfp.size, (255, 0, 0))
     # blending it with the pfp
@@ -45,7 +48,7 @@ async def boil_pfp(victim: discord.Member):
 
 async def add_speech_bubble(victim: discord.Member):
     user_pfp = await get_victim_avatar(victim)
-    speech_bubble = Image.open(".\\src\\assets\\pfp_manipulation\\speechbubble.png")
+    speech_bubble = Image.open(os.path.join((os.path.dirname(os.path.abspath(__file__))), "assets", "pfp_manipulation", "speechbubble.png"))
     user_pfp.paste(speech_bubble, (0,0), speech_bubble)
     final_image = Image.new("RGBA", (user_pfp.size), (255,255,255))
     final_image.paste(user_pfp, (0,0))
@@ -61,7 +64,7 @@ async def drain_overlay(victim: discord.Member):
     new_size = (int(avatar.width * 0.5), int(avatar.height * 0.5))
     user_pfp = avatar.resize(new_size, Image.Resampling.BILINEAR)
     
-    template = Image.open(".\\src\\assets\\pfp_manipulation\\drain.png")
+    template = Image.open(os.path.join((os.path.dirname(os.path.abspath(__file__))), "assets", "pfp_manipulation", "drain.png"))
 
     base_width, base_height = user_pfp.size
     overlay_width, overlay_height = template.size
