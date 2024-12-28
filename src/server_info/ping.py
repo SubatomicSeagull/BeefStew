@@ -48,6 +48,25 @@ async def ping_host(host, port, timeout, retries):
  # ping embed constructor
 async def pingembed(interaction: discord.Interaction, icon_url, guild_name):
     
+    
+
+    
+    hosts_path = os.path.join((os.path.dirname(os.path.abspath(__file__))), "hosts.json")
+    
+    if not os.path.exists(hosts_path):
+        generate_hosts_file()
+            
+    #if the hosts file is older than one day, update it
+    current_time = datetime.now()
+    file_mod_time = datetime.fromtimestamp(os.path.getmtime(hosts_path))
+    
+    if (current_time - file_mod_time).days > 1:
+        print(f"Hosts file older than 1 day ({(current_time - file_mod_time).days}), retriving updated info...")
+        generate_hosts_file()
+    
+    with open(hosts_path, "r", encoding="utf-8") as file:
+            data = json.load(file)
+    
     total_response_time = 0
     host_count = len(data)
     
@@ -55,18 +74,6 @@ async def pingembed(interaction: discord.Interaction, icon_url, guild_name):
     pingembed = discord.Embed(title=f"Pinged CCServer with {host_count} results:", description="", color=discord.Color.lighter_grey())
     pingembed.set_thumbnail(url=icon_url) # change to ccserver icon, actaully figure out how to add local files this time plz
     pingembed.set_author(name="Beefstew", icon_url=icon_url)
-    
-    hosts_path = os.path.join((os.path.dirname(os.path.abspath(__file__))), "server_info", "hosts.json")
-    
-    if not os.path.exists(hosts_path):
-        generate_hosts_file()
-            
-    #if the hosts file is older than one day, update it
-    if time.time() - os.path.getmtime(hosts_path) / 86400 > 1:
-        generate_hosts_file()
-    
-    with open(hosts_path, "r", encoding="utf-8") as file:
-            data = json.load(file)
     
     #ping each host:port
     for i, host, in enumerate(data):
@@ -78,13 +85,15 @@ async def pingembed(interaction: discord.Interaction, icon_url, guild_name):
             total_response_time = total_response_time + host_response_time
         else:
             pingembed.add_field(name=f"❌ **{host}** is Offline...", value="", inline=False)
-            
+    
+    
     pingembed.add_field(name="", value=f"with an average response time of {round((total_response_time / host_count),2)}ms.", inline=False)
     pingembed.add_field(name="", value=f"{guild_name} - {datetime.now().strftime('%d/%m/%Y %H:%M')}")
     
     return pingembed
 
 def generate_hosts_file():
+    print("Generating hosts file...")
     retrive_containers_json()
     containers_json_reformat()
-    os.remove(os.path.join((os.path.dirname(os.path.abspath(__file__))), "server_info", "containers.json"))
+    os.remove(os.path.join((os.path.dirname(os.path.abspath(__file__))), "containers.json"))
