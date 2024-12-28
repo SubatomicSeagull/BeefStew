@@ -48,9 +48,6 @@ async def ping_host(host, port, timeout, retries):
  # ping embed constructor
 async def pingembed(interaction: discord.Interaction, icon_url, guild_name):
     
-    
-
-    
     hosts_path = os.path.join((os.path.dirname(os.path.abspath(__file__))), "hosts.json")
     
     if not os.path.exists(hosts_path):

@@ -165,7 +165,7 @@ cython_debug/
 /src/server_info/hosts.json
 /src/server_info/server_info.json
 /src/assets/guild_config.json
-/src/.ssh
+.ssh
 containers.json
 guild_config.json
 server_info.json
