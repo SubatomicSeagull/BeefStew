@@ -15,14 +15,14 @@ async def change_nickname(ctx, victim: discord.Member, new_name: str):
                 else:
                     try:
                         await victim.edit(nick=new_name)
-                        await interaction.response.send_message(f"**{interaction.user.name}** invoked the rule on **{victim.name}**!\n{await nicknameprint(victim)}")           
+                        await interaction.response.send_message(f"**{interaction.user.name}** invoked the rule on **{victim.global_name}**!\n{await nicknameprint(victim)}")           
                     except discord.Forbidden as e:
                         print(e)
-                        await interaction.response.send_message(f"**{interaction.user.name}** tried to invoked the rule on **{victim.name}**!\nbut it didnt work :( next time get some permissions pal")
+                        await interaction.response.send_message(f"**{interaction.user.name}** tried to invoked the rule on **{victim.global_name}**!\nbut it didnt work :( next time get some permissions pal")
                     except Exception as e:
                         print(e)
             else:
-                await interaction.response.send_message(f"**{interaction.user.name}** tried to invoked the rule on **{victim.name}**!\nnice try fucker...")
+                await interaction.response.send_message(f"**{interaction.user.name}** tried to invoked the rule on **{victim.global_name}**!\nnice try fucker...")
                 
         elif isinstance(ctx, discord.Message):
             message = ctx
@@ -34,19 +34,19 @@ async def change_nickname(ctx, victim: discord.Member, new_name: str):
                 else:
                     try:
                         await victim.edit(nick=new_name)
-                        await message.channel.send(f"**{message.author.name}** invoked the rule on **{victim.name}**!\n{await nicknameprint(victim)}")
+                        await message.channel.send(f"**{message.author.name}** invoked the rule on **{victim.global_name}**!\n{await nicknameprint(victim)}")
                     except Exception as e:
                         print(e)
-                        await message.channel.send(f"**{message.author.name}** tried to invoked the rule on **{victim.name}**!\nbut it didnt work :( next time get some permissions okay?")
+                        await message.channel.send(f"**{message.author.name}** tried to invoked the rule on **{victim.global_name}**!\nbut it didnt work :( next time get some permissions okay?")
             else:
-                await message.channel.send(f"**{message.author.name}** tried to invoked the rule on **{victim.name}**!\nnice try fucker...")
+                await message.channel.send(f"**{message.author.name}** tried to invoked the rule on **{victim.global_name}**!\nnice try fucker...")
 
 
 #test this
 async def nicknameprint(victim: discord.Member): 
-    victim_name = type('Victim', (object,), {"mention": victim.name})()
     responses = load_element("responses.json", "nickname_change_responses")
     
     chosen_response = random.choice(responses)
-    chosen_response = chosen_response.format(victim=victim_name, tag=victim.mention)
+    print(chosen_response)
+    chosen_response = chosen_response.format(name=victim.global_name, tag=victim.mention)
     return chosen_response
