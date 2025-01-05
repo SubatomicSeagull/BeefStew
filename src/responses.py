@@ -4,46 +4,26 @@ import random
 import discord
 from json_handling import load_element
 
-def load_responses(file_path):
-    with open(file_path, 'r') as file:
-        return json.load(file)
-
-# Construct the file path to responses.json
-current_dir = os.path.dirname(__file__)
-file_path = os.path.join(current_dir, 'assets', 'responses.json')
-
-responses = load_responses(file_path)
-
-text_responses = responses['text_responses']
-keyword_responses = responses['keyword_responses']
-emoji_responses = responses['emoji_responses']
-
-def get_response(message):
-    message_text = str(message).lower()
-    if not message_text:
-        return ""
-
-    response = ""
-
-    # Check for exact text responses
-    if message_text in text_responses:
-        response += text_responses[message_text]
-
-    # Check for keyword responses
-    for keyword, keyword_response in keyword_responses.items():
-        if keyword in message_text:
-            response += keyword_response
-            break
-
-    # Append emoji responses in order of appearance
-    for word in message_text.split():
-        if word in emoji_responses:
-            response += emoji_responses[word]
-
-    return response
-
-
+async def get_response(message: discord.Message):
+    current_dir = os.path.dirname(__file__)
+    file_path = os.path.join(current_dir, 'assets', 'responses.json')
+    with open(file_path, "r") as file:
+        responses = json.load(file)
+    for trigger_phrase, response in responses["trigger_phrases"].items():
+        if trigger_phrase in message.content.lower():
+            response_type = response.get("type")
+            content = response.get("content")
+            if isinstance(response, dict) and response_type == "media":
+                media_path = os.path.join(current_dir, 'assets', 'media', (content))
+                await message.reply(file=discord.File(media_path))
+                return
+            else:
+                await message.reply(content)
+                return
+        
 async def get_insult():
+    current_dir = os.path.dirname(__file__)
+    file_path = os.path.join(current_dir, 'assets', 'responses.json')
     with open(file_path, 'r') as file:
         data = json.load(file)
     insult = random.choice(data["insults"])
