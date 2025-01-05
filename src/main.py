@@ -366,10 +366,10 @@ async def GBJ(interaction: discord.Interaction, victim: discord.Member):
 async def bless(interaction: discord.Interaction, victim: discord.Member):
     await interaction.response.defer()
     try:
-        gbj_pfp = await jesus(victim)
+        jesus_pfp = await jesus(victim)
         await interaction.channel.send(f"{victim.mention} bless you my child...")
-        await interaction.followup.send(file=discord.File(fp=gbj_pfp, filename=f"{victim.name} with jesus.png"))
-        gbj_pfp.close()
+        await interaction.followup.send(file=discord.File(fp=jesus_pfp, filename=f"{victim.name} with jesus.png"))
+        jesus_pfp.close()
         
     except Exception as e:
         postgres.log_error(e)
@@ -380,10 +380,10 @@ async def bless(interaction: discord.Interaction, victim: discord.Member):
 async def watch_out(interaction: discord.Interaction, victim: discord.Member):
     await interaction.response.defer()
     try:
-        gbj_pfp = await gay_baby_jail(victim)
+        jfk_pfp = await jfk(victim)
         await interaction.channel.send(f"{victim.mention} MR PRESIDENT GET DOWN!!!!!!")
-        await interaction.followup.send(file=discord.File(fp=gbj_pfp, filename=f"{victim.name} is jfk.png"))
-        gbj_pfp.close()
+        await interaction.followup.send(file=discord.File(fp=jfk_pfp, filename=f"{victim.name} is jfk.png"))
+        jfk_pfp.close()
         
     except Exception as e:
         postgres.log_error(e)
