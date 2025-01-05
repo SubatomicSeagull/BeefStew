@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from PIL import Image, ImageOps
+from PIL import Image, ImageOps, ImageEnhance
 import requests
 from io import BytesIO
 import os
@@ -80,4 +80,78 @@ async def drain_overlay(victim: discord.Member):
     final_image.save(image_binary, 'PNG')
     image_binary.seek(0)
     return image_binary
+
+async def gay_baby_jail(victim: discord.Member):
+    avatar = await get_victim_avatar(victim)
+    new_size = (int(avatar.width * 0.4), int(avatar.height * 0.4))
+    user_pfp = avatar.resize(new_size, Image.Resampling.BILINEAR)
     
+    template = Image.open(os.path.join((os.path.dirname(os.path.abspath(__file__))), "assets", "pfp_manipulation", "GBJ.png"))
+    
+    base_width, base_height = user_pfp.size
+    overlay_width, overlay_height = template.size
+
+    x = (overlay_width - base_width) // 1 -100
+    y = (overlay_height - base_height) // 1 -75
+
+    final_image = Image.new("RGBA", template.size, (255, 255, 255))
+    boxbg = Image.new("RGBA", [200,200], (75, 25, 0))
+    final_image.paste(boxbg, (x-10,y-20))
+    final_image.paste(user_pfp, (x,y))
+    final_image.paste(template, (0,0), template)
+    
+    image_binary = BytesIO()
+    final_image.save(image_binary, 'PNG')
+    image_binary.seek(0)
+    return image_binary
+
+async def jesus(victim: discord.Member):
+    avatar = await get_victim_avatar(victim)
+    new_size = (int(avatar.width * 0.5), int(avatar.height * 0.5))
+    user_pfp = avatar.resize(new_size, Image.Resampling.BILINEAR)
+    user_pfp = user_pfp.rotate(30, resample=Image.BICUBIC, expand=True)
+    
+    template = Image.open(os.path.join((os.path.dirname(os.path.abspath(__file__))), "assets", "pfp_manipulation", "jesus.png"))
+    
+    base_width, base_height = user_pfp.size
+    overlay_width, overlay_height = template.size
+
+    x = (overlay_width - base_width) // 1 + 5
+    y = (overlay_height - base_height) // 1 +20
+    
+
+    final_image = Image.new("RGBA", template.size, (255, 255, 255))
+    final_image.paste(user_pfp, (x,y))
+    final_image.paste(template, (0,0), template)
+    
+    image_binary = BytesIO()
+    final_image.save(image_binary, 'PNG')
+    image_binary.seek(0)
+    return image_binary
+
+async def jfk(victim: discord.Member):
+    avatar = await get_victim_avatar(victim)
+    new_size = (int(avatar.width * 0.2), int(avatar.height * 0.2))
+    user_pfp = avatar.resize(new_size, Image.Resampling.BILINEAR)
+    
+    enhancer = ImageEnhance.Color(user_pfp)
+    user_pfp = enhancer.enhance(0)
+    
+    template = Image.open(os.path.join((os.path.dirname(os.path.abspath(__file__))), "assets", "pfp_manipulation", "jfk.png"))
+    
+    base_width, base_height = user_pfp.size
+    overlay_width, overlay_height = template.size
+
+    x = (overlay_width - base_width) // 1 -162
+    y = (overlay_height - base_height) // 1 -80
+    
+
+    final_image = Image.new("RGBA", template.size, (255, 255, 255))
+    final_image.paste(user_pfp, (x,y))
+    final_image.paste(template, (0,0), template)
+    
+    
+    image_binary = BytesIO()
+    final_image.save(image_binary, 'PNG')
+    image_binary.seek(0)
+    return image_binary

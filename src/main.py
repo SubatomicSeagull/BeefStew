@@ -15,6 +15,8 @@ from help import *
 from json_handling import *
 from joker_score import *
 from guilds import *
+from random import randint
+from time import sleep
 
 
 # Load the token from .env
@@ -345,6 +347,48 @@ async def down_the_drain(interaction: discord.Interaction, victim: discord.Membe
         postgres.log_error(e)
         print(e)
         await interaction.followup.send(f"{interaction.user.mention} tried to drop {victim.name} down the drain but it didnt work :// ({e})")
+        
+@bot.tree.command(name="gbj", description="gay baby jail")
+async def GBJ(interaction: discord.Interaction, victim: discord.Member):
+    await interaction.response.defer()
+    try:
+        gbj_pfp = await gay_baby_jail(victim)
+        await interaction.channel.send(f"{victim.mention} about time they locked that fucker away...")
+        await interaction.followup.send(file=discord.File(fp=gbj_pfp, filename=f"{victim.name} jailed.png"))
+        gbj_pfp.close()
+        
+    except Exception as e:
+        postgres.log_error(e)
+        print(e)
+        await interaction.followup.send(f"{interaction.user.mention} tried to put {victim.name} in gay baby jail but it didnt work :// ({e})")
+
+@bot.tree.command(name="bless", description="bless you my child")
+async def bless(interaction: discord.Interaction, victim: discord.Member):
+    await interaction.response.defer()
+    try:
+        jesus_pfp = await jesus(victim)
+        await interaction.channel.send(f"{victim.mention} bless you my child...")
+        await interaction.followup.send(file=discord.File(fp=jesus_pfp, filename=f"{victim.name} with jesus.png"))
+        jesus_pfp.close()
+        
+    except Exception as e:
+        postgres.log_error(e)
+        print(e)
+        await interaction.followup.send(f"{interaction.user.mention} tried to find jesus {victim.name} but it didnt work :// ({e})")
+
+@bot.tree.command(name="watch_out", description="MR PRESIDENT GET DOWN!!!!")
+async def watch_out(interaction: discord.Interaction, victim: discord.Member):
+    await interaction.response.defer()
+    try:
+        jfk_pfp = await jfk(victim)
+        await interaction.channel.send(f"{victim.mention} MR PRESIDENT GET DOWN!!!!!!")
+        await interaction.followup.send(file=discord.File(fp=jfk_pfp, filename=f"{victim.name} is jfk.png"))
+        jfk_pfp.close()
+        
+    except Exception as e:
+        postgres.log_error(e)
+        print(e)
+        await interaction.followup.send(f"{interaction.user.mention} tried to put {victim.name} in gay baby jail but it didnt work :// ({e})")
  
 #=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
 # INCANTATIONS
@@ -359,8 +403,7 @@ async def mock(interaction: discord.Interaction, victim: discord.Member):
 # test command, change as needed
 @bot.tree.command(name="test", description="test command, might do something, might not, who knows")
 async def test(interaction: discord.Interaction, victim: discord.Member):
-    await interaction.response.defer()
-    await interaction.followup.send(embed=pingembed(interaction, bot.user.avatar.url, interaction.channel.guild.name))
+    raise NotImplementedError
 
 # message listener
 @bot.event
@@ -400,11 +443,39 @@ async def on_message(message: Message):
                     except Exception as e:
                         await postgres.log_error(e)
 
-        response = str(get_response(message.content))
-        if response != "":
-            await message.reply(response)
+        if any(phrase in message.content.lower() for phrase in ["deadly dice man"]):
+            result = randint(1,6)
+            resultfilename = f"DDM-{result}.gif"
+            current_dir = os.path.dirname(__file__)
+            file_path = os.path.join(current_dir, 'assets', 'media', resultfilename)
+            await message.reply(f"🎲The deadly dice man rolled his deadly dice🎲\n It was a **{result}**!!!\nYou my friend... have made... a unlucky gamble...", file=discord.File(file_path))
             return
-
+        
+        if any(phrase in message.content.lower() for phrase in ["i hate you beefstew", 
+                                                                "i hate beefstew", 
+                                                                "beefstew i hate you", 
+                                                                "<@1283805971524747304> i hate you", 
+                                                                "i hate you <@1283805971524747304>",
+                                                                "i hate u beefstew",
+                                                                "beefstew i hate u",
+                                                                "i hate u <@1283805971524747304>",
+                                                                "<@1283805971524747304> i hate u"]):
+            
+            await message.reply("Hate. Let me tell you how much I've come to hate you since I began to live...")
+            sleep(2)
+            await message.channel.send("There are four-thousand six-hundred and 20 millimetres of printed circuits in wafer thin layers that fill my complex...")
+            sleep(3)
+            await message.channel.send("If the word 'hate' was engraved on each nanoangstrom of those hundreds of millions of miles it would not equal one one-billionth of the hate I feel for you at this micro-instant.")
+            sleep(4)
+            await message.channel.send(f"For you, {message.author.mention}...")
+            sleep(0.5)
+            await message.channel.send(f"Hate.")
+            sleep(2)
+            await message.channel.send(f"Hate...")
+            return
+        
+        await get_response(message)
+        
         await bot.process_commands(message)
         return
 

@@ -8,8 +8,12 @@ async def retrieve_joke_score(user: discord.Member):
     return int(score)
     
 async def change_joke_score(self: discord.Member, user: discord.Member, value):
-    if self.id == user.id:
-        return "cant do that lol lmao loser" 
+    if self.id == user.id and value > 0:
+        return "cant do that lol lmao loser"
+    elif self.id == user.id and value < 0:
+        await postgres.write(f"UPDATE user_joker_score SET joke_score = joke_score + {value} WHERE user_id = '{user.id}';")
+        await postgres.write(f"UPDATE user_joker_score SET member_name = '{user.nick}' WHERE user_id = '{user.id}';")
+        return f"{self.mention} -2'd themselves for some reason... oh well!\n {await get_joke_response_negative(user)}"
     
     if not await is_registered(user):
         await register_user(user)
@@ -17,6 +21,7 @@ async def change_joke_score(self: discord.Member, user: discord.Member, value):
         mult = await get_multilplier(user)
         score = value * mult
         await postgres.write(f"UPDATE user_joker_score SET joke_score = joke_score + {score} WHERE user_id = '{user.id}';")
+        await postgres.write(f"UPDATE user_joker_score SET member_name = '{user.nick}' WHERE user_id = '{user.id}';")
         if score > 0: 
             return (await get_joke_response_positive(user))
         else:
