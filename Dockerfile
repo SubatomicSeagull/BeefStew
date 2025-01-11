@@ -5,8 +5,6 @@ RUN apt-get upgrade -y
 RUN apt-get install git -y
 RUN apt-get install libpq-dev gcc -y
 
-RUN git clone https://github.com/SubatomicSeagull/BeefStew.git
-
 WORKDIR /BeefStew
 
 COPY . .

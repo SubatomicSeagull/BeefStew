@@ -2,7 +2,7 @@ import socket
 import time
 import json
 import os
-from server_info.server_interactions import retrive_containers_json
+from data.server_info.server_interactions import retrive_containers_json
 from json_handling import containers_json_reformat
 import discord
 from datetime import datetime

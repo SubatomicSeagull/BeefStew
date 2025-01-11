@@ -1,7 +1,7 @@
 import json
 import os
 from collections import OrderedDict
-from server_info import server_interactions
+#from data.server_info import server_interactions
 
 ASSETS_FOLDER = os.path.join(os.path.dirname(__file__), 'assets')
 
@@ -52,8 +52,8 @@ def update_element(file_name, element, value):
     return True
 
 def containers_json_reformat():
-    hosts_path = os.path.join((os.path.dirname(os.path.abspath(__file__))), "server_info", "hosts.json")
-    containers_path = os.path.join((os.path.dirname(os.path.abspath(__file__))), "server_info", "containers.json")
+    hosts_path = os.path.join((os.path.dirname(os.path.abspath(__file__))), "data", "server_info", "hosts.json")
+    containers_path = os.path.join((os.path.dirname(os.path.abspath(__file__))), "data", "server_info", "containers.json")
     with open(containers_path, "r", encoding="utf-8-sig") as file:
         data = json.load(file)
         

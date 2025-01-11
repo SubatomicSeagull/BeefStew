@@ -1,15 +1,12 @@
 import os
-import re
-
 from dotenv import load_dotenv
 import discord
 from discord import Message
 from discord.ext import commands
-
 from nickname_rule import *
 from mod_tools import *
 from responses import *
-from server_info.ping import pingembed
+from data.server_info.ping import pingembed
 from pfp_manipulations import *
 from help import *
 from json_handling import *
@@ -42,8 +39,9 @@ def main():
 async def on_ready():
     for guild in bot.guilds:
         await bot.tree.sync(guild=guild)
+        print("Commands synced for all guilds")
     await bot.tree.sync()
-    print("Commands synced for all guilds")
+    #await bot.change_presence(status=discord.Status.do_not_disturb)
     print(f"{bot.user} is now online, may god help us all...")
     
 #=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+

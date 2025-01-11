@@ -1,5 +1,6 @@
 import random
 import discord
+import os
 from json_handling import load_element
 
 #nickname rule, handles logic for they call you slash command
@@ -8,7 +9,7 @@ async def change_nickname(ctx, victim: discord.Member, new_name: str):
         if isinstance(ctx, discord.Interaction):
             interaction = ctx
             # not allowed to rename the bot
-            if victim.id != 1283805971524747304:
+            if victim.id != os.getenv("CLIENTID"):
                 # not allowed to rename yourself
                 if victim.id == interaction.user.id:
                     await interaction.response.send_message(f"**{interaction.user.name}** tried to invoke the rule on themselves... for some reason")
@@ -27,7 +28,7 @@ async def change_nickname(ctx, victim: discord.Member, new_name: str):
         elif isinstance(ctx, discord.Message):
             message = ctx
             # not allowed to rename the bot
-            if victim.id != 1283805971524747304:
+            if victim.id !=os.getenv("CLIENTID"):
                 # not allowed to rename yourself
                 if victim.id == message.author.id:
                     await message.channel.send(f"**{message.author.name}** tried to invoke the rule on themselves... for some reason")

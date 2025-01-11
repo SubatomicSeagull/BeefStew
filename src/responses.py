@@ -30,7 +30,7 @@ async def get_insult():
     return insult
 
 async def vicious_mockery(interaction: discord.Interaction, victim: discord.Member):
-    if victim.id != 1283805971524747304:
+    if victim.id != os.getenv("CLIENTID"):
         try:
             insult = await get_insult()
             if victim.id == interaction.user.id:
