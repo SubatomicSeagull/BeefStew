@@ -1,6 +1,7 @@
 from data import postgres
 import discord
 from responses import get_joke_response_positive, get_joke_response_negative
+from random import randint
 
 async def retrieve_joke_score(user: discord.Member):
     joke_score = await (postgres.read(f"SELECT joke_score FROM user_joker_score WHERE user_id = '{user.id}';"))
@@ -55,3 +56,41 @@ async def get_multilplier(user: discord.Member):
         return 0
     else:
         return 1
+    
+async def gamble(interaction: discord.Interaction, user: discord.Member):
+    await interaction.response.defer()
+    #payment
+    #await postgres.write(f"UPDATE user_joker_score SET joke_score = joker_score -2 WHERE user_id = '{user.id}';")
+    
+    #possible outcomes
+    outcomes = {
+        range(1,2):(f"UPDATE user_joker_score SET joke_score = 0 WHERE user_id = '{user.id}';","Return to zero...\n(Score set to 0)"),
+        range(2,3):(f"UPDATE user_joker_score SET joke_score = joke_score * -1 WHERE user_id = '{user.id}';","Oh no...\n(Score set negative)"),
+        range(3,4):(f"UPDATE user_joker_score SET joke_score = 1 WHERE user_id = '{user.id}';","Points set to 1... you are forever cursed to have an odd score..."),
+        range(4,8):(f"UPDATE user_joker_score SET joke_score = joke_score /2 WHERE user_id = '{user.id}';","Points halved..."),
+        range(9,11):(f"UPDATE user_joker_score SET joke_score = joke_score * 0.75 WHERE user_id = '{user.id}';","yikes...\n(Points reduced by 25%)"),
+        range(11,13):(f"UPDATE user_joker_score SET joke_score = joke_score - 10 WHERE user_id = '{user.id}';","ough,, bad luck...\n(-10)"),
+        range(9,30):(f"UPDATE user_joker_score SET joke_score = joke_score + 0  WHERE user_id = '{user.id}';","Nothing happens..."),
+        range(30,43):(f"UPDATE user_joker_score SET joke_score = joke_score + 4 WHERE user_id = '{user.id}';","You got your points back plus some more!\n(points back +2)"),
+        range(43,46):(f"UPDATE user_joker_score SET joke_score = joke_score + 6 WHERE user_id = '{user.id}';","You got your points back, and then some!\n(points back +4)"),
+        range(46,47):(f"UPDATE user_joker_score SET joke_score = joke_score + 12 WHERE user_id = '{user.id}';","wooo thats what its all about baby, dedication!!\n(points back +10)"),
+        range(47,48):(f"UPDATE user_joker_score SET joke_score = joke_score * 1.5 WHERE user_id = '{user.id}';","Points increased by 50%!"),
+        range(48,49):(f"UPDATE user_joker_score SET joke_score = joke_score * 2 WHERE user_id = '{user.id}';","YOWZA!!!!\n(Points doubled!)"),
+        range(49,50):(f"UPDATE user_joker_score SET joke_score = joke_score * 3 WHERE user_id = '{user.id}';","OMGGGGG!!!\n(Points TRIPLED!)"),
+        range(50,51):(f"UPDATE user_joker_score SET joke_score = joke_score * 10  WHERE user_id = '{user.id}';","WOAHHH!!!!!!\n(POINTS x10!!!)")
+    }
+    roll, (query, explanation) = roll_outcome(outcomes)
+    
+    #await postgres.write(query)
+    await interaction.followup.send(f"🎲🎰Lets go gambling!!!🎰🎲\n{user.mention} Inserts 2 joker coins into the gambling machine...{explanation}")
+
+def roll_outcome(outcomes):
+    roll = randint(1,51)
+    print(f"rolled a {roll}")
+    for range_, outcome in outcomes.items():
+        if roll in range_:
+            return roll, outcome
+    
+        
+        
+    

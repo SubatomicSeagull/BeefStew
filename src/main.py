@@ -30,7 +30,6 @@ bot = commands.Bot(command_prefix="/", intents=intents)
 kicked_members = set()
 banned_members = set()
 
-
 def main():
     bot.run(os.getenv("TOKEN"))
 
@@ -401,7 +400,7 @@ async def mock(interaction: discord.Interaction, victim: discord.Member):
 # test command, change as needed
 @bot.tree.command(name="test", description="test command, might do something, might not, who knows")
 async def test(interaction: discord.Interaction, victim: discord.Member):
-    raise NotImplementedError
+    await gamble(interaction, victim)
 
 # message listener
 @bot.event
