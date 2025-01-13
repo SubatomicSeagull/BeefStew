@@ -57,10 +57,18 @@ async def get_multilplier(user: discord.Member):
     else:
         return 1
     
-async def gamble(interaction: discord.Interaction, user: discord.Member):
+async def gamble_points(interaction: discord.Interaction, user: discord.Member):
     await interaction.response.defer()
     #payment
-    #await postgres.write(f"UPDATE user_joker_score SET joke_score = joker_score -2 WHERE user_id = '{user.id}';")
+    
+    score = await postgres.read(f"SELECT joke_score FROM user_joker_score WHERE user_id = '{user.id}';")
+    score = score[0][0]
+    
+    if score - 2 < 0:
+        await interaction.followup.send(f"{user.mention} lmaooo ur broke sry no gambling for u loser")
+        return
+        
+    await postgres.write(f"UPDATE user_joker_score SET joke_score = joke_score -2 WHERE user_id = '{user.id}';")
     
     #possible outcomes
     outcomes = {
@@ -79,10 +87,13 @@ async def gamble(interaction: discord.Interaction, user: discord.Member):
         range(49,50):(f"UPDATE user_joker_score SET joke_score = joke_score * 3 WHERE user_id = '{user.id}';","OMGGGGG!!!\n(Points TRIPLED!)"),
         range(50,51):(f"UPDATE user_joker_score SET joke_score = joke_score * 10  WHERE user_id = '{user.id}';","WOAHHH!!!!!!\n(POINTS x10!!!)")
     }
+    
     roll, (query, explanation) = roll_outcome(outcomes)
     
-    #await postgres.write(query)
+    await postgres.write(query)
     await interaction.followup.send(f"🎲🎰Lets go gambling!!!🎰🎲\n{user.mention} Inserts 2 joker coins into the gambling machine...{explanation}")
+    return
+
 
 def roll_outcome(outcomes):
     roll = randint(1,51)

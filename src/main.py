@@ -225,6 +225,11 @@ async def help(interaction: discord.Interaction):
     page0embed.add_field(name="", value="[cosycraft.uk/privacy](https://www.cosycraft.uk/privacy)⠀⠀⠀⠀⠀⠀⠀[cosycraft/tos](https://www.cosycraft.com/tos)", inline=False)
     await interaction.channel.send(embed=page0embed, view=view)
 
+
+@bot.tree.command(name = "gamble", description="Let's go gambling!!!")
+async def gamble(interaction: discord.Interaction):
+    await gamble_points(interaction, interaction.user)
+    
 #=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
 # INVOKATIONS
 #=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
