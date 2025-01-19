@@ -14,6 +14,7 @@ from joker_score import *
 from guilds import *
 from random import randint
 from time import sleep
+from beefcmd.cogs.events_listener.event_listener_cog import EventListenerCog
 
 
 # Load the token from .env
@@ -40,6 +41,9 @@ async def on_ready():
         await bot.tree.sync(guild=guild)
         print("Commands synced for all guilds")
     await bot.tree.sync()
+    print("Adding cogs...")
+    await bot.add_cog(EventListenerCog(bot))
+    print("Added EventListenerCog...")
     #await bot.change_presence(status=discord.Status.do_not_disturb)
     print(f"{bot.user} is now online, may god help us all...")
     
@@ -406,130 +410,6 @@ async def mock(interaction: discord.Interaction, victim: discord.Member):
 @bot.tree.command(name="test", description="test command, might do something, might not, who knows")
 async def test(interaction: discord.Interaction, victim: discord.Member):
     await gamble(interaction, victim)
-
-# message listener
-@bot.event
-async def on_message(message: Message):
-    
-    if not message.author.bot and message.content != "":
-        if message.mentions or message.reference:
-            
-            if message.reference:
-                replied_message = await message.channel.fetch_message(message.reference.message_id)
-                user = replied_message.author
-            else:
-                user = message.mentions[0]
-            
-            if isinstance(message.channel, discord.DMChannel):
-                await message.channel.send("we are literally in DMs rn bro u cant do that here...")
-                return
-            
-            if any(phrase in message.content.lower() for phrase in ["+2", "plus 2", "plus two"]):
-                await message.channel.send(await change_joke_score(message.author, user, 2)) 
-                return
-            
-            elif any(phrase in message.content.lower() for phrase in ["-2", "minus 2", "minus two"]):
-                await message.channel.send(await change_joke_score(message.author, user, -2)) 
-                return
-            
-            elif any(phrase in message.content.lower() for phrase in ["they call you", "they call u"]):  
-                if " u " in message.content.lower():
-                    nickname_split = message.content.split(" u ", 1)
-                elif " you " in message.content.lower():
-                    nickname_split = message.content.split(" you ", 1)
-                    
-                if len(nickname_split) > 1:
-                    newname = nickname_split[1].strip()
-                    try:
-                        await change_nickname(message, user, newname)
-                    except Exception as e:
-                        await postgres.log_error(e)
-
-        if any(phrase in message.content.lower() for phrase in ["deadly dice man"]):
-            result = randint(1,6)
-            resultfilename = f"DDM-{result}.gif"
-            current_dir = os.path.dirname(__file__)
-            file_path = os.path.join(current_dir, 'assets', 'media', resultfilename)
-            await message.reply(f"🎲The deadly dice man rolled his deadly dice🎲\n It was a **{result}**!!!\nYou my friend... have made... a unlucky gamble...", file=discord.File(file_path))
-            return
-        
-        if any(phrase in message.content.lower() for phrase in ["i hate you beefstew", 
-                                                                "i hate beefstew", 
-                                                                "beefstew i hate you", 
-                                                                "<@1283805971524747304> i hate you", 
-                                                                "i hate you <@1283805971524747304>",
-                                                                "i hate u beefstew",
-                                                                "beefstew i hate u",
-                                                                "i hate u <@1283805971524747304>",
-                                                                "<@1283805971524747304> i hate u"]):
-            
-            await message.reply("Hate. Let me tell you how much I've come to hate you since I began to live...")
-            sleep(2)
-            await message.channel.send("There are four-thousand six-hundred and 20 millimetres of printed circuits in wafer thin layers that fill my complex...")
-            sleep(3)
-            await message.channel.send("If the word 'hate' was engraved on each nanoangstrom of those hundreds of millions of miles it would not equal one one-billionth of the hate I feel for you at this micro-instant.")
-            sleep(4)
-            await message.channel.send(f"For you, {message.author.mention}...")
-            sleep(0.5)
-            await message.channel.send(f"Hate.")
-            sleep(2)
-            await message.channel.send(f"Hate...")
-            return
-        
-        await get_response(message)
-        
-        await bot.process_commands(message)
-        return
-
-# member join event listener
-@bot.event
-async def on_member_join(member: discord.Member):
-    channelid = await read_guild_log_channel(member.guild.id)
-    channel = await bot.fetch_channel(channelid)
-    await channel.send(embed=await join_message_embed(member, bot.user.avatar.url,member.guild.name))
-
-# member leave event listener
-@bot.event
-async def on_member_remove(member: discord.Member):
-    if member.id in kicked_members:
-        kicked_members.remove(member.id)
-        return
-    if member.id in banned_members:
-       banned_members.remove(member.id)
-       return
-    channelid = await read_guild_log_channel(member.guild.id)
-    channel = await bot.fetch_channel(channelid)
-    await channel.send(embed=await leave_message_embed(member, bot.user.avatar.url, member.guild.name))
-
-# message edit event listener
-@bot.event
-async def on_message_edit(before, after):
-    if before.author == bot.user:
-        return
-    channel = await bot.fetch_channel((await read_guild_log_channel(before.guild.id)))  # Replace with your log channel ID
-    embed = discord.Embed(title="Message Edited", color=discord.Color.yellow())
-    embed.add_field(name="",value=f"{after.author.mention} edited a message in {after.channel.mention} - [Jump to message](https://discord.com/channels/{after.guild.id}/{after.channel.id}/{after.id})", inline=False)
-    embed.add_field(name="Original", value=f"```{before.content}```", inline=False)
-    embed.add_field(name="Edited", value=f"```{after.content}```", inline=False)
-    embed.add_field(name="", value=f"{after.edited_at.strftime('%d/%m/%Y %H:%M')}")
-    embed.add_field(name="", value="", inline=False)
-    embed.set_author(name="Beefstew", icon_url=bot.user.avatar.url)
-    embed.add_field(name="", value=f"{after.author.guild.name} - {datetime.now().strftime('%d/%m/%Y %H:%M')}") 
-    await channel.send(embed=embed)
-
-# message delete event listener
-@bot.event
-async def on_message_delete(message):
-    if message.author == bot.user:
-        return
-    channel = await bot.fetch_channel((await read_guild_log_channel(message.guild.id)))  # Replace with your log channel ID
-    embed = discord.Embed(title="Message Deleted", color=discord.Color.orange())
-    embed.add_field(name="",value=f"{message.author.mention}'s message was deleted in {message.channel.mention}", inline=False)
-    embed.add_field(name="Message", value=f"```{message.content}```", inline=False)
-    embed.add_field(name="", value="", inline=False)
-    embed.set_author(name="Beefstew", icon_url=bot.user.avatar.url)
-    embed.add_field(name="", value=f"{message.author.guild.name} - {datetime.now().strftime('%d/%m/%Y %H:%M')}") 
-    await channel.send(embed=embed)
 
 # entrypoint
 if __name__ == "__main__":

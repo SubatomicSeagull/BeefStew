@@ -4,12 +4,6 @@ from discord.ext import commands
 import random
 from json_handling import load_element
 from datetime import datetime
-
-# TBD 
-#   >   implement more ban messages
-#   >   warn system for spam, x warns and a user is kicked for exceeding the warning threshold
-#   >   also option to manually warn or clear warnings from people
-#   >   ability to mute / assign and remove muted role 
     
 async def kick_message_embed(mod: discord.Member, member: discord.Member, reason: str, icon_url, guild_name):
         kickembed = discord.Embed(title=f"Kicked!", color=discord.Color.dark_orange())
@@ -52,27 +46,6 @@ def get_ban_message(member: discord.Member, reason: str):
     responses = load_element("responses.json", "ban_messages")    
     chosen_response = random.choice(responses).format(member=membername, reason=reason)
     return chosen_response
-
-async def join_message_embed(user: discord.Member, icon_url, guild_name):
-        joinembed = discord.Embed(title=f"Hello!!!!!!!!", color=discord.Color.green())
-        joinembed.set_thumbnail(url=user.avatar.url)
-        joinembed.add_field(name="", value=f"<@{user.id}> **joined**", inline=False)
-        joinembed.add_field(name="", value=f"Account created: `{user.created_at.strftime('%d/%m/%Y')}`", inline=False)
-        joinembed.add_field(name="", value="", inline=False)
-        joinembed.add_field(name="", value="", inline=False)
-        joinembed.set_author(name="Beefstew", icon_url=icon_url)
-        joinembed.add_field(name="", value=f"{guild_name} - {datetime.now().strftime('%d/%m/%Y %H:%M')}")      
-        return joinembed
-    
-async def leave_message_embed(user: discord.Member, icon_url, guild_name):
-        leaveembed = discord.Embed(title=f"cya", color=discord.Color.purple())
-        leaveembed.set_thumbnail(url=user.avatar.url)
-        leaveembed.add_field(name="", value=f"<@{user.id}> **left.**", inline=False)
-        leaveembed.add_field(name="", value="", inline=False)
-        leaveembed.add_field(name="", value="", inline=False)
-        leaveembed.set_author(name="Beefstew", icon_url=icon_url)
-        leaveembed.add_field(name="", value=f"{guild_name} - {datetime.now().strftime('%d/%m/%Y %H:%M')}")      
-        return leaveembed
 
 async def create_mute_role(guild: discord.Guild):
     try:
