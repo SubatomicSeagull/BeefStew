@@ -1,0 +1,34 @@
+import discord
+from data import postgres
+from beefcmd.invocations.joker_score.joker_registration import is_registered, register_user
+
+async def retrieve_joke_score(user: discord.Member):
+    joke_score = await (postgres.read(f"SELECT joke_score FROM user_joker_score WHERE user_id = '{user.id}';"))
+    score = joke_score[0][0]
+    return int(score)
+
+async def get_multilplier(user: discord.Member):
+    winner = discord.utils.get(user.guild.roles, name="the funniest person ever")
+    loser = discord.utils.get(user.guild.roles, name="tonights biggest loser")   
+    if winner in user.roles:
+        return 1.5
+    elif loser in user.roles:
+        return 0
+    else:
+        return 1
+    
+async def score(interaction: discord.Interaction, user: discord.Member):
+    await interaction.response.defer()
+    
+    if isinstance(interaction.channel, discord.DMChannel):
+        await interaction.followup.send("we are literally in DMs rn bro u cant do that here...")
+        return
+    
+    if not await is_registered(user):
+        await register_user(user)
+    try:
+        score = await retrieve_joke_score(user)
+        await interaction.followup.send(f"{user.mention}'s joker score: **{score}**!")
+    except Exception as e:
+        postgres.log_error(e)
+        await interaction.followup.send(f"couldnt find {user.name}'s score :( ({e}))")

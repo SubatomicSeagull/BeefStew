@@ -1,6 +1,6 @@
 import discord
-from joker_score import change_joke_score
-from nickname_rule import change_nickname
+from beefcmd.invocations.joker_score.change_joker_score import change_joke_score
+from beefcmd.invocations.nickname_rule import change_nickname
 from data.postgres import log_error
 from random import randint
 import os

@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 import discord
 from discord.ext import commands
-from joker_score import *
+from data import postgres
 
 
 # Load the token from .env
@@ -24,6 +24,7 @@ async def load_cogs():
     print("registering cogs...")
     await bot.load_extension("beefcmd.cogs.event_listener_cog")
     await bot.load_extension("beefcmd.cogs.incantations_cog")
+    await bot.load_extension("beefcmd.cogs.invocations_cog")
 
 @bot.event
 async def on_ready():

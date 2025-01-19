@@ -2,6 +2,7 @@ import random
 import discord
 import os
 from json_handling import load_element
+from data.postgres import log_error
 
 #nickname rule, handles logic for they call you slash command
 async def change_nickname(ctx, victim: discord.Member, new_name: str):
@@ -42,8 +43,6 @@ async def change_nickname(ctx, victim: discord.Member, new_name: str):
             else:
                 await message.channel.send(f"**{message.author.name}** tried to invoked the rule on **{victim.global_name}**!\nnice try fucker...")
 
-
-#test this
 async def nicknameprint(victim: discord.Member): 
     responses = load_element("responses.json", "nickname_change_responses")
     
@@ -51,3 +50,14 @@ async def nicknameprint(victim: discord.Member):
     print(chosen_response)
     chosen_response = chosen_response.format(name=victim.global_name, tag=victim.mention)
     return chosen_response
+
+async def invoke_nickname_rule(interaction: discord.Interaction, victim: discord.Member, new_name: str):  
+    if isinstance(interaction.channel, discord.DMChannel):
+        await interaction.channel.send("we are literally in DMs rn bro u cant do that here...")
+        return
+    
+    try:
+        await change_nickname(interaction, victim, new_name)
+    except Exception as e:
+        log_error(e)
+        await interaction.response.send_message(f"Failed to change nickname: {e}")
