@@ -5,8 +5,8 @@ from data.postgres import log_error
 from random import randint
 import os
 from time import sleep
-from responses import get_response
 from guilds import read_guild_log_channel
+import json
 
 
 async def message_send_event(bot, message):
@@ -110,3 +110,21 @@ async def message_delete_event(bot, message):
     embed.add_field(name="Message", value=f"```{message.content}```", inline=False)
     embed.set_author(name="Beefstew", icon_url=bot.user.avatar.url)
     await channel.send(embed=embed)
+    
+    
+async def get_response(message: discord.Message):
+    current_dir = os.path.dirname(__file__)
+    file_path = os.path.join(current_dir, 'assets', 'responses.json')
+    with open(file_path, "r") as file:
+        responses = json.load(file)
+    for trigger_phrase, response in responses["trigger_phrases"].items():
+        if trigger_phrase in message.content.lower():
+            response_type = response.get("type")
+            content = response.get("content")
+            if isinstance(response, dict) and response_type == "media":
+                media_path = os.path.join(current_dir, 'assets', 'media', (content))
+                await message.reply(file=discord.File(media_path))
+                return
+            else:
+                await message.reply(content)
+                return

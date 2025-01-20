@@ -1,6 +1,6 @@
 import discord
 from data import postgres
-from beefcmd.invocations.joker_score.joker_registration import is_registered, register_user
+from beefcommands.invocations.joker_score.joker_registration import is_registered, register_user
 
 async def retrieve_joke_score(user: discord.Member):
     joke_score = await (postgres.read(f"SELECT joke_score FROM user_joker_score WHERE user_id = '{user.id}';"))

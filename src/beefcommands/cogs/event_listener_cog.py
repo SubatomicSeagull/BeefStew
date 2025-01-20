@@ -1,8 +1,8 @@
 import discord
 from discord.ext import commands
-import beefcmd.events.message_events
-from beefcmd.events.member_events.member_remove import member_remove_event
-from beefcmd.events.member_events.member_join import member_join_event
+import beefcommands.events.message_events
+from beefcommands.events.member_events.member_remove import member_remove_event
+from beefcommands.events.member_events.member_join import member_join_event
 
 class EventListenerCog(commands.Cog):
     def __init__(self, bot):
@@ -13,7 +13,7 @@ class EventListenerCog(commands.Cog):
     # Message Listener
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
-        await beefcmd.events.message_events.message_send_event(self.bot, message)
+        await beefcommands.events.message_events.message_send_event(self.bot, message)
 
     # Member Join Listener
     @commands.Cog.listener()
@@ -28,12 +28,12 @@ class EventListenerCog(commands.Cog):
     # Message Edit Listener
     @commands.Cog.listener()
     async def on_message_edit(self, before: discord.Message, after: discord.Message):
-        await beefcmd.events.message_events.message_edit_event(self.bot, before, after)
+        await beefcommands.events.message_events.message_edit_event(self.bot, before, after)
 
     # Message Delete Listener
     @commands.Cog.listener()
     async def on_message_delete(self, message: discord.Message):
-        beefcmd.events.message_events.message_delete_event(self.bot, message)
+        beefcommands.events.message_events.message_delete_event(self.bot, message)
 
 async def setup(bot):
     print("event cog setup")

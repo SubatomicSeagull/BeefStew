@@ -1,8 +1,8 @@
 import discord
 from discord.ext import commands
-import beefcmd.invocations.joker_score.change_joker_score
-import beefcmd.invocations.joker_score.read_joker_score
-from beefcmd.invocations.nickname_rule import invoke_nickname_rule
+import beefcommands.invocations.joker_score.change_joker_score
+import beefcommands.invocations.joker_score.read_joker_score
+from beefcommands.invocations.nickname_rule import invoke_nickname_rule
 
 class InvocationsCog(commands.Cog):
     def __init__(self, bot):
@@ -14,15 +14,15 @@ class InvocationsCog(commands.Cog):
         
     @discord.app_commands.command(name="plus2", description="good one buddy")
     async def plus2(interation: discord.Interaction, joker: discord.Member):
-        await beefcmd.invocations.joker_score.change_joker_score.plus2(interation, joker)
+        await beefcommands.invocations.joker_score.change_joker_score.plus2(interation, joker)
         
     @discord.app_commands.command(name="minus2", description="*tugs on collar* yikes...")
     async def minus2(interation: discord.Interaction, joker: discord.Member):
-        await beefcmd.invocations.joker_score.change_joker_score.minus2(interation, joker)
+        await beefcommands.invocations.joker_score.change_joker_score.minus2(interation, joker)
     
     @discord.app_commands.command(name="score", description="how funny r u...?")
     async def score(interation: discord.Interaction, joker: discord.Member):
-        await beefcmd.invocations.joker_score.read_joker_score.score(interation, joker)
+        await beefcommands.invocations.joker_score.read_joker_score.score(interation, joker)
 
 async def setup(bot):
     print("invocation cog setup")

@@ -2,8 +2,8 @@ import discord
 from data import postgres
 from json_handling import load_element
 import random
-from beefcmd.invocations.joker_score.read_joker_score import get_multilplier
-from beefcmd.invocations.joker_score.joker_registration import is_registered, register_user
+from beefcommands.invocations.joker_score.read_joker_score import get_multilplier
+from beefcommands.invocations.joker_score.joker_registration import is_registered, register_user
 
 
 async def change_joke_score(self: discord.Member, user: discord.Member, value):

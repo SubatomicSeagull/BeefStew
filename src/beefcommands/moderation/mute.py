@@ -1,51 +1,58 @@
 import discord
-from discord import Message, app_commands
-from discord.ext import commands
-import random
-from json_handling import load_element
-from datetime import datetime
-    
-async def kick_message_embed(mod: discord.Member, member: discord.Member, reason: str, icon_url, guild_name):
-        kickembed = discord.Embed(title=f"Kicked!", color=discord.Color.dark_orange())
-        kickembed.set_thumbnail(url=member.avatar.url)
-        kickembed.add_field(name="", value=get_kick_message(member, reason), inline=False)
-        kickembed.add_field(name="", value="", inline=False)
-        kickembed.add_field(name="", value="", inline=False)
-        kickembed.add_field(name="", value="", inline=False)
-        kickembed.add_field(name="", value=f"**Kicked by**: <@{mod.id}>", inline=False)
-        kickembed.add_field(name="", value=f"**Reason**: {reason}", inline=False)    
-        kickembed.add_field(name="", value="", inline=False)
-        kickembed.add_field(name="", value="", inline=False) 
-        kickembed.set_author(name="Beefstew", icon_url=icon_url)
-        kickembed.add_field(name="", value=f"{guild_name} - {datetime.now().strftime('%d/%m/%Y %H:%M')}")      
-        return kickembed
+import os
 
-def get_kick_message(member: discord.Member, reason: str): 
-    membername = type('Member', (object,), {"id": member.id})()
-    responses = load_element("responses.json", "kick_messages")    
-    chosen_response = random.choice(responses).format(member=membername, reason=reason)
-    return chosen_response
-
-async def ban_message_embed(mod: discord.Member, member: discord.Member, reason: str, icon_url, guild_name):
-        banembed = discord.Embed(title=f"BANNED!", color=discord.Color.red())
-        banembed.set_thumbnail(url=member.avatar.url)
-        banembed.add_field(name="", value=get_ban_message(member, reason), inline=False)
-        banembed.add_field(name="", value="", inline=False)
-        banembed.add_field(name="", value="", inline=False)
-        banembed.add_field(name="", value="", inline=False)
-        banembed.add_field(name="", value=f"**Banned by**: <@{mod.id}>", inline=False)
-        banembed.add_field(name="", value=f"**Reason**: {reason}", inline=False)    
-        banembed.add_field(name="", value="", inline=False)
-        banembed.add_field(name="", value="", inline=False) 
-        banembed.set_author(name="Beefstew", icon_url=icon_url)
-        banembed.add_field(name="", value=f"{guild_name} - {datetime.now().strftime('%d/%m/%Y %H:%M')}")      
-        return banembed
+async def mute(interaction: discord.Interaction, member: discord.Member): 
+    if interaction.user.id == member.id:
+        await interaction.response.send_message("mute yourself? just stop talking lol", ephemeral=True)
+        return
+    if member.id == os.getenv("CLIENTID"):
+        await interaction.response.send_message("you cant silence me bitch", ephemeral=True)
+        return
+    if not interaction.user.guild_permissions.administrator:
+        await interaction.response.send_message("yeah yeah nice try", ephemeral=True)
+        return
     
-def get_ban_message(member: discord.Member, reason: str): 
-    membername = type('Member', (object,), {"id": member.name})()
-    responses = load_element("responses.json", "ban_messages")    
-    chosen_response = random.choice(responses).format(member=membername, reason=reason)
-    return chosen_response
+    try:
+        await member.edit(mute=True)
+    except Exception as e:
+        print("Target user is not in a voice channel, consider re-muting if they join.")
+    
+    if discord.utils.get(member.guild.roles, name="BeefMute") not in member.roles:
+        try:
+            await add_mute_role(interaction, member)
+            await interaction.response.send_message(f"{member.mention} was muted", ephemeral=True)
+            return
+        
+        except discord.Forbidden:
+            await interaction.response.send_message("umm.. no i dont think so", ephemeral=True)
+            return
+    else:
+        await interaction.response.send_message(f"{member.mention} is already muted", ephemeral=True)
+        return
+
+async def unmute(interaction: discord.Interaction, member: discord.Member):
+    if interaction.user.id == member.id:
+        await interaction.response.send_message("yeah yeah nice try", ephemeral=True)
+        return
+    if member.id == os.getenv("CLIENTID"):
+        await interaction.response.send_message("you cant un-silence me bitch", ephemeral=True)
+        return
+    if not interaction.user.guild_permissions.administrator:
+        await interaction.response.send_message("yeah yeah nice try", ephemeral=True)
+        return        
+    
+    try:
+        await member.edit(mute=False)
+    except Exception as e:
+        print("Target user is not in a voice channel, consider re-muting if they join.")
+    if discord.utils.get(member.guild.roles, name="BeefMute") in member.roles:
+        try:
+            await remove_mute_role(interaction, member)
+            await interaction.response.send_message(f"{member.mention} was unmuted", ephemeral=True)
+        except discord.Forbidden:
+            await interaction.response.send_message("umm.. no i dont think so", ephemeral=True)
+    else:
+        await interaction.response.send_message(f"{member.mention} is already unmuted", ephemeral=True)
 
 async def create_mute_role(guild: discord.Guild):
     try:
@@ -150,4 +157,3 @@ async def remove_mute_role(interaction: discord.Interaction, member: discord.Mem
     except Exception as e:
         await interaction.channel.send(f"couldnt unmute {member.name} because {e}")
         return
-
