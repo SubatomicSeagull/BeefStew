@@ -1,11 +1,11 @@
 import discord
-from beefcmd.invocations.joker_score.change_joker_score import change_joke_score
-from beefcmd.invocations.nickname_rule import change_nickname
+from beefcommands.invocations.joker_score.change_joker_score import change_joke_score
+from beefcommands.invocations.nickname_rule import change_nickname
 from data.postgres import log_error
 from random import randint
 import os
 from time import sleep
-from guilds import read_guild_log_channel
+from beefutilities.guilds import read_guild_log_channel
 import json
 
 

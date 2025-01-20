@@ -1,6 +1,6 @@
 import discord
 from data import postgres
-from json_handling import load_element
+from beefutilities.json_handling import load_element
 import random
 from beefcommands.invocations.joker_score.read_joker_score import get_multilplier
 from beefcommands.invocations.joker_score.joker_registration import is_registered, register_user

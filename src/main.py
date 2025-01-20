@@ -25,6 +25,9 @@ async def load_cogs():
     await bot.load_extension("beefcmd.cogs.event_listener_cog")
     await bot.load_extension("beefcmd.cogs.incantations_cog")
     await bot.load_extension("beefcmd.cogs.invocations_cog")
+    await bot.load_extension("beefcmd.cogs.moderation_cog")
+    await bot.load_extension("beefcmd.cogs.utilities_cog")
+    await bot.load_extension("beefcmd.cogs.visage_cog")
 
 @bot.event
 async def on_ready():

@@ -1,5 +1,5 @@
 import os
-from json_handling import load_element
+from beefutilities.json_handling import load_element
 import random
 import discord
 

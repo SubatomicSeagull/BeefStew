@@ -26,5 +26,5 @@ class ModerationCog(commands.Cog):
         pass
 
 async def setup(bot):
-    print("invocation cog setup")
+    print("moderation cog setup")
     await bot.add_cog(ModerationCog(bot))

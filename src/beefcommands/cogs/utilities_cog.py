@@ -1,13 +1,30 @@
 import discord
 from discord.ext import commands
+from beefcommands.utilities.ccping import ccping
 
 class UtilitiesCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
     
-    async def cog_load(self):
-        self.bot.tree.add_command(self.group)
+    @discord.app_commands.command(name="ccping", description="pings CCServer, please be responsible with this one...")
+    async def ccping(self, interaction: discord.Interaction):
+        await ccping(self.bot, interaction)
+    
+    async def ccinfo():
+        pass
+    
+    async def set_log_channel():
+        pass
 
-    async def cog_unload(self):
-        self.bot.tree.remove_command(self.group.name)
+    async def set_info_channel():
+        pass
+    
+    async def set_quote_channel():
+        pass
+    
+    async def help():
+        pass
+
+async def setup(bot):
+    print("utilities cog setup")
+    await bot.add_cog(UtilitiesCog(bot))

@@ -2,7 +2,7 @@ import paramiko
 import os
 #from data import postgres
 
-def retrive_containers_json():
+async def retrive_containers_json():
     try:
         host=os.getenv("SERVERIP")
         port=os.getenv("SFTPPORT")
@@ -36,7 +36,8 @@ def retrive_containers_json():
         sftp.close()
         ssh_client.close()
         print(e)
-        
-        
-def retreive_server_info_json():
+   
+async def retreive_server_info_json():
     raise NotImplementedError
+
+

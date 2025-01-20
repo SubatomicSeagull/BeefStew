@@ -2,8 +2,7 @@ import socket
 import time
 import json
 import os
-from data.server_info.server_interactions import retrive_containers_json
-from json_handling import containers_json_reformat
+from beefutilities.generate_hosts import generate_hosts_file
 import discord
 from datetime import datetime
 
@@ -51,7 +50,7 @@ async def pingembed(interaction: discord.Interaction, icon_url, guild_name):
     hosts_path = os.path.join((os.path.dirname(os.path.abspath(__file__))), "hosts.json")
     
     if not os.path.exists(hosts_path):
-        generate_hosts_file()
+        await generate_hosts_file()
             
     #if the hosts file is older than one day, update it
     current_time = datetime.now()
@@ -59,7 +58,7 @@ async def pingembed(interaction: discord.Interaction, icon_url, guild_name):
     
     if (current_time - file_mod_time).days > 1:
         print(f"Hosts file older than 1 day ({(current_time - file_mod_time).days}), retriving updated info...")
-        generate_hosts_file()
+        await generate_hosts_file()
     
     with open(hosts_path, "r", encoding="utf-8") as file:
             data = json.load(file)
@@ -88,9 +87,3 @@ async def pingembed(interaction: discord.Interaction, icon_url, guild_name):
     pingembed.add_field(name="", value=f"{guild_name} - {datetime.now().strftime('%d/%m/%Y %H:%M')}")
     
     return pingembed
-
-def generate_hosts_file():
-    print("Generating hosts file...")
-    retrive_containers_json()
-    containers_json_reformat()
-    os.remove(os.path.join((os.path.dirname(os.path.abspath(__file__))), "containers.json"))
