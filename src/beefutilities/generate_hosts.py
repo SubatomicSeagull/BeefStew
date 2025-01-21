@@ -4,8 +4,13 @@ from collections import OrderedDict
 from data.server_info.server_interactions import retrive_containers_json
 
 async def containers_json_reformat():
-    hosts_path = os.path.join((os.path.dirname(os.path.abspath(__file__))), "data", "server_info", "hosts.json")
-    containers_path = os.path.join((os.path.dirname(os.path.abspath(__file__))), "data", "server_info", "containers.json")
+    
+    current_dir = os.path.dirname(__file__)
+    file_path = os.path.join(current_dir, '..')
+    
+    hosts_path = os.path.join(file_path, "data", "server_info", "hosts.json")
+    containers_path = os.path.join(file_path, "data", "server_info", "containers.json")
+    
     with open(containers_path, "r", encoding="utf-8-sig") as file:
         data = json.load(file)
         
@@ -64,4 +69,9 @@ async def generate_hosts_file():
     print("Generating hosts file...")
     await retrive_containers_json()
     await containers_json_reformat()
-    os.remove(os.path.join((os.path.dirname(os.path.abspath(__file__))), "containers.json"))
+    
+    current_dir = os.path.dirname(__file__)
+    file_path = os.path.join(current_dir, '..')
+    containers_path = os.path.join(file_path, "data", "server_info", "containers.json")
+    
+    os.remove(containers_path)

@@ -3,6 +3,7 @@ from discord.ext import commands
 import beefcommands.moderation.mute
 import beefcommands.moderation.kick
 import beefcommands.moderation.ban
+
 class ModerationCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -18,12 +19,12 @@ class ModerationCog(commands.Cog):
         await beefcommands.moderation.ban.ban_member(interaction, self.bot, user, reason, self.banned_members)
     
     @discord.app_commands.command(name="mute", description="SHHHHH")
-    async def mute():
-        pass
+    async def mute(interaction: discord.Interaction, member: discord.Member):
+        await beefcommands.moderation.mute.mute(interaction, member)
     
     @discord.app_commands.command(name="unmute", description="you may speak...")
-    async def unmute():
-        pass
+    async def unmute(interaction: discord.Interaction, member: discord.Member):
+        await beefcommands.moderation.mute.unmute(interaction, member)
 
 async def setup(bot):
     print("moderation cog setup")

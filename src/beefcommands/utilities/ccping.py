@@ -13,19 +13,25 @@ async def ccping(bot, interaction: discord.Interaction):
         await interaction.followup.send("we are literally in DMs rn bro u cant do that here...")
         return
             
-    embed = await pingembed(interaction, bot.user.avatar.url, interaction.channel.guild.name)
+    boturl = bot.user.avatar.url
+    embed = await pingembed(interaction, boturl, interaction.channel.guild.name)
     await interaction.followup.send(embed=embed)
     
 async def pingembed(interaction: discord.Interaction, icon_url, guild_name):
-    
-    hosts_path = os.path.join((os.path.dirname(os.path.abspath(__file__))), "hosts.json")
+   
+    current_dir = os.path.dirname(__file__)
+    file_path = os.path.join(current_dir, '..', '..')
+    hosts_path = os.path.join(file_path, "data", "server_info", "hosts.json")
     
     if not os.path.exists(hosts_path):
+        print("Can't find hosts.json...")
         await generate_hosts_file()
             
     #if the hosts file is older than one day, update it
     current_time = datetime.now()
     file_mod_time = datetime.fromtimestamp(os.path.getmtime(hosts_path))
+    
+    print(f"hosts.json is {(current_time - file_mod_time).days} days old.")
     
     if (current_time - file_mod_time).days > 1:
         print(f"Hosts file older than 1 day ({(current_time - file_mod_time).days}), retriving updated info...")

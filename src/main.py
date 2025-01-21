@@ -22,12 +22,12 @@ banned_members = set()
 
 async def load_cogs():
     print("registering cogs...")
-    await bot.load_extension("beefcmd.cogs.event_listener_cog")
-    await bot.load_extension("beefcmd.cogs.incantations_cog")
-    await bot.load_extension("beefcmd.cogs.invocations_cog")
-    await bot.load_extension("beefcmd.cogs.moderation_cog")
-    await bot.load_extension("beefcmd.cogs.utilities_cog")
-    await bot.load_extension("beefcmd.cogs.visage_cog")
+    await bot.load_extension("beefcommands.cogs.event_listener_cog")
+    await bot.load_extension("beefcommands.cogs.incantations_cog")
+    await bot.load_extension("beefcommands.cogs.invocations_cog")
+    await bot.load_extension("beefcommands.cogs.moderation_cog")
+    await bot.load_extension("beefcommands.cogs.utilities_cog")
+    await bot.load_extension("beefcommands.cogs.visage_cog")
 
 @bot.event
 async def on_ready():

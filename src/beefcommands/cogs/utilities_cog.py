@@ -1,6 +1,8 @@
 import discord
 from discord.ext import commands
 from beefcommands.utilities.ccping import ccping
+from beefutilities.guilds import set_info, set_logs, set_quotes
+from beefcommands.utilities.help import help
 
 class UtilitiesCog(commands.Cog):
     def __init__(self, bot):
@@ -10,20 +12,25 @@ class UtilitiesCog(commands.Cog):
     async def ccping(self, interaction: discord.Interaction):
         await ccping(self.bot, interaction)
     
-    async def ccinfo():
-        pass
+    @discord.app_commands.command(name="ccinfo", description="returns current info about CCServer")
+    async def ccinfo(self, interaction: discord.Interaction):
+        await interaction.response.send_message("not implemented yet sorry :(")
     
-    async def set_log_channel():
-        pass
+    @discord.app_commands.command(name="set_logs_channel", description="where should i spew...?")
+    async def set_log_channel(self, interacton: discord.Interaction):
+        await set_logs(interacton)
 
-    async def set_info_channel():
-        pass
+    @discord.app_commands.command(name="set_info_channel", description="where should i spew...?")
+    async def set_info_channel(self, interacton: discord.Interaction):
+        await set_info(interacton)
     
-    async def set_quote_channel():
-        pass
+    @discord.app_commands.command(name="set_quotes_channel", description="where do *you* spew...?")
+    async def set_quote_channel(self, interacton: discord.Interaction):
+        await set_quotes(interacton)
     
-    async def help():
-        pass
+    @discord.app_commands.command(name="help", description="HELP!! HELP ME!!!!!!!")
+    async def help(self, interaction: discord.Interaction):
+        await help(self.bot, interaction)
 
 async def setup(bot):
     print("utilities cog setup")

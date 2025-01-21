@@ -1,9 +1,9 @@
 import discord
-from json_handling import load_element
+from beefutilities.json_handling import load_element
 from datetime import datetime
 import random
 import os
-from guilds import read_guild_log_channel
+from beefutilities.guilds import read_guild_log_channel
 from data import postgres
 
 async def ban_member(interaction: discord.Interaction, bot, member: discord.Member, reason: str, banned_members: set): 

@@ -114,7 +114,8 @@ async def message_delete_event(bot, message):
     
 async def get_response(message: discord.Message):
     current_dir = os.path.dirname(__file__)
-    file_path = os.path.join(current_dir, 'assets', 'responses.json')
+    file_path = os.path.join(current_dir, '..', '..')
+    file_path = os.path.join(file_path, 'assets', 'responses.json')
     with open(file_path, "r") as file:
         responses = json.load(file)
     for trigger_phrase, response in responses["trigger_phrases"].items():
