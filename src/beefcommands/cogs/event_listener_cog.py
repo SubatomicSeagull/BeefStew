@@ -33,7 +33,7 @@ class EventListenerCog(commands.Cog):
     # Message Delete Listener
     @commands.Cog.listener()
     async def on_message_delete(self, message: discord.Message):
-        beefcommands.events.message_events.message_delete_event(self.bot, message)
+        await beefcommands.events.message_events.message_delete_event(self.bot, message)
 
 async def setup(bot):
     print("event cog setup")

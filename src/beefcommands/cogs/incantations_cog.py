@@ -6,7 +6,7 @@ class IncantationsCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         
-    @discord.app_commands.command(name="vicious_mockery", description="cast vicious mockery on someone")
+    @discord.app_commands.command(name="mock", description="cast vicious mockery on someone")
     async def vicious_mockery(self, interaction: discord.Interaction, victim: discord.Member):
         await beefcommands.incantations.vicious_mockery.insult(interaction, victim)
 

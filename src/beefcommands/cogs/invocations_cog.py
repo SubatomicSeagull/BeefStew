@@ -9,19 +9,19 @@ class InvocationsCog(commands.Cog):
         self.bot = bot
 
     @discord.app_commands.command(name="they_call_you", description="invokes the rule...")
-    async def they_call_you(interaction: discord.Interaction, victim: discord.Member, new_name: str):
+    async def they_call_you(self, interaction: discord.Interaction, victim: discord.Member, new_name: str):
         await invoke_nickname_rule(interaction, victim, new_name)
         
     @discord.app_commands.command(name="plus2", description="good one buddy")
-    async def plus2(interation: discord.Interaction, joker: discord.Member):
+    async def plus2(self, interation: discord.Interaction, joker: discord.Member):
         await beefcommands.invocations.joker_score.change_joker_score.plus2(interation, joker)
         
     @discord.app_commands.command(name="minus2", description="*tugs on collar* yikes...")
-    async def minus2(interation: discord.Interaction, joker: discord.Member):
+    async def minus2(self, interation: discord.Interaction, joker: discord.Member):
         await beefcommands.invocations.joker_score.change_joker_score.minus2(interation, joker)
     
     @discord.app_commands.command(name="score", description="how funny r u...?")
-    async def score(interation: discord.Interaction, joker: discord.Member):
+    async def score(self, interation: discord.Interaction, joker: discord.Member):
         await beefcommands.invocations.joker_score.read_joker_score.score(interation, joker)
 
 async def setup(bot):

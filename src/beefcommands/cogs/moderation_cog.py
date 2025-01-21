@@ -19,11 +19,11 @@ class ModerationCog(commands.Cog):
         await beefcommands.moderation.ban.ban_member(interaction, self.bot, user, reason, self.banned_members)
     
     @discord.app_commands.command(name="mute", description="SHHHHH")
-    async def mute(interaction: discord.Interaction, member: discord.Member):
+    async def mute(self, interaction: discord.Interaction, member: discord.Member):
         await beefcommands.moderation.mute.mute(interaction, member)
     
     @discord.app_commands.command(name="unmute", description="you may speak...")
-    async def unmute(interaction: discord.Interaction, member: discord.Member):
+    async def unmute(self, interaction: discord.Interaction, member: discord.Member):
         await beefcommands.moderation.mute.unmute(interaction, member)
 
 async def setup(bot):

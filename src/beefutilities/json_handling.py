@@ -3,7 +3,7 @@ import os
 from collections import OrderedDict
 #from data.server_info import server_interactions
 
-ASSETS_FOLDER = os.path.join(os.path.dirname(__file__), 'assets')
+ASSETS_FOLDER = os.path.join(os.path.dirname(__file__), '..', 'assets')
 
 def load_element(file_name, element):
     file_path = os.path.join(ASSETS_FOLDER, file_name)
