@@ -1,5 +1,27 @@
 import discord
 import discord.ext
+
+
+async def help(bot, interaction: discord.Interaction):
+    await interaction.response.defer()
+    
+    if isinstance(interaction.channel, discord.DMChannel):
+        await interaction.followup.send("we are literally in DMs rn bro u cant do that here...")
+        return
+    view = HelpEmbed()
+    page0embed = discord.Embed(title="Beefstew Help", description="You don't want to know what I can *really* do...", color=discord.Color.lighter_grey())
+    page0embed.set_thumbnail(url=bot.user.avatar.url)
+    page0embed.set_author(name="Beefstew", icon_url=bot.user.avatar.url)
+    page0embed.add_field(name="",value="⠀", inline=False)
+    page0embed.add_field(name="Commands:",value="", inline=False)
+    page0embed.add_field(name="",value="Click on the buttons below for command lists", inline=False)
+    page0embed.add_field(name="",value="⠀", inline=False)
+    page0embed.add_field(name="\nOther info:\n",value="", inline=False)
+    page0embed.add_field(name="", value="Privacy Policy", inline=True)
+    page0embed.add_field(name="", value="⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀Terms of Service", inline=True)
+    page0embed.add_field(name="", value="[cosycraft.uk/privacy](https://www.cosycraft.uk/privacy)⠀⠀⠀⠀⠀⠀⠀[cosycraft/tos](https://www.cosycraft.com/tos)", inline=False)
+    await interaction.channel.send(embed=page0embed, view=view)
+
 class HelpEmbed(discord.ui.View):
     def __init__(self):
         super().__init__()
