@@ -35,7 +35,6 @@ async def message_send_event(bot, message):
             await message.channel.send(await change_joke_score(message.author, user, -2))
             return
 
-        # Nickname Change Logic
         elif any(phrase in message.content.lower() for phrase in ["they call you", "they call u"]):
             if " u " in message.content.lower():
                 nickname_split = message.content.split(" u ", 1)
@@ -49,12 +48,13 @@ async def message_send_event(bot, message):
                 except Exception as e:
                     await log_error(e)
 
-    # "Deadly Dice Man" Logic
     if "deadly dice man" in message.content.lower():
         result = randint(1, 6)
         result_filename = f"DDM-{result}.gif"
+        
         current_dir = os.path.dirname(__file__)
-        file_path = os.path.join(current_dir, 'assets', 'media', result_filename)
+        file_path = os.path.join(current_dir, '..', '..', 'assets', 'media', result_filename)
+        
         await message.reply(
             f"🎲 The deadly dice man rolled his deadly dice 🎲\n"
             f"It was a **{result}**!!!\nYou my friend... have made... an unlucky gamble...",
@@ -62,7 +62,6 @@ async def message_send_event(bot, message):
         )
         return
 
-    # "Hate Message" Response
     if any(phrase in message.content.lower() for phrase in [
         "i hate you beefstew", "i hate beefstew", "beefstew i hate you",
         "<@1283805971524747304> i hate you", "i hate you <@1283805971524747304>",
@@ -123,7 +122,7 @@ async def get_response(message: discord.Message):
             response_type = response.get("type")
             content = response.get("content")
             if isinstance(response, dict) and response_type == "media":
-                media_path = os.path.join(current_dir, 'assets', 'media', (content))
+                media_path = os.path.join(current_dir,'..', '..', 'assets', 'media', (content))
                 await message.reply(file=discord.File(media_path))
                 return
             else:
