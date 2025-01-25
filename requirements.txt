@@ -5,3 +5,4 @@ Pillow
 requests
 psycopg2
 paramiko
+yt-dlp

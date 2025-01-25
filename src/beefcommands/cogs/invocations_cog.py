@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import beefcommands.invocations.joker_score.change_joker_score
 import beefcommands.invocations.joker_score.read_joker_score
+import beefcommands.invocations.joker_score.gamble
 from beefcommands.invocations.nickname_rule import invoke_nickname_rule
 
 class InvocationsCog(commands.Cog):
@@ -23,6 +24,10 @@ class InvocationsCog(commands.Cog):
     @discord.app_commands.command(name="score", description="how funny r u...?")
     async def score(self, interation: discord.Interaction, joker: discord.Member):
         await beefcommands.invocations.joker_score.read_joker_score.score(interation, joker)
+        
+    @discord.app_commands.command(name="gamble", description="Lets go gambling!")
+    async def gamble(self, interation: discord.Interaction, joker: discord.Member):
+        await beefcommands.invocations.joker_score.gamble.gamble_points(interation, joker)
 
 async def setup(bot):
     print("invocation cog setup")
