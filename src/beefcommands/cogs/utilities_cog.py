@@ -15,7 +15,7 @@ class UtilitiesCog(commands.Cog):
     
     @discord.app_commands.command(name="ccinfo", description="returns current info about CCServer")
     async def ccinfo(self, interaction: discord.Interaction):
-        await get_audio_link(interaction, "https://open.spotify.com/playlist/2pP2Gwr6mCGbDWeggQrr95?si=b62cbddef3564600")
+        await get_audio_link(interaction, "https://open.spotify.com/playlist/2ZKEG3l5jI3okW0OgWz404?si=7f03edf474064e33")
     
     @discord.app_commands.command(name="set_logs_channel", description="where should i spew...?")
     async def set_log_channel(self, interacton: discord.Interaction):

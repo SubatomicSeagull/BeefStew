@@ -17,3 +17,7 @@ async def queue_pop(self, interaction: discord.Interaction):
 async def clear(self, interaction: discord.Interaction):
     await interaction.response.send_message("not implemented yet sorry :(")
     #clear the queue
+    
+async def shuffle(self, interaction: discord.Interaction):
+    await interaction.response.send_message("not implemented yet sorry :(")
+    #randomises the queue

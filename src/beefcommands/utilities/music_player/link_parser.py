@@ -32,7 +32,7 @@ async def link_parser(interaction: discord.Interaction, url: str):
         return await get_metadata_yt(interaction, url)
     elif type == 'spotify':
         print("spotify link, retrieving metadata")
-        return await yt_search(await spotify_link_parser(interaction, url))
+        return await spotify_link_parser(interaction, url)
     elif type == 'search':
         print("search term, retrieving yt link")        
         return await yt_search(interaction, url)
@@ -66,10 +66,10 @@ async def spotify_link_parser(interaction: discord.Interaction, url: str):
         
         if all_songs == True:
             print("retriving data for all tracks")
-            await get_metadata_spotify_playlist(url)
+            return await get_metadata_spotify_playlist(url)
         else:
             print("retreiving data for first track")
-            await get_metadata_spotify_playlist_first_track(url)
+            return await get_metadata_spotify_playlist_first_track(url)
 
 async def get_metadata_spotify(interaction: discord.Interaction, url: str):
     print("retriving spotify track metadata")
@@ -77,20 +77,20 @@ async def get_metadata_spotify(interaction: discord.Interaction, url: str):
     track = sp_client.track(url)
     song_name = track["name"]
     album = track["album"]["name"]
+    artist = track['artists'][0]['name']
     
-    yt_search_term = (f"{album} - {song_name}")
+    yt_search_term = (f"{artist} - {album} - {song_name}")
     return yt_search_term
             
 async def get_metadata_spotify_playlist(url: str):
     song_list = sp_client.playlist_tracks(url)
     
     tracks = [item["track"] for item in song_list["items"]]
-    count = 0
     for track in tracks:
-        #add the song to the queue
-        count += 1
-    print(count)
-    #return tracks
+        song_name = track["name"]
+        album = track["album"]["name"]
+        artist = track['artists'][0]['name']
+        print(f"{artist} - {album} - {song_name}")
 
 
 async def get_metadata_spotify_playlist_first_track(interaction: discord.Interaction, url: str):
