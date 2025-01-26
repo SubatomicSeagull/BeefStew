@@ -26,8 +26,8 @@ class InvocationsCog(commands.Cog):
         await beefcommands.invocations.joker_score.read_joker_score.score(interation, joker)
         
     @discord.app_commands.command(name="gamble", description="Lets go gambling!")
-    async def gamble(self, interation: discord.Interaction, joker: discord.Member):
-        await beefcommands.invocations.joker_score.gamble.gamble_points(interation, joker)
+    async def gamble(self, interation: discord.Interaction):
+        await beefcommands.invocations.joker_score.gamble.gamble_points(interation)
 
 async def setup(bot):
     print("invocation cog setup")

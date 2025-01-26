@@ -3,9 +3,9 @@ from data import postgres
 from random import randint
 import os
 
-async def gamble_points(interaction: discord.Interaction, user: discord.Member):
+async def gamble_points(interaction: discord.Interaction):
     await interaction.response.defer()
-    
+    user = interaction.user
     score = await postgres.read(f"SELECT joke_score FROM user_joker_score WHERE user_id = '{user.id}';")
     score = score[0][0]
     
