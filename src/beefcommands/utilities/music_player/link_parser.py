@@ -76,21 +76,22 @@ async def get_metadata_spotify(interaction: discord.Interaction, url: str):
     
     track = sp_client.track(url)
     song_name = track["name"]
-    album = track["album"]["name"]
     artist = track['artists'][0]['name']
     
-    yt_search_term = (f"{artist} - {album} - {song_name}")
+    yt_search_term = (f"{artist} - {song_name}")
     return yt_search_term
             
 async def get_metadata_spotify_playlist(url: str):
     song_list = sp_client.playlist_tracks(url)
     
     tracks = [item["track"] for item in song_list["items"]]
+    track_queries = []
     for track in tracks:
         song_name = track["name"]
-        album = track["album"]["name"]
         artist = track['artists'][0]['name']
-        print(f"{artist} - {album} - {song_name}")
+        query = (f"{artist} - {song_name}")
+        track_queries.append(query)
+    print(track_queries)
 
 
 async def get_metadata_spotify_playlist_first_track(interaction: discord.Interaction, url: str):
@@ -125,7 +126,7 @@ class PlaylistWarningEmbed(discord.ui.View):
         self.stop()
         await interaction.response.edit_message(content="added one track", embed=None, view=None)
     
-async def yt_search(search_term: str):
+async def yt_search(interaction: discord.Interaction, search_term: str):
     print(f"searching youtube for \"{search_term}\"...")
     phrase = search_term.replace(" ", "+")
     search_link = "https://www.youtube.com/results?search_query=" + phrase
@@ -134,8 +135,9 @@ async def yt_search(search_term: str):
     search_results = re.findall(r'watch\?v=(\S{11})', response.read().decode())
     first_result = search_results[0]
     url = "https://www.youtube.com/watch?v=" + first_result
-    return await get_metadata_yt(url)
+    return await get_metadata_yt(interaction, url)
 
 async def get_audio_link(interaction: discord.Interaction, url: str):
+    print(f"putting {url} throught the link parser...")
     metadata = await link_parser(interaction, url)
     return metadata["url"]
