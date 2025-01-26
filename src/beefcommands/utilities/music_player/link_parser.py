@@ -1,62 +1,43 @@
+import os
 import re
 import yt_dlp
 import urllib.request
+import spotipy
+from spotipy.oauth2 import SpotifyClientCredentials
+import discord
+from discord.ext import commands
 
-#take in a hyperlink or search term
-#using regex, find out which website it is for, or if its even a link at all
-#supported sites: youtube, spotify, bandcamp, soundcloud
-# find the metadata in non youtube links, then search and return the link for the first search result.
+sp_client = spotipy.Spotify(client_credentials_manager = SpotifyClientCredentials(client_id=os.getenv("SPOTIFYCLIENTID"), client_secret=os.getenv("SPOTIFYCLIENTSECRET")))
 
-# for spotify playlists, ask user if they want to queue all X songs or just the first one.
-# if yes, return list of sanitiesed yt links, no = just the first one 
-
-#non hyperlinks can skip straight to the youtbe search
-
-#youtube links can skip the search process entirely
-
-
-def link_validation(url: str):
+async def link_validation(url: str):
     print("validating the link")
     youtube_pattern = re.compile(r'(https?://)?(www\.)?(youtube|youtu|youtube-nocookie)\.(com|be)/.+')
     spotify_pattern = re.compile(r'(https?://)?(open\.)?spotify\.com/.+')
-    bandcamp_pattern = re.compile(r'(https?://)?([a-z0-9]+\.bandcamp\.com)/.+')
-    soundcloud_pattern = re.compile(r'(https?://)?(www\.)?soundcloud\.com/.+')
     search_pattern = re.compile(r'^(?!https?://).+')
 
     if youtube_pattern.match(url):
         return True, "youtube"
     elif spotify_pattern.match(url):
         return True, "spotify"
-    elif bandcamp_pattern.match(url):
-        return True, "bandcamp"
-    elif soundcloud_pattern.match(url):
-        return True, "soundcloud"
     elif search_pattern.match(url):
         return True, "search"
     else:
         return False, "invalid"
 
-def link_parser(url: str):
-    (valid, type) = link_validation(url)
+async def link_parser(interaction: discord.Interaction, url: str):
+    (valid, type) = await link_validation(url)
     
     if type == 'youtube':
         print("youtube link, retrieving metadata")
-        return get_metadata_yt(url)
+        return await get_metadata_yt(interaction, url)
     elif type == 'spotify':
         print("spotify link, retrieving metadata")
-        return get_metadata_spotify(url)
-    elif type == 'bandcamp':
-        print("bandcamp link, retrieving metadata")
-        return get_metadata_bandcamp(url)
-    elif type == 'soundcloud':
-        print("soundcloud link, retrieving metadata")    
-        return get_metadata_soundcloud(url)
+        return await yt_search(await spotify_link_parser(interaction, url))
     elif type == 'search':
         print("search term, retrieving yt link")        
-        return yt_search(url)
+        return await yt_search(interaction, url)
 
-
-def get_metadata_yt(url: str):
+async def get_metadata_yt(interaction: discord.Interaction, url: str):
     print("getting yt metadata")
     ydl_opts = {
         "format": "bestaudio/best",
@@ -68,24 +49,84 @@ def get_metadata_yt(url: str):
         info_dict = ydl.extract_info(url, download=False)
         return info_dict
 
-def get_metadata_spotify(url: str):
+
+async def spotify_link_parser(interaction: discord.Interaction, url: str):
+    if "track" in url:  
+        await get_metadata_spotify(url)
     
+    elif "playlist" in url:
+        
+        playlist = sp_client.playlist(url)
+        playlist_tracks = sp_client.playlist_tracks(url)
+        playlist_art = sp_client.playlist_cover_image(url)
+        count = playlist_tracks['total']
+        name = playlist['name']
+        
+        all_songs = await playlist_warning(interaction, playlist_art[0]['url'], count, name)
+        
+        if all_songs == True:
+            print("retriving data for all tracks")
+            await get_metadata_spotify_playlist(url)
+        else:
+            print("retreiving data for first track")
+            await get_metadata_spotify_playlist_first_track(url)
+
+async def get_metadata_spotify(interaction: discord.Interaction, url: str):
+    print("retriving spotify track metadata")
     
+    track = sp_client.track(url)
+    song_name = track["name"]
+    album = track["album"]["name"]
     
+    yt_search_term = (f"{album} - {song_name}")
+    return yt_search_term
+            
+async def get_metadata_spotify_playlist(url: str):
+    song_list = sp_client.playlist_tracks(url)
+    
+    tracks = [item["track"] for item in song_list["items"]]
+    count = 0
+    for track in tracks:
+        #add the song to the queue
+        count += 1
+    print(count)
+    #return tracks
+
+
+async def get_metadata_spotify_playlist_first_track(interaction: discord.Interaction, url: str):
     pass
+#gets the first trackl of the playlist
+    
+async def playlist_warning(interaction: discord.Interaction, playlist_art: str, count: int, name: str):  
+    view = PlaylistWarningEmbed()
+    embed = discord.Embed(title="Spotify Playlist", description="hold on there buddy...", color=discord.Color.green())
+    embed.set_thumbnail(url=playlist_art)
+    embed.add_field(name=f"{name} has {count} songs.", value= "u wanna add all these?")
+    await interaction.response.send_message(embed=embed, view=view)
+    
+    await view.wait()
+    response = view.response
 
-def validate_spotify_link(url: str):
-    if re.search(r"^(https?://)?open\.spotify\.com/(playlist|track)/.+$", url):
-    return sp_url
-
-
-def get_metadata_bandcamp(url: str):
-    pass
-
-def get_metadata_soundcloud(url: str):
-    pass
-
-def yt_search(search_term: str):
+    return response
+class PlaylistWarningEmbed(discord.ui.View):
+    def __init__(self):
+        super().__init__()
+        self.response = None
+        
+    @discord.ui.button(label="all of em babey!!", style=discord.ButtonStyle.primary)
+    async def add_all_tracks(self, interaction: discord.Interaction, button: discord.ui.Button):
+        self.response = True
+        self.stop()
+        await interaction.response.edit_message(content="added all the tracks", embed=None, view=None)
+    
+    @discord.ui.button(label= "just the one please", style=discord.ButtonStyle.primary)
+    async def add_top_track(self, interaction: discord.Interaction, button: discord.ui.Button):
+        self.response = False
+        self.stop()
+        await interaction.response.edit_message(content="added one track", embed=None, view=None)
+    
+async def yt_search(search_term: str):
+    print(f"searching youtube for \"{search_term}\"...")
     phrase = search_term.replace(" ", "+")
     search_link = "https://www.youtube.com/results?search_query=" + phrase
     response = urllib.request.urlopen(search_link)
@@ -93,9 +134,8 @@ def yt_search(search_term: str):
     search_results = re.findall(r'watch\?v=(\S{11})', response.read().decode())
     first_result = search_results[0]
     url = "https://www.youtube.com/watch?v=" + first_result
-    return get_metadata_yt(url)
+    return await get_metadata_yt(url)
 
-def get_audio_link(url: str):
-    metadata = link_parser(url)
+async def get_audio_link(interaction: discord.Interaction, url: str):
+    metadata = await link_parser(interaction, url)
     return metadata["url"]
-    

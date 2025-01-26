@@ -3,6 +3,7 @@ from discord.ext import commands
 from beefcommands.utilities.ccping import ccping
 from beefutilities.guilds import set_info, set_logs, set_quotes
 from beefcommands.utilities.help import help
+from beefcommands.utilities.music_player.link_parser import get_audio_link
 
 class UtilitiesCog(commands.Cog):
     def __init__(self, bot):
@@ -14,7 +15,7 @@ class UtilitiesCog(commands.Cog):
     
     @discord.app_commands.command(name="ccinfo", description="returns current info about CCServer")
     async def ccinfo(self, interaction: discord.Interaction):
-        await interaction.response.send_message("not implemented yet sorry :(")
+        await get_audio_link(interaction, "https://open.spotify.com/playlist/2pP2Gwr6mCGbDWeggQrr95?si=b62cbddef3564600")
     
     @discord.app_commands.command(name="set_logs_channel", description="where should i spew...?")
     async def set_log_channel(self, interacton: discord.Interaction):
