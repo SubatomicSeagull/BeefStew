@@ -5,12 +5,12 @@ import re
 import requests
 
 async def get_metadata_yt(interaction: discord.Interaction, url: str):
-    print("getting yt metadata")
+    print("getting yt metadata for " + url)
+    
     ydl_opts = {
         "format": "bestaudio/best",
         "noplaylist": True,
-        "quiet": True,
-        'cookiefile': "C:\\Users\\subat\\Desktop\\BeefStew\\src\\beefcommands\\utilities\\music_player\\cookies.txt"
+        "quiet": True
         }
     
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:

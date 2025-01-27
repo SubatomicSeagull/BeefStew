@@ -1,6 +1,5 @@
 import discord
 from discord.ext import commands
-from beefcommands.utilities.music_player.yt_link_parser import playlist_warning
 
 class MusicPlayerCog(commands.Cog):
     def __init__(self, bot):
@@ -8,7 +7,7 @@ class MusicPlayerCog(commands.Cog):
         
     @discord.app_commands.command(name="play", description="add")
     async def play(self, interaction: discord.Interaction):
-        await playlist_warning(interaction)
+        await interaction.response.send_message("not implemented yet sorry :(")
         
     @discord.app_commands.command(name="play_next", description="play next, skip the queue!")
     async def play_next(self, interaction: discord.Interaction):
