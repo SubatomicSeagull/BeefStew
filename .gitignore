@@ -165,3 +165,5 @@ src\data\server_info\hosts.json
 .ssh
 hosts.json
 .cache
+src\beefcommands\utilities\music_player\yt_cookies.txt
+cookies.txt

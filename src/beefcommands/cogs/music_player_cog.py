@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from beefcommands.utilities.music_player.link_parser import playlist_warning
+from beefcommands.utilities.music_player.yt_link_parser import playlist_warning
 
 class MusicPlayerCog(commands.Cog):
     def __init__(self, bot):

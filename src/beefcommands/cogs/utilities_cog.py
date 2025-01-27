@@ -3,7 +3,7 @@ from discord.ext import commands
 from beefcommands.utilities.ccping import ccping
 from beefutilities.guilds import set_info, set_logs, set_quotes
 from beefcommands.utilities.help import help
-from beefcommands.utilities.music_player.link_parser import get_audio_link
+from beefcommands.utilities.music_player.yt_link_parser import get_audio_link
 
 class UtilitiesCog(commands.Cog):
     def __init__(self, bot):
