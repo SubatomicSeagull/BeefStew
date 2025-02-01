@@ -17,20 +17,20 @@ class MusicPlayerCog(commands.Cog):
     @commands.command(name="queue_add", description="add video to the queue")
     async def queue_add(self, ctx, url: str):
         media_type = await link_validation(url)
-        print(f"Media type from link_validation: {media_type}")  # Debugging
+        print(f"Media type from link_validation: {media_type}")
         if media_type != "invalid" and media_type is not None:
-            print(f"Valid {media_type} link...")  # Debugging
+            print(f"Valid {media_type} link...")
             yt_links = await media_source(ctx, url, media_type)
-            print(f"yt_links returned from media_source: {yt_links}")  # Debugging
-            print(f"Trying to push {yt_links} to the queue")  # Debugging
+            print(f"yt_links returned from media_source: {yt_links}")
+            print(f"Trying to push [YouTube Video](<{yt_links}>) to the queue")
             await queue_push(ctx, yt_links)
-            await ctx.send(f"Pushed [{yt_links}] to the queue successfully")
+            await ctx.send(f"Pushed [YouTube Video](<{yt_links}>) to the queue successfully")
         else:
             await ctx.send("Invalid link")
         
     @commands.command(name="queue_list", description="list the queue")
     async def queue_list(self, ctx):
-        await ctx.send(f"queue = [{await queue_list(ctx)}]")
+        await ctx.send(f"queue = {await queue_list(ctx)}")
         
     @discord.app_commands.command(name="skip", description="STREAMER NEXT GAME!!!!!!")
     async def skip(self, interaction: discord.Interaction):

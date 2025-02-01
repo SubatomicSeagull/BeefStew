@@ -16,7 +16,7 @@ async def queue_stack(ctx, tracks: list):
     
 async def queue_push(ctx, tracks: list):
     for track in tracks:
-        print(f"pushing {track} to the queue")
+        print(f"pushing [YouTube Video](<{track}>) to the queue")
         queue.append(track)
     
 async def queue_pop(ctx):
@@ -60,17 +60,22 @@ async def media_source(ctx, url: str, type: str):
     links = []
     if type == 'youtube':
         print("youtube link, retrieving metadata")
+        print(f"appending {url}")
         links.append(url)
-        print(f"links = {links}")
-        return links
     elif type == 'spotify':
         print("spotify link, retrieving metadata")
-        return links.append(await spotify_link_parser(ctx, url))
+        sp_song = await spotify_link_parser(ctx, url)
+        print(f"appending {sp_song}")
+        links.append(sp_song)
     elif type == 'search':
-        print("search term, retrieving yt link")        
-        return links.append(await yt_link_from_search_term(ctx, url))
+        print("search term, retrieving yt link")  
+        search_song = await yt_link_from_search_term(ctx, url)
+        print(f"appending {search_song}")
+        links.append(search_song)      
     else:
         return "invalid"
+    print(f"media source returning {links}")
+    return links
     
 async def get_metadata_yt(ctx, url: str):
     print("getting yt metadata for " + url)
@@ -150,8 +155,9 @@ async def get_metadata_spotify(ctx, url: str):
     print(f"search term = {search_term}")
     yt_link = await yt_link_from_search_term(ctx, search_term)
     print(f"yt link = {yt_link}")
+    track_queries.append(await yt_link_from_search_term(ctx, search_term))
 
-    return track_queries.append(await yt_link_from_search_term(ctx, search_term))
+    return track_queries
             
 async def get_metadata_spotify_playlist(ctx, url: str):
     track_queries = []
