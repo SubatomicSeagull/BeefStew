@@ -7,6 +7,7 @@ import os
 from time import sleep
 from beefutilities.guilds import read_guild_log_channel
 import json
+from datetime import datetime
 
 
 async def message_send_event(bot, message):
@@ -88,7 +89,6 @@ async def message_send_event(bot, message):
         return
 
     await get_response(message)
-    await bot.process_commands(message)
     
     
 async def message_edit_event(bot, before, after):
@@ -98,7 +98,8 @@ async def message_edit_event(bot, before, after):
     embed = discord.Embed(title="Message Edited", color=discord.Color.yellow())
     embed.add_field(name="Original", value=f"```{before.content}```", inline=False)
     embed.add_field(name="Edited", value=f"```{after.content}```", inline=False)
-    embed.set_author(name="Beefstew", icon_url=bot.user.avatar.url)
+    embed.set_author(name=before.author, icon_url=before.author.avatar.url)
+    embed.add_field(name="", value=f"{before.author.guild.name} - {datetime.now().strftime('%d/%m/%Y %H:%M')}")  
     await channel.send(embed=embed)
     
 async def message_delete_event(bot, message):
@@ -107,7 +108,8 @@ async def message_delete_event(bot, message):
     channel = await bot.fetch_channel(await read_guild_log_channel(message.guild.id))
     embed = discord.Embed(title="Message Deleted", color=discord.Color.orange())
     embed.add_field(name="Message", value=f"```{message.content}```", inline=False)
-    embed.set_author(name="Beefstew", icon_url=bot.user.avatar.url)
+    embed.set_author(name=message.author, icon_url=message.author.avatar.url)
+    embed.add_field(name="", value=f"{message.author.guild.name} - {datetime.now().strftime('%d/%m/%Y %H:%M')}")  
     await channel.send(embed=embed)
     
     
