@@ -3,21 +3,24 @@ import random
 import os
 import re
 import yt_dlp
-import urllib
+import urllib.request
+import urllib.parse
 from spotipy.oauth2 import SpotifyClientCredentials
 import spotipy
+import asyncio
+import requests
 
 
 queue = []
 
-async def queue_stack(ctx, tracks: list):
+async def queue_stack(ctx, tracks):
     print(f"stacking {tracks} to the front of the queue")
     queue.insert(0, tracks[0])
     
-async def queue_push(ctx, tracks: list):
-    for track in tracks:
-        print(f"pushing [YouTube Video](<{track}>) to the queue")
-        queue.append(track)
+async def queue_push(ctx, track):
+    print("tracks to be pushed: " + track)
+    print(f"pushing {track} to the back of the queue") 
+    queue.append(track)
     
 async def queue_pop(ctx):
     print(f"popping {queue[0]} from the queue")
@@ -31,8 +34,20 @@ async def shuffle(ctx):
     print("shuffling the queue")
     random.shuffle
     
-async def queue_list(ctx):
-    return queue
+def queue_list(ctx):
+    count = 1
+    content = ""
+    print(f"Queue: {queue}")
+    for link in queue:
+        print(link)
+        response  = requests.get(link)
+        title_match = re.search(r'<title>(.*?) - YouTube</title>', response.text)
+        if title_match:
+            title = title_match.group(1).strip()
+        content = content + (f"**{count}.** [{title}]({link})\n")
+        count+=1
+    print(content)
+    return content
     #generate an embed listing the first 10 songs in the queue,
     # is there a way to dynamically add pages?
     
@@ -61,7 +76,7 @@ async def media_source(ctx, url: str, type: str):
     if type == 'youtube':
         print("youtube link, retrieving metadata")
         print(f"appending {url}")
-        links.append(url)
+        links.append([url])
     elif type == 'spotify':
         print("spotify link, retrieving metadata")
         sp_song = await spotify_link_parser(ctx, url)
@@ -71,7 +86,7 @@ async def media_source(ctx, url: str, type: str):
         print("search term, retrieving yt link")  
         search_song = await yt_link_from_search_term(ctx, url)
         print(f"appending {search_song}")
-        links.append(search_song)      
+        links.append([search_song])
     else:
         return "invalid"
     print(f"media source returning {links}")
@@ -92,8 +107,12 @@ async def get_metadata_yt(ctx, url: str):
         return info_dict
     
 async def yt_link_from_search_term(ctx, search_term: str):
+    url = await asyncio.to_thread(yt_link_from_search_term_sync, search_term)
+    return url
+
+def yt_link_from_search_term_sync(search_term: str):
     print(f"searching youtube for \"{search_term}\"...")
-    phrase = search_term.replace(" ", "+")
+    phrase = urllib.parse.quote(search_term.replace(" ", "+"), safe="+")
     search_link = "https://www.youtube.com/results?search_query=" + phrase
     response = urllib.request.urlopen(search_link)
     
