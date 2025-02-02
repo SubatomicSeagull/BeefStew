@@ -143,7 +143,7 @@ async def spotify_link_parser(ctx, url):
         print("getting metadata for spotify track")
 
         track = await asyncloop.run_in_executor(executor, sp_client.track, url)
-        return await process_spotify_track(ctx, track)
+        return [await process_spotify_track(ctx, track)]
     
     if "album" in url:
         pass
