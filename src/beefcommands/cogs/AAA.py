@@ -30,17 +30,19 @@ class testCog(commands.Cog):
         media_type = await asyncloop.run_in_executor(executor, validate_input, ctx, url)
         print(f"type from validate_input: {media_type}")
         b4 = time.time()
+        statusmsg = await ctx.send(f"Queuing songs...")
         if media_type != "invalid" and media_type is not None:
-            await ctx.send(f"Queuing songs...")
             ytlinks = await link_parser(ctx, url, media_type)
             print (ytlinks)
             for playlist in ytlinks:
                 for link in playlist:
-                    queue_push(ctx, link)
-            response_time = ((time.time() - b4))
-            await ctx.send(f"Pushed to the queue successfully in {round(response_time, 1)} seconds")
+                    if link[0] is not None:
+                        queue_push(ctx, link)
+                        await statusmsg.edit(content="Queued")
+                    else:
+                        await statusmsg.edit(content="unable to parse link, skipping")
         else:
-            await ctx.send("Invalid link")
+            await statusmsg.edit(content="Invalid link")
         
             
     @commands.command(name="qlist", description="list the queue")
@@ -68,18 +70,19 @@ async def get_youtube_title(url):
     return await asyncloop.run_in_executor(executor, sync_get_youtube_title, url)
     
 def sync_get_youtube_title(url):
-    response  = requests.get(url)
-    htmlresponse = response.text
-    title_match = re.search(r'<title>(.*?) - YouTube</title>', htmlresponse)
-    if title_match:
-        title = title_match.group(1).strip()
-        if title == "":
-            print("TITLE IS EMPTY!!!!!!!")
-            return "Empty :(`"
-        print(f"returning title {html.unescape(title)}")
-        return html.unescape(title)
-    else:
-        return "Unknown"
+    if url is not None or "":
+        response  = requests.get(url)
+        htmlresponse = response.text
+        title_match = re.search(r'<title>(.*?) - YouTube</title>', htmlresponse)
+        if title_match:
+            title = title_match.group(1).strip()
+            if title == "":
+                print("TITLE IS EMPTY!!!!!!!")
+                return "Empty :("
+            print(f"returning title {html.unescape(title)}")
+            return html.unescape(title)
+    
+    return "Unknown"
 
 def queue_push(ctx, track):
     print(f"pushing {track} to the back of the queue") 
@@ -118,11 +121,14 @@ async def get_youtube_link(ctx, search_term):
     
 def sync_get_youtube_link(search_term):
     print(f"getting youtube link for {search_term}")
-    phrase = urllib.parse.quote(search_term.replace(" ", "+"), safe="+")
-    search_link = f"https://www.youtube.com/results?search_query={phrase}"
-    response = urllib.request.urlopen(search_link)
-    search_results = re.findall(r'watch\?v=(\S{11})', response.read().decode())
-    return f"https://www.youtube.com/watch?v={search_results[0]}"
+    try:
+        phrase = urllib.parse.quote(search_term.replace(" ", "+"), safe="+")
+        search_link = f"https://www.youtube.com/results?search_query={phrase}"
+        response = urllib.request.urlopen(search_link)
+        search_results = re.findall(r'watch\?v=(\S{11})', response.read().decode())
+        return f"https://www.youtube.com/watch?v={search_results[0]}"
+    except Exception as e:
+        return None
     
 async def link_parser(ctx, url, type):
     return_links = []
@@ -149,25 +155,30 @@ async def spotify_link_parser(ctx, url):
         pass
     
     if "playlist" in url:
+        playlist = await asyncloop.run_in_executor(executor, sp_client.playlist, url)
+        playlist_name = playlist['name']
+        playlist_art = playlist['images'][0]['url'] if playlist['images'] else None
+        total = playlist['tracks']['total']
+        
+        warning_response = await playlistwarning(ctx, playlist_name, playlist_art, total)
+        
+        if warning_response is None:
+            return []
+        
         urls = []
         print("getting metadata for spotify playlist")
         song_list = await asyncloop.run_in_executor(executor, sp_client.playlist_tracks, url)
         total = song_list["total"]
         pages = math.ceil(total / 100)
-        #playlist_tracks = [item["track"] for item in song_list["items"]]
-        #for track in playlist_tracks:
-        #   item = await process_spotify_track(ctx, track)
-        #    urls.append(item)
         
-        for i in range(pages):
-            print(f"fetching page {i}")
-            page = sp_client.playlist_tracks(url, offset = i * 100)
-            fetch_page = await asyncio.gather(*[process_spotify_track(ctx, item["track"]) for item in page["items"]])
-            for result in fetch_page:
-                if result is not None:
-                    urls.append(result)
-            print(f"count: {len(urls)}")
-        return urls
+        if warning_response == True:    
+            for i in range(pages):
+                print(f"fetching page {i}")
+                page = sp_client.playlist_tracks(url, offset = i * 100)
+                fetch_page = await asyncio.gather(*[process_spotify_track(ctx, item["track"]) for item in page["items"]])
+                for result in fetch_page:
+                    if result is not None:
+                        urls.append(result)
 
 async def process_spotify_track(ctx, track):
     song_name = track["name"]
@@ -185,29 +196,45 @@ async def process_spotify_track(ctx, track):
 
 class PlaylistWarningEmbed(discord.ui.View):
     def __init__(self, ctx):
-        super().__init__()
+        super().__init__(timeout=30)
         self.ctx = ctx
         self.response = None
+        self.message = None  # Add message reference
         
     @discord.ui.button(label="all of em babey!!", style=discord.ButtonStyle.primary)
     async def add_all_tracks(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.response = True
+        await interaction.message.delete()
         self.stop()
-        await self.ctx.send(content="added all the tracks", embed=None, view=None)
     
-    @discord.ui.button(label= "just the one please", style=discord.ButtonStyle.primary)
+    @discord.ui.button(label="just the one please", style=discord.ButtonStyle.primary)
     async def add_top_track(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.response = False
+        await interaction.message.delete()
         self.stop()
-        await self.ctx.send(content="added one track", embed=None, view=None)
+        
+    @discord.ui.button(label="umm actaully nvm ://", style=discord.ButtonStyle.primary)
+    async def add_top_track(self, interaction: discord.Interaction, button: discord.ui.Button):
+        self.response = None
+        await interaction.message.delete()
+        self.stop()
+        
+    async def on_timeout(self):
+        if self.message:
+            try:
+                await self.message.delete()
+            except discord.NotFound:
+                pass
+        self.stop()
         
 async def playlistwarning(ctx, playlist_name, playlist_art, count):
     warning_embed = discord.Embed(title=playlist_name, description="hold on there buddy...", color=discord.Color.green())
     warning_embed.set_thumbnail(url=playlist_art)
-    warning_embed.add_field(name="", value=f"{playlist_name}, has {count} songs, do you want to add them all?")
+    warning_embed.add_field(name="", value=f"**{playlist_name}** has **{count}** songs, do you want to add them all?")
     
     view = PlaylistWarningEmbed(ctx)
-    await ctx.send(embed=warning_embed, view=view)
+    message = await ctx.send(embed=warning_embed, view=view)
+    view.message = message
     
     await view.wait()
     return view.response
