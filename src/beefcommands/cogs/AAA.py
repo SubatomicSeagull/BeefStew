@@ -8,7 +8,6 @@ import urllib.request
 import urllib.parse
 from spotipy.oauth2 import SpotifyClientCredentials
 import spotipy
-import random
 import os
 from concurrent.futures import ThreadPoolExecutor
 import time
@@ -16,7 +15,7 @@ import html
 import math
 
 queue = []
-executor = ThreadPoolExecutor(max_workers=16)
+executor = ThreadPoolExecutor(max_workers=4)
 asyncloop = asyncio.get_event_loop()
 sp_client = spotipy.Spotify(client_credentials_manager = SpotifyClientCredentials(client_id=os.getenv("SPOTIFYCLIENTID"), client_secret=os.getenv("SPOTIFYCLIENTSECRET")))
 
@@ -42,7 +41,7 @@ class testCog(commands.Cog):
             await ctx.send(f"Pushed to the queue successfully in {round(response_time, 1)} seconds")
         else:
             await ctx.send("Invalid link")
-
+        
             
     @commands.command(name="qlist", description="list the queue")
     async def qlist(self, ctx):
@@ -70,12 +69,14 @@ async def get_youtube_title(url):
     
 def sync_get_youtube_title(url):
     response  = requests.get(url)
-    title_match = re.search(r'<title>(.*?) - YouTube</title>', response.text)
+    htmlresponse = response.text
+    title_match = re.search(r'<title>(.*?) - YouTube</title>', htmlresponse)
     if title_match:
         title = title_match.group(1).strip()
-        if not title:
+        if title == "":
             print("TITLE IS EMPTY!!!!!!!")
             return "Empty :(`"
+        print(f"returning title {html.unescape(title)}")
         return html.unescape(title)
     else:
         return "Unknown"
@@ -172,7 +173,6 @@ async def process_spotify_track(ctx, track):
     song_name = track["name"]
     artist = track['artists'][0]['name']
     search_term = f"{artist} - {song_name}"
-    asyncio.sleep(2)
     try:
         yt_link = await get_youtube_link(ctx, search_term)
         title = await get_youtube_title(yt_link)
