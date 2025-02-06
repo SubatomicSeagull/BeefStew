@@ -94,6 +94,9 @@ async def message_send_event(bot, message):
 async def message_edit_event(bot, before, after):
     if before.author == bot.user:
         return
+    
+    if before == after:
+        return
     channel = await bot.fetch_channel(await read_guild_log_channel(before.guild.id))
     embed = discord.Embed(title="Message Edited", color=discord.Color.yellow())
     embed.add_field(name="Original", value=f"```{before.content}```", inline=False)

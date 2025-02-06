@@ -14,6 +14,16 @@ import time
 import html
 import math
 
+
+
+#todo
+# add album handling
+# also need handling for other spotify links like artist or mix or radio or whatever
+# implement queue pop and stack
+# implement queue clear
+# can we get rid of these globals?
+# splice everything up neatly
+
 queue = []
 executor = ThreadPoolExecutor(max_workers=4)
 asyncloop = asyncio.get_event_loop()
@@ -26,37 +36,70 @@ class testCog(commands.Cog):
     @commands.command(name="qadd", description="list the queue")  
     async def qadd(self, ctx, *args):
         url = " ".join(args)
-        #new thread
         media_type = await asyncloop.run_in_executor(executor, validate_input, ctx, url)
         print(f"type from validate_input: {media_type}")
         b4 = time.time()
         statusmsg = await ctx.send(f"Queuing songs...")
-        if media_type != "invalid" and media_type is not None:
-            ytlinks = await link_parser(ctx, url, media_type)
-            print (ytlinks)
-            for playlist in ytlinks:
-                for link in playlist:
-                    if link[0] is not None:
-                        queue_push(ctx, link)
-                        await statusmsg.edit(content="Queued")
-                    else:
-                        await statusmsg.edit(content="unable to parse link, skipping")
-        else:
-            await statusmsg.edit(content="Invalid link")
         
+        try:
+            if media_type == "invalid" or media_type is None:
+                await statusmsg.delete()
+                ctx.send("what do u want me to do with this...? i dont get it :(")
+                return
+        
+        
+            ytlinks = await link_parser(ctx, url, media_type)
+            if ytlinks is None:
+                await statusmsg.delete()
+                ctx.send("couldnt read the link u sent sry")
+                return
+            
+            added = 0
+            skipped = 0
+            
+            for playlist in ytlinks:
+                if playlist is None:
+                    print("unable to read playlist, skipping...")
+                    skipped += 1
+                    continue
+                
+                for link in playlist:
+                    if link is None or link[0] is None:
+                        print("unable to read link, skipping...")
+                        skipped += 1
+                        continue
+                    
+                    queue_push(ctx, link)
+                    added += 1
+                    
+            await statusmsg.delete()
+            if added == 0:
+                return
+            
+            if skipped == 0:
+                if added == 1:
+                    await ctx.send(f"{ctx.author.name} added 1 song to the queue")
+                else:
+                    await ctx.send(f"{ctx.author.name} added {added} songs to the queue")
+            else:
+                await ctx.send(f"{ctx.author.name} added {added} to the queue, i had to skip {skipped} of them tho ://")
+                
+        except Exception as e:
+            await statusmsg.delete()
+            await ctx.send(f"couldnt read the link u sent sry", delete_after=10)
             
     @commands.command(name="qlist", description="list the queue")
     async def qlist(self, ctx):
         for i in range(len(queue)):
             print(queue[i])
-        count = 1
+        count = 1 
         content = ""
         content = content + (f"Queue:\n")
         for link in queue:
+            print(f"**{count}.** {link[1]}\n")
             if count < 11:
                 content = content + (f"**{count}.** {link[1]}\n")
             count+=1
-        print(content)
         if count > 11:
             await ctx.send(f"{content}...\n and {count - 10} other tracks.")
         else:
@@ -152,7 +195,18 @@ async def spotify_link_parser(ctx, url):
         return [await process_spotify_track(ctx, track)]
     
     if "album" in url:
-        pass
+        album_tracks = await asyncloop.run_in_executor(executor, sp_client.album_tracks, url)
+        
+        urls = []
+        print("getting metadata for spotify album")
+        fetch_album_tracks = await asyncio.gather(*[process_spotify_track(ctx, track)for track in album_tracks["items"]])
+        
+        for result in fetch_album_tracks:
+            if result is not None:
+                urls.append(result)
+        return urls
+        
+        
     
     if "playlist" in url:
         playlist = await asyncloop.run_in_executor(executor, sp_client.playlist, url)
@@ -179,7 +233,13 @@ async def spotify_link_parser(ctx, url):
                 for result in fetch_page:
                     if result is not None:
                         urls.append(result)
+        return urls
 
+    if "artist" in url:
+        print("artist link... whajt r u doing")
+        return None
+    
+    
 async def process_spotify_track(ctx, track):
     song_name = track["name"]
     artist = track['artists'][0]['name']
@@ -190,16 +250,14 @@ async def process_spotify_track(ctx, track):
         return (yt_link, title)
     except Exception as e:
         print(f"\n \n ==========================failed to process track {song_name}, skipping. ({e})==================== \n \n )")
-        return None
-    
-
+        return None 
 
 class PlaylistWarningEmbed(discord.ui.View):
     def __init__(self, ctx):
         super().__init__(timeout=30)
         self.ctx = ctx
         self.response = None
-        self.message = None  # Add message reference
+        self.message = None
         
     @discord.ui.button(label="all of em babey!!", style=discord.ButtonStyle.primary)
     async def add_all_tracks(self, interaction: discord.Interaction, button: discord.ui.Button):
