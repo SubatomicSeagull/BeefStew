@@ -41,7 +41,7 @@ async def on_ready():
     await bot.tree.sync()
     print(f"{bot.user} is now online, may god help us all...")
 
-@bot.command(name="join")
+@bot.command(name="jointest")
 async def join(ctx, url):
     if ctx.author.voice:
         channel = ctx.author.voice.channel
