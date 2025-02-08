@@ -10,16 +10,9 @@ from spotipy.oauth2 import SpotifyClientCredentials
 import spotipy
 import os
 from concurrent.futures import ThreadPoolExecutor
-import time
 import html
 import math
 import random
-
-
-
-#todo
-# can we get rid of these globals?
-# splice everything up neatly
 
 g_queue = []
 g_current_track = []
@@ -30,16 +23,12 @@ sp_client = spotipy.Spotify(client_credentials_manager = SpotifyClientCredential
 
 class testCog(commands.Cog):
     def __init__(self, bot):
-        self.bot = bot
-        self.paused_position = 0
-        self.paused_source = None
-        self.start_time = None
-        
+        self.bot = bot   
         
     def get_queue(self):
         return g_queue
     
-    def get_current_track(self, track):
+    def get_current_track(self):
         return g_current_track
     
     def get_current_track_link(self):
@@ -62,7 +51,7 @@ class testCog(commands.Cog):
     async def skip(self, ctx):
         if ctx.voice_client.is_playing():
             ctx.voice_client.stop()
-            await self.play_next(ctx)
+            self.bot.loop.create_task(self.play_next(ctx))
     
     # add alias "/queue", "/q"  
     @commands.command(name="qadd", description="list the queue")  
@@ -134,36 +123,20 @@ class testCog(commands.Cog):
             await self.establish_voice_connection(ctx)
             print("playing next")
         
-            if not (ctx.voice_client and ctx.voice_client.is_playing()):
-                await self.play_next(ctx)
-    
-    
-    @commands.command(name="qpause", description="Pause the current track")
-    async def qpause(self, ctx):
-        print("PAUSING")
-        if ctx.voice_client and ctx.voice_client.is_playing():
-            if self.start_time:
-                self.paused_position = (ctx.message.created_at - self.start_time).total_seconds()
-            self.paused_source = ctx.voice_client.source
-            ctx.voice_client.pause()
-            print("PAUSED SUCCESSFULLY")
+        if not (ctx.voice_client and ctx.voice_client.is_playing()):
+            await self.play_next(ctx)
 
-    @commands.command(name="qresume", description="Resume the paused track")
+    @commands.command(name="qpause", description="Pauses the current track")
+    async def qpause(self, ctx):
+        if not ctx.voice_client or not ctx.voice_client.is_playing():
+            return
+        ctx.voice_client.pause()
+
+    @commands.command(name="qresume", description="Resumes the paused track")
     async def qresume(self, ctx):
-        print("RESUMING")
-        if ctx.voice_client and ctx.voice_client.is_paused():
-            # Resume from the stored position
-            exepath = os.getenv("FFMPEGEXE")
-            source = discord.FFmpegPCMAudio(
-                source=self.paused_source.original,
-                executable=exepath,
-                before_options=f"-ss {self.paused_position}"
-            )
-            
-            ctx.voice_client.play(source, after=lambda e: self.bot.loop.create_task(self.handle_after_playing(ctx, e)))
-            print("RESUMED SUCCESSFULLY")
-            self.start_time = ctx.message.created_at - time.timedelta(seconds=self.paused_position)
-    
+        if not ctx.voice_client or not ctx.voice_client.is_paused():
+            return
+        ctx.voice_client.resume()
     
     
     async def establish_voice_connection(self, ctx):
@@ -173,26 +146,28 @@ class testCog(commands.Cog):
             await ctx.voice_client.move_to(ctx.author.voice.channel)
             
     async def play_next(self, ctx):
+        print("song done! playing next")
         queue = self.get_queue()
         
-        if not queue and self.get_loop_flag() == False:
-            await ctx.send("YAAAWNNN thers no more songs in the queue IM BORED!!! cya")
-            await ctx.voice_client.disconnect()
-            return
-        
-        if self.get_loop_flag == True and self.get_current_track():
+        if self.get_loop_flag() == True:
             current_track = self.get_current_track()
-        elif queue:
+            if current_track:
+                await self.play_track(ctx, current_track[0], current_track[1])
+                return
+            
+        if queue:
             current_track = queue.pop(0)
             self.set_current_track(current_track)
+            await self.play_track(ctx, current_track[0], current_track[1])
         else:
-            return
-        
-        await self.play_track(ctx, current_track[0], current_track[1])
+            await ctx.send("YAAAWNNN thers no more songs in the queue IM BORED!!! cya")
+            await ctx.voice_client.disconnect()
         
     async def play_track(self, ctx, url, title):
+        if not ctx.voice_client:
+            await self.establish_voice_connection(ctx)
         exepath = os.getenv("FFMPEGEXE")
-        
+        self.get_current_track_info = (url, title)
         ydl_ops = {
             "format": "bestaudio/best",
             "noplaylist": True,
@@ -200,9 +175,9 @@ class testCog(commands.Cog):
         }
         
         try:
-            with yt_dlp.YoutubeDL(ydl_ops) as ydl:
-                metadata = ydl.extract_info(url, download=False)
-                audio_url = metadata["url"]   
+            
+            metadata =  await asyncloop.run_in_executor(executor, lambda: yt_dlp.YoutubeDL(ydl_ops).extract_info(url, download=False))
+            audio_url = metadata["url"]   
         except Exception as e:
             await ctx.send(f"couldnt play {title} ({e})")
             return
@@ -213,6 +188,14 @@ class testCog(commands.Cog):
             if error:
                 print(f"An error occurred: {error}")
                 return
+            
+            if not g_queue and not self.get_loop_flag():
+                coro = ctx.send("YAAAWNNN thers no more songs in the queue IM BORED!!! cya")
+                self.bot.loop.create_task(coro)
+                coro = ctx.voice_client.disconnect()
+                self.bot.loop.create_task(coro)
+                return
+            
             coro = self.handle_after_playing(ctx, error)
             future = asyncio.run_coroutine_threadsafe(coro, self.bot.loop)
             try:
@@ -225,7 +208,7 @@ class testCog(commands.Cog):
             
             
     async def handle_after_playing(self, ctx, error):
-        if self.get_loop_flag:
+        if self.get_loop_flag() == True:
             current_track = self.get_current_track()
             if current_track:
                 await self.play_track(ctx, current_track[0], current_track[1])
@@ -240,18 +223,29 @@ class testCog(commands.Cog):
     # add inline command "(@)beefstew get in here", "(@)beefstew come here", 
     @commands.command(name="join", description="get in here!!")
     async def join_vc(self, ctx):
+        if not ctx.author.voice:
+            await ctx.reply("ur not in a vc")
+            return
+        
         if not ctx.voice_client:
             await ctx.author.voice.channel.connect()
+            await self.play_next(ctx)
         elif ctx.voice_client.channel != ctx.author.voice.channel:
             await ctx.voice_client.move_to(ctx.author.voice.channel)
+            await self.play_next(ctx)
+        else:
+            return
     
     # add alias "/fuckoff"
     @commands.command(name="leave", description="fukoff")
     async def leave(self, ctx):
+        print("leaving vc")
         if ctx.voice_client:
-            self.get_queue().clear()
-            g_current_track.clear()
             await ctx.voice_client.disconnect()
+            print("clearing the queue")
+            self.get_queue().clear()
+            print("stopping the current track")
+            g_current_track.clear()
         
 async def setup(bot):
     print("incantation cog setup")
