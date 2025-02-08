@@ -23,7 +23,9 @@ sp_client = spotipy.Spotify(client_credentials_manager = SpotifyClientCredential
 
 class testCog(commands.Cog):
     def __init__(self, bot):
-        self.bot = bot   
+        self.bot = bot
+        self.disconnect_task = None
+        
         
     def get_queue(self):
         return g_queue
@@ -47,11 +49,16 @@ class testCog(commands.Cog):
     def set_loop_flag(self, value):
         loop = value
         
+    def cancel_disconnect_time(self):
+        if self.disconnect_task and not self.disconnect_task.done():
+            self.disconnect_task.cancel()
+            self.disconnect_task = None
+            
+            
     @commands.command(name="skip", description="next pleaes")
     async def skip(self, ctx):
         if ctx.voice_client.is_playing():
             ctx.voice_client.stop()
-            self.bot.loop.create_task(self.play_next(ctx))
     
     # add alias "/queue", "/q"  
     @commands.command(name="qadd", description="list the queue")  
@@ -160,9 +167,20 @@ class testCog(commands.Cog):
             self.set_current_track(current_track)
             await self.play_track(ctx, current_track[0], current_track[1])
         else:
-            await ctx.send("YAAAWNNN thers no more songs in the queue IM BORED!!! cya")
-            await ctx.voice_client.disconnect()
+            self.disconnect_task = self.bot.loop.create_task(self.disconnect_timeout(ctx))
         
+        
+    async def disconnect_timeout(self, ctx):
+        try:
+            print("no songs in the queue, waiting for 5 mintues")
+            await asyncio.sleep(300)
+            if not self.get_queue():
+                await ctx.send("YAAAWNNN thers no more songs in the queue IM BORED!!! cya")
+                await ctx.voice_client.disconnect()
+        except asyncio.CancelledError:
+            print("new song queued, disconnect cancelled")
+            
+    
     async def play_track(self, ctx, url, title):
         if not ctx.voice_client:
             await self.establish_voice_connection(ctx)
@@ -189,13 +207,7 @@ class testCog(commands.Cog):
                 print(f"An error occurred: {error}")
                 return
             
-            if not g_queue and not self.get_loop_flag():
-                coro = ctx.send("YAAAWNNN thers no more songs in the queue IM BORED!!! cya")
-                self.bot.loop.create_task(coro)
-                coro = ctx.voice_client.disconnect()
-                self.bot.loop.create_task(coro)
-                return
-            
+            # When playback ends, call the handler.
             coro = self.handle_after_playing(ctx, error)
             future = asyncio.run_coroutine_threadsafe(coro, self.bot.loop)
             try:
@@ -205,8 +217,7 @@ class testCog(commands.Cog):
             
         ctx.voice_client.play(source, after=after_playing)
         await ctx.send(f"now playing: **{title}**")
-            
-            
+                
     async def handle_after_playing(self, ctx, error):
         if self.get_loop_flag() == True:
             current_track = self.get_current_track()
@@ -277,16 +288,13 @@ async def handle_queue(ctx, url, insert=False):
     queue = testCog.get_queue(testCog)
     added = 0
     print(ytlinks)
+    
     for playlist in ytlinks:
+        if insert: reversed(playlist)
         for track in playlist:
-            if insert:
-                print(f"inserting {track}")
-                queue.insert(0, track)
-            else:
-                print(f"appending {track}")
-                queue.append(track)
+            print(f"appending {track}")
+            queue.append(track)
             added += 1
-        
     if added == 1:
         await ctx.send(f"{ctx.author.name} added 1 track to the queue")
     else:
