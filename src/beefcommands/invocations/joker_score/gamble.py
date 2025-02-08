@@ -5,17 +5,25 @@ import os
 
 async def gamble_points(interaction: discord.Interaction):
     await interaction.response.defer()
+    # dm restriction
+    if isinstance(interaction.channel, discord.DMChannel):
+        await interaction.followup.send("we are literally in DMs rn bro u cant do that here...")
+        return
+    
     user = interaction.user
+    # read the current score
     score = await postgres.read(f"SELECT joke_score FROM user_joker_score WHERE user_id = '{user.id}';")
     score = score[0][0]
     
+    # cant play if ur broke
     if score - 2 < 0:
         await interaction.followup.send(f"{user.mention} lmaooo ur broke sry no gambling for u loser")
         return
-        
-    await postgres.write(f"UPDATE user_joker_score SET joke_score = joke_score -2 WHERE user_id = '{user.id}';")
     
-    #possible outcomes
+    # pay a coin for a spin
+    await postgres.write(f"UPDATE user_joker_score SET joke_score = joke_score -1 WHERE user_id = '{user.id}';")
+    
+    # possible outcomes
     outcomes = {
         range(1,3):(f"UPDATE user_joker_score SET joke_score = 0 WHERE user_id = '{user.id}';","Return to zero...\n(Score set to 0)", "return_to_0.gif"),
         range(3,6):(f"UPDATE user_joker_score SET joke_score = joke_score * -1 WHERE user_id = '{user.id}';","Oh no...\n(Score set negative)", "negative.gif"),
@@ -36,19 +44,20 @@ async def gamble_points(interaction: discord.Interaction):
         range(100,101):(f"UPDATE user_joker_score SET joke_score = joke_score + 2 * 10  WHERE user_id = '{user.id}';","WOAHHH!!!!!!\n(POINTS x10!!!)", "score_x10.gif")
     }
     
-
+    # get the outcome
     roll, (query, explanation, media) = roll_outcome(outcomes)
     
+    # comit the change in the db
     await postgres.write(query)
     
+    # find the path to the media folder
     current_dir = os.path.dirname(__file__)
-    print(current_dir)
     file_path = os.path.join(current_dir,'..', '..', '..', 'assets', 'media', 'slots', media)
-    print(file_path)
+    
     file=discord.File(file_path)
     await interaction.channel.send(file=file)
     await interaction.channel.send(explanation)
-    await interaction.followup.send(f"🎲🎰Lets go gambling!!!🎰🎲\n{user.mention} Inserts 2 joker coins into the gambling machine...")
+    await interaction.followup.send(f"🎲🎰Lets go gambling!!!🎰🎲\n{user.mention} Inserts a joker coin into the gambling machine...")
     return
 
 def roll_outcome(outcomes):

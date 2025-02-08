@@ -7,23 +7,31 @@ from beefutilities.guilds import read_guild_log_channel
 from data import postgres
 
 async def ban_member(interaction: discord.Interaction, bot, member: discord.Member, reason: str, banned_members: set): 
+    # cant ban yourself
     if interaction.user.id == member.id:
         await interaction.response.send_message("You can't ban youself idiot, the leave button is right there", ephemeral=True)
         return
+    # cant ban the bot
     if member.id == os.getenv("CLIENTID"):
         await interaction.response.send_message("you cant get rid of me that easily...", ephemeral=True)
         return
+    # cant ban if you dont have permissions
     if not interaction.user.guild_permissions.ban_members:
         await interaction.response.send_message("you really think im gonna let u do that?", ephemeral=True)
         return
     
     try:
-        banned_members.add(member.id)    
+        # add to the banned members holding list
+        banned_members.add(member.id)
+        # retrive the log channel
         channelid = await read_guild_log_channel(interaction.guild.id)
         channel = await bot.fetch_channel(channelid)
+        
         await channel.send(embed=await ban_message_embed(interaction.user, member, reason, bot.user.avatar.url, interaction.guild.name))
         await interaction.response.send_message(f"You banned {member.name}.", ephemeral=True)
+        
         await member.ban(reason=reason)
+    
     except Exception as e:
         await postgres.log_error(e)
         await interaction.response.send_message(f"Couldn't ban user {member.name} because {e}", ephemeral=True)

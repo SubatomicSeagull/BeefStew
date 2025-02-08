@@ -10,6 +10,7 @@ async def get_insult():
 
 async def insult(interaction: discord.Interaction, victim: discord.Member):
     await interaction.response.defer()
+    # not allowed to insult beefstew
     if victim.id != os.getenv("CLIENTID"):
         try:
             insult = await get_insult()

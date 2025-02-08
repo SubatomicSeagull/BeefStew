@@ -7,12 +7,15 @@ from beefutilities.guilds import read_guild_log_channel
 from data import postgres
 
 async def kick_member(interaction: discord.Interaction, bot, member: discord.Member, reason: str, kicked_members: set): 
+    # cant kick yourself
     if interaction.user.id == member.id:
         await interaction.response.send_message("u cant kick youself idiot, the leave button is right there", ephemeral=True)
         return
+    # cant kick the bot
     if member.id == os.getenv("CLIENTID"):
         await interaction.response.send_message("you cant get rid of me that easily...", ephemeral=True)
         return
+    # cant kick if u dont have permissions
     if not interaction.user.guild_permissions.kick_members:
         await interaction.response.send_message("yeah yeah nice try", ephemeral=True)
         return

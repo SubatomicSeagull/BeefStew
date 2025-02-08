@@ -7,6 +7,7 @@ async def retrieve_joke_score(user: discord.Member):
     score = joke_score[0][0]
     return int(score)
 
+# probably not going to use this
 async def get_multilplier(user: discord.Member):
     winner = discord.utils.get(user.guild.roles, name="the funniest person ever")
     loser = discord.utils.get(user.guild.roles, name="tonights biggest loser")   
@@ -19,7 +20,7 @@ async def get_multilplier(user: discord.Member):
     
 async def score(interaction: discord.Interaction, user: discord.Member):
     await interaction.response.defer()
-    
+    # dm restriction
     if isinstance(interaction.channel, discord.DMChannel):
         await interaction.followup.send("we are literally in DMs rn bro u cant do that here...")
         return
