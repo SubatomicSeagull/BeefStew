@@ -52,5 +52,4 @@ async def watch_out(interaction: discord.Interaction, victim: discord.Member):
         
     except Exception as e:
         postgres.log_error(e)
-        print(e)
         await interaction.followup.send(f"{interaction.user.mention} tried to put {victim.name} in gay baby jail but it didnt work :// ({e})")

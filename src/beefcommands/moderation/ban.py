@@ -11,10 +11,12 @@ async def ban_member(interaction: discord.Interaction, bot, member: discord.Memb
     if interaction.user.id == member.id:
         await interaction.response.send_message("You can't ban youself idiot, the leave button is right there", ephemeral=True)
         return
+    
     # cant ban the bot
     if member.id == os.getenv("CLIENTID"):
         await interaction.response.send_message("you cant get rid of me that easily...", ephemeral=True)
         return
+    
     # cant ban if you dont have permissions
     if not interaction.user.guild_permissions.ban_members:
         await interaction.response.send_message("you really think im gonna let u do that?", ephemeral=True)
@@ -23,6 +25,7 @@ async def ban_member(interaction: discord.Interaction, bot, member: discord.Memb
     try:
         # add to the banned members holding list
         banned_members.add(member.id)
+        
         # retrive the log channel
         channelid = await read_guild_log_channel(interaction.guild.id)
         channel = await bot.fetch_channel(channelid)
@@ -37,8 +40,10 @@ async def ban_member(interaction: discord.Interaction, bot, member: discord.Memb
         await interaction.response.send_message(f"Couldn't ban user {member.name} because {e}", ephemeral=True)
 
 async def ban_message_embed(mod: discord.Member, member: discord.Member, reason: str, icon_url, guild_name):
+        # embed header
         banembed = discord.Embed(title=f"BANNED!", color=discord.Color.red())
         banembed.set_thumbnail(url=member.avatar.url)
+        # embed body
         banembed.add_field(name="", value=get_ban_message(member, reason), inline=False)
         banembed.add_field(name="", value="", inline=False)
         banembed.add_field(name="", value="", inline=False)
@@ -48,6 +53,7 @@ async def ban_message_embed(mod: discord.Member, member: discord.Member, reason:
         banembed.add_field(name="", value="", inline=False)
         banembed.add_field(name="", value="", inline=False) 
         banembed.set_author(name="Beefstew", icon_url=icon_url)
+        # embed footer
         banembed.add_field(name="", value=f"{guild_name} - {datetime.now().strftime('%d/%m/%Y %H:%M')}")      
         return banembed
     

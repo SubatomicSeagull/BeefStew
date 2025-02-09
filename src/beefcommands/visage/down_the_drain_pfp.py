@@ -47,5 +47,4 @@ async def down_the_drain(interaction: discord.Interaction, victim: discord.Membe
         drain_pfp.close()
     except Exception as e:
         postgres.log_error(e)
-        print(e)
         await interaction.followup.send(f"{interaction.user.mention} tried to drop {victim.name} down the drain but it didnt work :// ({e})")

@@ -69,7 +69,8 @@ class MusicPlayerCog(commands.Cog):
     @commands.command(name="loop", aliases=["repeat"], description="loop the current song")
     async def mp_loop_queue(self, ctx):
         await queue.qloop(ctx)
-        
+
+# cog startup
 async def setup(bot):
-    print("music player cog setup")
+    print("- music player cog setup")
     await bot.add_cog(MusicPlayerCog(bot))

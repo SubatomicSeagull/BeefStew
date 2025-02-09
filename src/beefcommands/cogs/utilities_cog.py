@@ -38,6 +38,7 @@ class UtilitiesCog(commands.Cog):
     async def help(self, interaction: discord.Interaction):
         await help(self.bot, interaction)
 
+# cog setup
 async def setup(bot):
-    print("utilities cog setup")
+    print("- utilities cog setup")
     await bot.add_cog(UtilitiesCog(bot))

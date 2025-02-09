@@ -13,6 +13,7 @@ async def play(ctx, *args):
     if url:
         # add the item to the front of the queue
         await queue.handle_queue(ctx, url, insert=True)
+        
         # join the voice channel if its not in there already
         await voice_channel.establish_voice_connection(ctx)
     

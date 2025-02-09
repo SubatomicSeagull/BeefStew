@@ -42,6 +42,7 @@ class VisageCog(commands.Cog):
     async def JFK(self, interaction: discord.Interaction, victim: discord.Member):
         await beefcommands.visage.JFK_pfp.watch_out(interaction, victim)
 
+# cog startup
 async def setup(bot):
-    print("visage cog setup")
+    print("- visage cog setup")
     await bot.add_cog(VisageCog(bot))

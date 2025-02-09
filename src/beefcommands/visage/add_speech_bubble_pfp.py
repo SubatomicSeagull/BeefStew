@@ -40,6 +40,5 @@ async def slander(interaction: discord.Interaction, victim: discord.Member):
         slandered_pfp.close()
     except Exception as e:
         postgres.log_error(e)
-        print(e)
         await interaction.followup.send(content=f"{interaction.user.mention} tried to slander {victim.mention}, but it didnt work :// ({e})")
     

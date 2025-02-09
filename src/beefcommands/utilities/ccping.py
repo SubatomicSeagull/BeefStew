@@ -34,7 +34,6 @@ async def pingembed(interaction: discord.Interaction, icon_url, guild_name):
     file_mod_time = datetime.fromtimestamp(os.path.getmtime(hosts_path))
     
     if (current_time - file_mod_time).days > 1:
-        print(f"Hosts file older than 1 day ({(current_time - file_mod_time).days}), retriving updated info...")
         await generate_hosts_file()
     
     # open hosts.json

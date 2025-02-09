@@ -10,15 +10,21 @@ async def get_insult():
 
 async def insult(interaction: discord.Interaction, victim: discord.Member):
     await interaction.response.defer()
+    
     # not allowed to insult beefstew
     if victim.id != os.getenv("CLIENTID"):
         try:
+            # retrive insule
             insult = await get_insult()
+            
+            # cant insult yourself
             if victim.id == interaction.user.id:
                 await interaction.followup.send(f"{interaction.user.mention} tried to cast Vicious Mockery on themselves for some reason...\nit still works tho, {interaction.user.mention} {insult} ")
             else:
                 await interaction.followup.send(f"{victim.mention} {insult}")
         except Exception as e:
             await interaction.followup.send(f"{interaction.user.mention} tried to cast Vicious Mockery on {victim.mention}... but it failed ({e})")
+    
+    # cant insult beefstew
     else:
         await interaction.followup.send(f"{interaction.user.mention} tried to cast Vicious Mockery on me...BITCH") 

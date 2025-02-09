@@ -36,5 +36,5 @@ class EventListenerCog(commands.Cog):
         await beefcommands.events.message_events.message_delete_event(self.bot, message)
 
 async def setup(bot):
-    print("event cog setup")
+    print("- event cog setup")
     await bot.add_cog(EventListenerCog(bot))

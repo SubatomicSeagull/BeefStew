@@ -38,6 +38,7 @@ def set_loop_flag(value):
 async def handle_queue(ctx, url, insert):
     # send the status message
     status = await ctx.send("Queuing songs...")
+    
     # validate the url
     media_type = validate_input(url)
     if media_type == "invalid":
@@ -60,6 +61,7 @@ async def handle_queue(ctx, url, insert):
             # insert at the front
             if insert == True:
                 queue.insert(0, track)
+            
             # push to the back
             else:
                 queue.append(track)
@@ -80,15 +82,16 @@ async def qlist(ctx):
         
         # for each song in the queue up to a limit of 10, print just the title with an index number and add it to the content
         for i in range(len(queue)):
-            print(queue[i])
             if i < 10:
                 content += f"**{i+1}**. {queue[i][1]}\n"
             else:
                 # add if there are more than 10 songs
                 content += f"... and {len(queue) - 10} more tracks."
                 break
+      
       # generate the list embed
         listembed = discord.Embed(title="StewQueue", description="\n", color=discord.Color.orange())
+        
         # list the current track if there is one
         if get_current_track():
             listembed.add_field(name="", value=f"**Currently playing:** {get_current_track_title()}", inline=False) 
@@ -125,11 +128,9 @@ async def qloop(ctx):
         if get_loop_flag() == False:
             set_loop_flag(True)
             await ctx.send(f"toggled loop **ON**")
-            print(get_loop_flag())
         else:
             set_loop_flag(False)
             await ctx.send(f"toggled loop **OFF**")
-            print(get_loop_flag())
             
         
     

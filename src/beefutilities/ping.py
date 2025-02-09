@@ -6,15 +6,17 @@ from beefutilities.generate_hosts import generate_hosts_file
 import discord
 from datetime import datetime
 
-#try to connect to the host through the given port
 async def check(host,port,timeout):
+    # instantiate the socket and set timeout params
     address = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
     address.settimeout(timeout)
     try:
+        # try to connect to the host:post
         address.connect((host,port))
     except:
        return False
     else:
+       # close the connection
        address.close()
        return True
 
@@ -29,8 +31,8 @@ async def ping_host(host, port, timeout, retries):
         t0 = time.time()
         if await check(host, port, timeout):
             response_time = ((time.time() - t0) * 1000)
-            #print(str(response_time) + " ms")
             sum = sum + response_time
+        
         #if the host did not respond, set everything to 0 and break the loop
         else:
             sum = 0
@@ -46,9 +48,10 @@ async def ping_host(host, port, timeout, retries):
 
  # ping embed constructor
 async def pingembed(interaction: discord.Interaction, icon_url, guild_name):
-    
+    # construct a path to hosts.json
     hosts_path = os.path.join((os.path.dirname(os.path.abspath(__file__))), "hosts.json")
     
+    # if it doesnt exits, create it
     if not os.path.exists(hosts_path):
         await generate_hosts_file()
             
@@ -57,9 +60,9 @@ async def pingembed(interaction: discord.Interaction, icon_url, guild_name):
     file_mod_time = datetime.fromtimestamp(os.path.getmtime(hosts_path))
     
     if (current_time - file_mod_time).days > 1:
-        print(f"Hosts file older than 1 day ({(current_time - file_mod_time).days}), retriving updated info...")
         await generate_hosts_file()
-    
+
+    # read hosts.json
     with open(hosts_path, "r", encoding="utf-8") as file:
             data = json.load(file)
     

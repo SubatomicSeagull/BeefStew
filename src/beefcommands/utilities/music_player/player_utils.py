@@ -10,6 +10,7 @@ async def play_next(ctx):
     # retrive the queue
     queue_list = queue.get_queue()
     if queue.get_loop_flag() == True:
+        
         # play the current_track link again and dont take from the queue
         current_track = queue.get_current_track()
         if current_track:
@@ -17,10 +18,11 @@ async def play_next(ctx):
             return
         
     # if the queue is not empty
-    if queue_list:
+    if queue_list:       
         # move the top of the queue to the currently playing
         current_track = queue_list.pop(0)
         queue.set_current_track(current_track)
+        
         # play the song in currently_playing
         await play_track(ctx, queue.get_current_track_link(), queue.get_current_track_title())
     else:
@@ -42,8 +44,10 @@ async def play_track(ctx, url, title):
     # if the bot isnt in a voice channel, join it
     if not ctx.voice_client:
         await voice_channel.establish_voice_connection(ctx)
+    
     # find the ffmpeg executable
     exepath = os.getenv("FFMPEGEXE")
+    
     # define the audio options
     ydl_ops = {
         "format": "bestaudio/best",
@@ -54,6 +58,7 @@ async def play_track(ctx, url, title):
     try:
         # retrive the thread executor
         loop = asyncio.get_running_loop()
+        
         # retrive the metadata for the youtube link and return the audio url
         metadata =  await loop.run_in_executor(executor, lambda: yt_dlp.YoutubeDL(ydl_ops).extract_info(url, download=False))
         audio_url = metadata["url"]   
@@ -68,7 +73,6 @@ async def play_track(ctx, url, title):
     # define behaviour after playing a track
     def after_playing(error):
         if error:
-            print(f"An error occurred: {error}")
             return
         
         # when playback ends, call the handler
@@ -90,6 +94,7 @@ async def disconnect_timeout(ctx):
         if not queue.get_queue():
             await ctx.send("YAAAWNNN thers no more songs in the queue IM BORED!!! cya")
             await ctx.voice_client.disconnect()
+    
     # interupt the timer when the queue is no longer empty
     except asyncio.CancelledError:
         pass

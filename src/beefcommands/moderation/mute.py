@@ -6,10 +6,12 @@ async def mute(interaction: discord.Interaction, member: discord.Member):
     if interaction.user.id == member.id:
         await interaction.response.send_message("mute yourself? just stop talking lol", ephemeral=True)
         return
+    
     # cant mute beefstew
     if member.id == os.getenv("CLIENTID"):
         await interaction.response.send_message("you cant silence me bitch", ephemeral=True)
         return
+    
     # cant mute if you dont have permissions
     if not interaction.user.guild_permissions.administrator:
         await interaction.response.send_message("yeah yeah nice try", ephemeral=True)
@@ -20,7 +22,7 @@ async def mute(interaction: discord.Interaction, member: discord.Member):
     try:
         await member.edit(mute=True)
     except Exception as e:
-        print("Target user is not in a voice channel, consider re-muting if they join.")
+        pass
     
     # add the beefmute role if they dont have it already
     if discord.utils.get(member.guild.roles, name="BeefMute") not in member.roles:
@@ -42,10 +44,12 @@ async def unmute(interaction: discord.Interaction, member: discord.Member):
     if interaction.user.id == member.id:
         await interaction.response.send_message("yeah yeah nice try", ephemeral=True)
         return
+    
     # you cant unmute beefstew
     if member.id == os.getenv("CLIENTID"):
         await interaction.response.send_message("you cant un-silence me bitch", ephemeral=True)
         return
+    
     # cant unmute if you dont have permissions
     if not interaction.user.guild_permissions.administrator:
         await interaction.response.send_message("yeah yeah nice try", ephemeral=True)
@@ -56,7 +60,7 @@ async def unmute(interaction: discord.Interaction, member: discord.Member):
         # this needs a rework as if a user isnt in a voice channel and gets muted they wont be server umuted
         await member.edit(mute=False)
     except Exception as e:
-        print("Target user is not in a voice channel, consider re-muting if they join.")
+        pass
     if discord.utils.get(member.guild.roles, name="BeefMute") in member.roles:
         try:
             await remove_mute_role(interaction, member)
@@ -69,7 +73,7 @@ async def unmute(interaction: discord.Interaction, member: discord.Member):
 
 async def create_mute_role(guild: discord.Guild):
     try:
-        print("Creating Mute Role: Defining the permissions...")
+        
         # define each and every permission for the role - there must be a better way of doing this
         permissions = discord.Permissions()    
         permissions.update(
@@ -99,15 +103,13 @@ async def create_mute_role(guild: discord.Guild):
             manage_webhooks=False,
             manage_emojis= False
         )    
-        print("Creating Mute Role: creating the role")
         mute_role = await guild.create_role(name="BeefMute", permissions=permissions,)
+        
         # move the role to the highest position it can go stopping before overriding owner
-        print(f"Creating Mute Role: elevating the role to position {(len(mute_role.guild.roles)-3)}")
         await mute_role.edit(position=(len(mute_role.guild.roles)-3))
         
         
         # overwriting the permissions of the role, again there has to be better way
-        print("Creating Mute Role: creating override permissions")
         overwrite = discord.PermissionOverwrite()
         overwrite.kick_members=False
         overwrite.ban_members=False
@@ -137,30 +139,27 @@ async def create_mute_role(guild: discord.Guild):
         
         # for each channel, set the role overrides, for real there HAS to be a better way
         for channel in guild.channels:
-            print(f"Creating Mute Role: setting permission overrides in {channel.name}")
             try:
                 await channel.set_permissions(mute_role, overwrite=overwrite)
             except discord.Forbidden:
-                print(f"Failed to set permissions in {channel.name}. Missing permissions.")
+                return
             except discord.HTTPException as e:
-                print(f"Failed to set permissions in {channel.name}: {e}")
-                
+                return             
     except discord.Forbidden:
-        print("Tried to create the mute role, but no permissions")
+        return
         
     
 async def add_mute_role(interaction: discord.Interaction, member: discord.Member):
     # retrive the guild
     guild = member.guild
+    
     # check to see if the mute role is registered in the server
     mute_role = discord.utils.get(guild.roles, name="BeefMute")
     if mute_role is None:
-        print("Mute: no mute role, creating one")
         await create_mute_role(guild=guild)
         mute_role = discord.utils.get(guild.roles, name="BeefMute")
     try:
         # add the role to the user
-        print("Mute: adding role to user")
         await member.add_roles(mute_role)
     
     except discord.Forbidden as e:
@@ -169,13 +168,14 @@ async def add_mute_role(interaction: discord.Interaction, member: discord.Member
 async def remove_mute_role(interaction: discord.Interaction, member: discord.Member):
     # retrive the guild
     guild = member.guild
+    
     # check to see if the mute role is registered in the server
     mute_role = discord.utils.get(guild.roles, name="BeefMute")
     if mute_role is None:
         await create_mute_role(guild=guild)
         mute_role = discord.utils.get(guild.roles, name="BeefMute")
     try:
-        # remove the role from the user
+      # remove the role from the user
       await member.remove_roles(mute_role)
     except discord.Forbidden as e:
         await interaction.channel.send(f"couldnt unmute {member.name} because i dont have permission {e} :(", ephemeral=True)

@@ -5,13 +5,14 @@ import os
 
 async def gamble_points(interaction: discord.Interaction):
     await interaction.response.defer()
+    
     # dm restriction
     if isinstance(interaction.channel, discord.DMChannel):
         await interaction.followup.send("we are literally in DMs rn bro u cant do that here...")
         return
     
-    user = interaction.user
     # read the current score
+    user = interaction.user
     score = await postgres.read(f"SELECT joke_score FROM user_joker_score WHERE user_id = '{user.id}';")
     score = score[0][0]
     
@@ -54,6 +55,7 @@ async def gamble_points(interaction: discord.Interaction):
     current_dir = os.path.dirname(__file__)
     file_path = os.path.join(current_dir,'..', '..', '..', 'assets', 'media', 'slots', media)
     
+    # send the corresponding gif
     file=discord.File(file_path)
     await interaction.channel.send(file=file)
     await interaction.channel.send(explanation)
@@ -62,7 +64,6 @@ async def gamble_points(interaction: discord.Interaction):
 
 def roll_outcome(outcomes):
     roll = randint(1,100)
-    print(f"rolled a {roll}")
     for range_, outcome in outcomes.items():
         if roll in range_:
             return roll, outcome

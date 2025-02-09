@@ -53,5 +53,4 @@ async def bless(interaction: discord.Interaction, victim: discord.Member):
         
     except Exception as e:
         postgres.log_error(e)
-        print(e)
         await interaction.followup.send(f"{interaction.user.mention} tried to find jesus {victim.name} but it didnt work :// ({e})")

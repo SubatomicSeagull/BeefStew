@@ -51,5 +51,4 @@ async def boil(interaction: discord.Interaction, victim: discord.Member):
         boiled_pfp.close()
     except Exception as e:
         await postgres.log_error(e)
-        print(e)
         await interaction.followup.send(f"{interaction.user.mention} tried to boil {victim.name} but it didnt work :// ({e})")

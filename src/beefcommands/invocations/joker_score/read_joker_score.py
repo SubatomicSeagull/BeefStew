@@ -20,11 +20,13 @@ async def get_multilplier(user: discord.Member):
     
 async def score(interaction: discord.Interaction, user: discord.Member):
     await interaction.response.defer()
+    
     # dm restriction
     if isinstance(interaction.channel, discord.DMChannel):
         await interaction.followup.send("we are literally in DMs rn bro u cant do that here...")
         return
     
+    # check to see if the user is registered in the db, if not, register them
     if not await is_registered(user):
         await register_user(user)
     try:

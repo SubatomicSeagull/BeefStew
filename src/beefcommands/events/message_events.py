@@ -14,6 +14,7 @@ async def message_send_event(bot, message):
     # dont respond if its a bot message
     if message.author.bot or not message.content:
             return
+        
         # check for mentions or replies
     if message.mentions or message.reference:
         user = None
@@ -98,9 +99,11 @@ async def message_edit_event(bot, before, after):
     # dont alert to bot edits
     if before.author == bot.user:
         return
+    
     # dont alert if its the same
     if before == after:
         return
+    
     # get the log channel
     channel = await bot.fetch_channel(await read_guild_log_channel(before.guild.id))
     
@@ -115,12 +118,16 @@ async def message_delete_event(bot, message):
     #dont alert to bot deletion
     if message.author == bot.user:
         return
+    
     # get the log channel
     channel = await bot.fetch_channel(await read_guild_log_channel(message.guild.id))
     
+    #embed header
     embed = discord.Embed(title="Message Deleted", color=discord.Color.orange())
-    embed.add_field(name="Message", value=f"```{message.content}```", inline=False)
     embed.set_author(name=message.author, icon_url=message.author.avatar.url)
+    #embed body
+    embed.add_field(name="Message", value=f"```{message.content}```", inline=False)
+    #embed footer
     embed.add_field(name="", value=f"{message.author.guild.name} - {datetime.now().strftime('%d/%m/%Y %H:%M')}")  
     await channel.send(embed=embed)
     
@@ -136,14 +143,17 @@ async def get_response(message: discord.Message):
     # check for trigger words
     for trigger_phrase, response in responses["trigger_phrases"].items():
         if trigger_phrase in message.content.lower():
+            
             # get the type and content
             response_type = response.get("type")
             content = response.get("content")
+            
             # pathfind to the media folder
             if isinstance(response, dict) and response_type == "media":
                 media_path = os.path.join(current_dir,'..', '..', 'assets', 'media', (content))
                 await message.reply(file=discord.File(media_path))
                 return
+            
             else:
                 await message.reply(content)
                 return

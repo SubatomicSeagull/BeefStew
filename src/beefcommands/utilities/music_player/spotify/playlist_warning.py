@@ -29,6 +29,7 @@ class PlaylistWarningEmbed(discord.ui.View):
         
 async def playlistwarning(ctx, playlist_name, playlist_art, count):
     warning_embed = discord.Embed(title=playlist_name, description="hold on there buddy...", color=discord.Color.green())
+    
     # sets the thumbnail to be the playlist art
     warning_embed.set_thumbnail(url=playlist_art)
     warning_embed.add_field(name="", value=f"**{playlist_name}** has **{count}** songs, do you want to add them all?")
@@ -37,6 +38,7 @@ async def playlistwarning(ctx, playlist_name, playlist_art, count):
     
     message = await ctx.send(embed=warning_embed, view=view)
     view.message = message
+    
     # wait for a user to click a button, else, timeout
     await view.wait()
     return view.response
