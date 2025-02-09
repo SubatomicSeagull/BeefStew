@@ -8,30 +8,37 @@ class UtilitiesCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
     
+    # pings ccserver and returns an average ping time
     @discord.app_commands.command(name="ccping", description="pings CCServer, please be responsible with this one...")
     async def ccping(self, interaction: discord.Interaction):
         await ccping(self.bot, interaction)
     
+    # not implemented yet, will retrive info about ccserver like storage, ping, etc
     @discord.app_commands.command(name="ccinfo", description="returns current info about CCServer")
-    async def ccinfo(self, interaction: discord.Interaction):
-        await interaction.response.send_message("not implemented yet sorry :(")
+    async def ccinfo(self, interaction: discord.Interaction, url: str):
+        pass
     
+    # sets the logs channel to the channel its run in
     @discord.app_commands.command(name="set_logs_channel", description="where should i spew...?")
     async def set_log_channel(self, interacton: discord.Interaction):
         await set_logs(interacton)
 
+    # sets the info channel to the channel its run in
     @discord.app_commands.command(name="set_info_channel", description="where should i spew...?")
     async def set_info_channel(self, interacton: discord.Interaction):
         await set_info(interacton)
     
+    # sets the quotes channel to the channel its run in
     @discord.app_commands.command(name="set_quotes_channel", description="where do *you* spew...?")
     async def set_quote_channel(self, interacton: discord.Interaction):
         await set_quotes(interacton)
     
+    # prints a list of commands
     @discord.app_commands.command(name="help", description="HELP!! HELP ME!!!!!!!")
     async def help(self, interaction: discord.Interaction):
         await help(self.bot, interaction)
 
+# cog setup
 async def setup(bot):
-    print("utilities cog setup")
+    print("- utilities cog setup")
     await bot.add_cog(UtilitiesCog(bot))

@@ -3,23 +3,36 @@ from dotenv import load_dotenv
 import discord
 from discord.ext import commands
 from data import postgres
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
+from spotipy.oauth2 import SpotifyClientCredentials
+import spotipy
 
+# instantiate the thread pool executor
+executor = ThreadPoolExecutor(max_workers=4)
 
-# Load the token from .env
+# start up the multithreading loop
+asyncloop = asyncio.new_event_loop()
+asyncio.set_event_loop(asyncloop)
+
+# log in to the spotify api
+sp_client = spotipy.Spotify(client_credentials_manager = SpotifyClientCredentials(client_id=os.getenv("SPOTIFYCLIENTID"), client_secret=os.getenv("SPOTIFYCLIENTSECRET")))
+
+# load the token from .env
 try:
     load_dotenv()
 except Exception as e:
     print("Dotenv load failed, either dotenv is not installed or there is no .env file.")
     postgres.log_error(e)
 
-# Create client and intents objects
+# create client and intents objects
 intents = discord.Intents.all()
 intents.message_content = True
 bot = commands.Bot(command_prefix="/", intents=intents)
 kicked_members = set()
 banned_members = set()
 
-
+# load the commands though the cogs
 async def load_cogs():
     print("registering cogs...")
     await bot.load_extension("beefcommands.cogs.event_listener_cog")
@@ -28,15 +41,23 @@ async def load_cogs():
     await bot.load_extension("beefcommands.cogs.moderation_cog")
     await bot.load_extension("beefcommands.cogs.utilities_cog")
     await bot.load_extension("beefcommands.cogs.visage_cog")
+    await bot.load_extension("beefcommands.cogs.music_player_cog")
+
 
 @bot.event
-async def on_ready():
-    print(f"Commands currently registered:")
+async def on_ready():    
+    # deregister all the slash command and refesh them
     for command in bot.tree.get_commands():
         print(f"removing {command.name}")
         await bot.tree.remove_command(command.name)
+        
+    # load the cogs
     await load_cogs()
+    
+    # re-register all the command
     await bot.tree.sync()
+    
+    # go!
     print(f"{bot.user} is now online, may god help us all...")
 
 # entrypoint

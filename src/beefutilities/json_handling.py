@@ -1,12 +1,15 @@
 import json
 import os
 from collections import OrderedDict
-#from data.server_info import server_interactions
 
+# global assets folder path
 ASSETS_FOLDER = os.path.join(os.path.dirname(__file__), '..', 'assets')
 
 def load_element(file_name, element):
+    # construct the file path
     file_path = os.path.join(ASSETS_FOLDER, file_name)
+    
+    # retrive the given element
     with open(file_path, 'r') as file:
         data = json.load(file)
     if element not in data:
@@ -14,32 +17,46 @@ def load_element(file_name, element):
     return data[element]
 
 def save_element(file_name, element, value):
+    #construct the file path
     file_path = os.path.join(ASSETS_FOLDER, file_name)
+    
+    # save the value to the given element if the file exists
     try:
         with open(file_path, 'r') as file:
             data = json.load(file)
     except FileNotFoundError:
         data = {}
     data[element] = value
+     
+    #write the data to the file
     with open(file_path, 'w') as file:
         json.dump(data, file, indent=4)
 
 def delete_element(file_name, element):
+    # construct the file path
     file_path = os.path.join(ASSETS_FOLDER, file_name)
+    
+    # open the json file
     with open(file_path, 'r') as file:
         data = json.load(file)
     if element in data:
+        # remove the element of it exists
         del data[element]
+        # write the new json file
         with open(file_path, 'w') as file:
             json.dump(data, file, indent=4)
         return True
     return False
 
 def update_element(file_name, element, value):
+    # construct the file path
     file_path = os.path.join(ASSETS_FOLDER, file_name)
+    
+    # open the file
     with open(file_path, 'r') as file:
         data = json.load(file)
     
+    # split the elements and match them with the kesy 
     keys = element.split('.')
     d = data
     for key in keys[:-1]:
@@ -47,10 +64,14 @@ def update_element(file_name, element, value):
     
     d[keys[-1]] = value
     
+    # write the updated file.
     with open(file_path, 'w') as file:
         json.dump(data, file, indent=4)
     return True
 
+
+### uhhhh these are reused from generate hosts and i dont know which ones are used
+# plz fix 
 def containers_json_reformat():
     hosts_path = os.path.join((os.path.dirname(os.path.abspath(__file__))), "data", "server_info", "hosts.json")
     containers_path = os.path.join((os.path.dirname(os.path.abspath(__file__))), "data", "server_info", "containers.json")
