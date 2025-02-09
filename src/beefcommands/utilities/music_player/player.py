@@ -11,12 +11,12 @@ async def play(ctx, *args):
     #join together arbitrary arguments into search query
     url = " ".join(args)
     if url:
-        #add the item to the front of the queue
+        # add the item to the front of the queue
         await queue.handle_queue(ctx, url, insert=True)
-        #join the voice channel if its not oined already
+        # join the voice channel if its not in there already
         await voice_channel.establish_voice_connection(ctx)
     
-    #start playing the queue
+    # start playing the queue
     if not (ctx.voice_client and ctx.voice_client.is_playing()):
         await play_next(ctx)
 

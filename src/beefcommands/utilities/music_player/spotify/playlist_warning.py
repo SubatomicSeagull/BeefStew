@@ -7,20 +7,14 @@ class PlaylistWarningEmbed(discord.ui.View):
         self.response = None
         self.message = None
         
-    @discord.ui.button(label="all of em babey!!", style=discord.ButtonStyle.primary)
+    @discord.ui.button(label="all of em babey!!", style=discord.ButtonStyle.green)
     async def add_all_tracks(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.response = True
         await interaction.message.delete()
         self.stop()
-    
-    @discord.ui.button(label="just the one please", style=discord.ButtonStyle.primary)
-    async def add_top_track(self, interaction: discord.Interaction, button: discord.ui.Button):
-        self.response = False
-        await interaction.message.delete()
-        self.stop()
         
-    @discord.ui.button(label="umm actaully nvm ://", style=discord.ButtonStyle.primary)
-    async def add_top_track(self, interaction: discord.Interaction, button: discord.ui.Button):
+    @discord.ui.button(label="umm actaully nvm ://", style=discord.ButtonStyle.danger)
+    async def dont_add_tracks(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.response = None
         await interaction.message.delete()
         self.stop()
@@ -35,12 +29,14 @@ class PlaylistWarningEmbed(discord.ui.View):
         
 async def playlistwarning(ctx, playlist_name, playlist_art, count):
     warning_embed = discord.Embed(title=playlist_name, description="hold on there buddy...", color=discord.Color.green())
+    # sets the thumbnail to be the playlist art
     warning_embed.set_thumbnail(url=playlist_art)
     warning_embed.add_field(name="", value=f"**{playlist_name}** has **{count}** songs, do you want to add them all?")
     
     view = PlaylistWarningEmbed(ctx)
+    
     message = await ctx.send(embed=warning_embed, view=view)
     view.message = message
-    
+    # wait for a user to click a button, else, timeout
     await view.wait()
     return view.response

@@ -10,27 +10,27 @@ class EventListenerCog(commands.Cog):
         self.kicked_members = set()
         self.banned_members = set()
 
-    # Message Listener
+    # message listener
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         await beefcommands.events.message_events.message_send_event(self.bot, message)
 
-    # Member Join Listener
+    # member join listener
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
         await member_join_event(self.bot, member)
 
-    # Member Leave Listener
+    # member leave listener
     @commands.Cog.listener()
     async def on_member_remove(self, member: discord.Member):
         await member_remove_event(self.bot, member, self.kicked_members, self.banned_members)
 
-    # Message Edit Listener
+    # message edit listener
     @commands.Cog.listener()
     async def on_message_edit(self, before: discord.Message, after: discord.Message):
         await beefcommands.events.message_events.message_edit_event(self.bot, before, after)
 
-    # Message Delete Listener
+    # message delete listener
     @commands.Cog.listener()
     async def on_message_delete(self, message: discord.Message):
         await beefcommands.events.message_events.message_delete_event(self.bot, message)

@@ -2,6 +2,7 @@ import re
 from beefcommands.utilities.music_player.youtube.youtube_handler import get_youtube_title, get_youtube_link
 from beefcommands.utilities.music_player.spotify.spotify_handler import spotify_link_parser
 
+# what kind of link is it?
 async def link_parser(ctx, url, type):
     return_links = []
     if type == 'youtube':
@@ -16,8 +17,8 @@ async def link_parser(ctx, url, type):
         return_links.append([(search_song, title)])
     return return_links
 
+# is it a valid link, if so, what type?
 def validate_input(url):
-    print("validating the link")
     youtube_pattern = re.compile(r'(https?://)?(www\.)?(youtube|youtu|youtube-nocookie)\.(com|be)/.+')
     spotify_pattern = re.compile(r'(https?://)?(open\.)?spotify\.com/.+')
     search_pattern = re.compile(r'^(?!https?://).+')

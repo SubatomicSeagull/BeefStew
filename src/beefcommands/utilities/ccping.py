@@ -8,42 +8,43 @@ from datetime import datetime
 
 async def ccping(bot, interaction: discord.Interaction):
     await interaction.response.defer()
-    
+    # dm restriction
     if isinstance(interaction.channel, discord.DMChannel):
         await interaction.followup.send("we are literally in DMs rn bro u cant do that here...")
         return
-            
+    
+    # retrive the bots pfp
     boturl = bot.user.avatar.url
+    
     embed = await pingembed(interaction, boturl, interaction.channel.guild.name)
     await interaction.followup.send(embed=embed)
     
 async def pingembed(interaction: discord.Interaction, icon_url, guild_name):
-   
+    # construct a file path to hosts.json
     current_dir = os.path.dirname(__file__)
     file_path = os.path.join(current_dir, '..', '..')
     hosts_path = os.path.join(file_path, "data", "server_info", "hosts.json")
     
+    # generate a new hosts file if there isnt one
     if not os.path.exists(hosts_path):
-        print("Can't find hosts.json...")
         await generate_hosts_file()
             
     #if the hosts file is older than one day, update it
     current_time = datetime.now()
     file_mod_time = datetime.fromtimestamp(os.path.getmtime(hosts_path))
     
-    print(f"hosts.json is {(current_time - file_mod_time).days} days old.")
-    
     if (current_time - file_mod_time).days > 1:
         print(f"Hosts file older than 1 day ({(current_time - file_mod_time).days}), retriving updated info...")
         await generate_hosts_file()
     
+    # open hosts.json
     with open(hosts_path, "r", encoding="utf-8") as file:
             data = json.load(file)
     
     total_response_time = 0
     host_count = len(data)
     
-    #embed headder
+    #embed header
     pingembed = discord.Embed(title=f"Pinged CCServer with {host_count} results:", description="", color=discord.Color.lighter_grey())
     pingembed.set_thumbnail(url=icon_url) # change to ccserver icon, actaully figure out how to add local files this time plz
     pingembed.set_author(name="Beefstew", icon_url=icon_url)
