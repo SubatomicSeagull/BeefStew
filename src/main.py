@@ -15,15 +15,15 @@ executor = ThreadPoolExecutor(max_workers=4)
 asyncloop = asyncio.new_event_loop()
 asyncio.set_event_loop(asyncloop)
 
-# log in to the spotify api
-sp_client = spotipy.Spotify(client_credentials_manager = SpotifyClientCredentials(client_id=os.getenv("SPOTIFYCLIENTID"), client_secret=os.getenv("SPOTIFYCLIENTSECRET")))
-
 # load the token from .env
 try:
     load_dotenv()
 except Exception as e:
     print("Dotenv load failed, either dotenv is not installed or there is no .env file.")
     postgres.log_error(e)
+
+# log in to the spotify api
+sp_client = spotipy.Spotify(client_credentials_manager = SpotifyClientCredentials(client_id=os.getenv("SPOTIFYCLIENTID"), client_secret=os.getenv("SPOTIFYCLIENTSECRET")))
 
 # create client and intents objects
 intents = discord.Intents.all()
