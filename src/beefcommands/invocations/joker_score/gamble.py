@@ -17,7 +17,7 @@ async def gamble_points(interaction: discord.Interaction):
     score = score[0][0]
     
     # cant play if ur broke
-    if score - 2 < 0:
+    if score - 1 < 0:
         await interaction.followup.send(f"{user.mention} lmaooo ur broke sry no gambling for u loser")
         return
     
@@ -36,13 +36,13 @@ async def gamble_points(interaction: discord.Interaction):
         range(30,40):(f"UPDATE user_joker_score SET joke_score = joke_score + 0  WHERE user_id = '{user.id}';","Nothing happens...", "nothing02.gif"),
         range(40,50):(f"UPDATE user_joker_score SET joke_score = joke_score + 0  WHERE user_id = '{user.id}';","Nothing happens...", "nothing03.gif"),
         range(50,60):(f"UPDATE user_joker_score SET joke_score = joke_score + 0  WHERE user_id = '{user.id}';","Nothing happens...", "nothing04.gif"),
-        range(60,74):(f"UPDATE user_joker_score SET joke_score = joke_score + 4 WHERE user_id = '{user.id}';","You got your points back plus some more!\n(points back +2)", "+2.gif"),
-        range(74,84):(f"UPDATE user_joker_score SET joke_score = joke_score + 6 WHERE user_id = '{user.id}';","You got your points back, and then some!\n(points back +4)","+4.gif"),
-        range(84,90):(f"UPDATE user_joker_score SET joke_score = joke_score + 12 WHERE user_id = '{user.id}';","wooo thats what its all about baby, dedication!!\n(points back +10)","+10.gif"),
-        range(90,94):(f"UPDATE user_joker_score SET joke_score = joke_score + 2 * 1.5 WHERE user_id = '{user.id}';","Points increased by 50%!","score_x1.5.gif"),
-        range(94,97):(f"UPDATE user_joker_score SET joke_score = joke_score + 2 * 2 WHERE user_id = '{user.id}';","YOWZA!!!!\n(Points doubled!)", "score_x2.gif"),
-        range(97,100):(f"UPDATE user_joker_score SET joke_score = joke_score + 2 * 3 WHERE user_id = '{user.id}';","OMGGGGG!!!\n(Points TRIPLED!)", "score_x3.gif"),
-        range(100,101):(f"UPDATE user_joker_score SET joke_score = joke_score + 2 * 10  WHERE user_id = '{user.id}';","WOAHHH!!!!!!\n(POINTS x10!!!)", "score_x10.gif")
+        range(60,74):(f"UPDATE user_joker_score SET joke_score = joke_score + 3 WHERE user_id = '{user.id}';","You got your points back plus some more!\n(points back +2)", "+2.gif"),
+        range(74,84):(f"UPDATE user_joker_score SET joke_score = joke_score + 5 WHERE user_id = '{user.id}';","You got your points back, and then some!\n(points back +4)","+4.gif"),
+        range(84,90):(f"UPDATE user_joker_score SET joke_score = joke_score + 11 WHERE user_id = '{user.id}';","wooo thats what its all about baby, dedication!!\n(points back +10)","+10.gif"),
+        range(90,94):(f"UPDATE user_joker_score SET joke_score = joke_score + 21 WHERE user_id = '{user.id}';","20 Points!","score_x1.5.gif"),
+        range(94,97):(f"UPDATE user_joker_score SET joke_score = joke_score + 1 * 2 WHERE user_id = '{user.id}';","YOWZA!!!!\n(Points doubled!)", "score_x2.gif"),
+        range(97,100):(f"UPDATE user_joker_score SET joke_score = joke_score + 1 * 10 WHERE user_id = '{user.id}';","OMGGGGG!!!\n(Points x10!!!)", "score_x3.gif"),
+        range(100,101):(f"UPDATE user_joker_score SET joke_score = joke_score + 1001  WHERE user_id = '{user.id}';","WOAHHH!!!!!!\n(ONE THOUSAND POINTS!!!)", "score_x10.gif")
     }
     
     # get the outcome

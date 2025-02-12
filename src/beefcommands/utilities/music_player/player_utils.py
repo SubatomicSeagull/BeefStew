@@ -2,6 +2,7 @@ import asyncio
 import discord
 import yt_dlp
 import os
+import platform
 from beefcommands.utilities.music_player import queue
 from beefutilities import voice_channel
 from main import executor
@@ -45,14 +46,20 @@ async def play_track(ctx, url, title):
     if not ctx.voice_client:
         await voice_channel.establish_voice_connection(ctx)
     
-    # find the ffmpeg executable
-    exepath = os.getenv("FFMPEGEXE")
+    # find the ffmpeg executable based on the OS
+    if platform.system().lower() == "windows":
+        exepath = os.getenv("FFMPEGEXE")
+    else:
+        exepath = "/usr/bin/ffmpeg"
     
     # define the audio options
     ydl_ops = {
         "format": "bestaudio/best",
         "noplaylist": True,
         "quiet": True,
+        "key": "FFmpegExtractAudio",
+        "preferredcodec": "opus",
+        "preferredquality": "192"
     }
     
     try:
@@ -60,6 +67,7 @@ async def play_track(ctx, url, title):
         loop = asyncio.get_running_loop()
         
         # retrive the metadata for the youtube link and return the audio url
+        
         metadata =  await loop.run_in_executor(executor, lambda: yt_dlp.YoutubeDL(ydl_ops).extract_info(url, download=False))
         audio_url = metadata["url"]   
     
@@ -68,7 +76,27 @@ async def play_track(ctx, url, title):
         return
     
     # define the source to play in discord voice client
-    source = discord.FFmpegPCMAudio(source=audio_url, executable=exepath)
+    
+    before_options=[
+        "-re",
+        "-nostdin",
+        "-hide_banner",
+        "-loglevel error",
+        "-reconnect 1",
+        "-reconnect_streamed 1",
+        "-reconnect_delay_max 5"]
+    
+    options=[
+        "-vn",
+        "-ac 2",
+        "-ar 48000",
+        "-b:a 128k",
+        "-filter:a aresample=async=1",
+        "-bufsize 192k",
+        "-maxrate 128k",
+        "-f segment -segment_time 10"
+    ]
+    source = discord.FFmpegOpusAudio(source=audio_url, executable=exepath, options=options, before_options=before_options)
     
     # define behaviour after playing a track
     def after_playing(error):
@@ -84,14 +112,22 @@ async def play_track(ctx, url, title):
             pass
         
     # play the song in the voice channel
-    ctx.voice_client.play(source, after=after_playing)
-    await ctx.send(f"Playing: **{title}**")
+    import time
+    t0 = time.time()
+    try:
+        await ctx.send(f"Playing: **{title}**")
+        ctx.voice_client.play(source, after=after_playing)
+    except Exception as e:
+        response_time = ((time.time() - t0) * 1000)
+        await ctx.send(f" Error while playing **{title}** (after {response_time}s), {e}. Skipping...")
+        after_playing(None)
+
 
 async def disconnect_timeout(ctx):
     try:
         # wait 5 minutes for another song to be queued
         await asyncio.sleep(300)
-        if not queue.get_queue():
+        if not queue.get_queue() and not ctx.voice_client.is_playing():
             await ctx.send("YAAAWNNN thers no more songs in the queue IM BORED!!! cya")
             await ctx.voice_client.disconnect()
     
