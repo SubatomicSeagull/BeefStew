@@ -8,6 +8,10 @@ from beefutilities import voice_channel
 from main import executor
 
 async def play_next(ctx):
+    # dont play anything if the bot isnt connected
+    if not ctx.voice_client:
+        return
+    
     # retrive the queue
     queue_list = queue.get_queue()
     if queue.get_loop_flag() == True:
@@ -32,6 +36,9 @@ async def play_next(ctx):
         ctx.bot.get_cog('MusicPlayerCog').disconnect_task = disconnect_task
 
 async def handle_after_playing(ctx, error):
+    # allow the voice handshake and ffmpeg process to settle
+    await asyncio.sleep(1)
+    
     # play the current_track link again and dont take from the queue
     if queue.get_loop_flag() == True:
         current_track = queue.get_current_track()
@@ -78,10 +85,9 @@ async def play_track(ctx, url, title):
     # define the source to play in discord voice client
     
     before_options=[
-        "-re",
         "-nostdin",
         "-hide_banner",
-        "-loglevel error",
+        "-loglevel info",
         "-reconnect 1",
         "-reconnect_streamed 1",
         "-reconnect_delay_max 5"]
@@ -90,16 +96,20 @@ async def play_track(ctx, url, title):
         "-vn",
         "-ac 2",
         "-ar 48000",
-        "-b:a 128k",
-        "-filter:a aresample=async=1",
+        "-b:a 96k",
         "-bufsize 192k",
-        "-maxrate 128k",
-        "-f segment -segment_time 10"
+        "-maxrate 96k"
     ]
     source = discord.FFmpegOpusAudio(source=audio_url, executable=exepath, options=options, before_options=before_options)
     
     # define behaviour after playing a track
     def after_playing(error):
+        if not ctx.voice_client:
+            return
+        
+        if not queue.get_queue() and not queue.get_current_track():
+            return
+        
         if error:
             return
         
@@ -112,15 +122,8 @@ async def play_track(ctx, url, title):
             pass
         
     # play the song in the voice channel
-    import time
-    t0 = time.time()
-    try:
-        await ctx.send(f"Playing: **{title}**")
-        ctx.voice_client.play(source, after=after_playing)
-    except Exception as e:
-        response_time = ((time.time() - t0) * 1000)
-        await ctx.send(f" Error while playing **{title}** (after {response_time}s), {e}. Skipping...")
-        after_playing(None)
+    await ctx.send(f"Playing: **{title}**")
+    ctx.voice_client.play(source, after=after_playing)
 
 
 async def disconnect_timeout(ctx):

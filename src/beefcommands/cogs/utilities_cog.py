@@ -3,6 +3,7 @@ from discord.ext import commands
 from beefcommands.utilities.ccping import ccping
 from beefutilities.guilds import set_info, set_logs, set_quotes
 from beefcommands.utilities.help import help
+from beefutilities.update import update_info
 
 class UtilitiesCog(commands.Cog):
     def __init__(self, bot):
@@ -37,6 +38,10 @@ class UtilitiesCog(commands.Cog):
     @discord.app_commands.command(name="help", description="HELP!! HELP ME!!!!!!!")
     async def help(self, interaction: discord.Interaction):
         await help(self.bot, interaction)
+        
+    @discord.app_commands.command(name="test", description="jamie delete this")
+    async def test(self, interaction: discord.Interaction):
+        await update_info(interaction, self.bot)
 
 # cog setup
 async def setup(bot):

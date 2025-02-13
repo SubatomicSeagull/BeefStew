@@ -1,3 +1,4 @@
+import asyncio
 from beefcommands.utilities.music_player import player
 from beefcommands.utilities.music_player import queue
 
@@ -22,15 +23,20 @@ async def join_vc(ctx):
         return
     
 async def leave_vc(ctx):
+            # clear the queue
+    queue.clear_queue()
+        
+        # clear the current track
+    queue.clear_current_track()
+    
     # if a voice connection is established, disconnect
     if ctx.voice_client:
         await ctx.voice_client.disconnect()
         
-        # clear the queue
-        queue.clear_queue()
+    # give time for the ffmpeg process and voice handshake to shut down
+    await asyncio.sleep(2)
         
-        # clear the current track
-        queue.clear_current_track()
+    return
         
 async def establish_voice_connection(ctx):
     # if the bot isnt already in a voice channel, connect

@@ -56,7 +56,7 @@ async def handle_queue(ctx, url, insert):
     
     # unwrap the arrays returned by the link parser and add each tuple to the queue, inserting if insert = true
     for playlist in ytlinks:
-        if insert == True: reversed(playlist)
+        if insert == True: playlist = reversed(playlist)
         for track in playlist:
             # insert at the front
             if insert == True:
