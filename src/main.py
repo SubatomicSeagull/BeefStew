@@ -51,6 +51,7 @@ async def on_ready():
     for command in bot.tree.get_commands():
         print(f"removing {command.name}")
         await bot.tree.remove_command(command.name)
+    await bot.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name="you..."))
         
     # load the cogs
     await load_cogs()

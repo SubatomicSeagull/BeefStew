@@ -53,6 +53,7 @@ async def spotify_link_parser(ctx, url):
         # if the user wants to add all the songs, process each track for each page
         if warning_response == True:    
             for i in range(pages):
+                print(i)
                 page = sp_client.playlist_tracks(url, offset = i * 100)
                 fetch_page = await asyncio.gather(*[process_spotify_track(ctx, item["track"]) for item in page["items"]])
                 for result in fetch_page:
@@ -68,8 +69,11 @@ async def spotify_link_parser(ctx, url):
     
 async def process_spotify_track(ctx, track):
     # retrive the name and artist
-    song_name = track["name"]
-    artist = track['artists'][0]['name']
+    try:
+        song_name = track["name"]
+        artist = track['artists'][0]['name']
+    except Exception as e:
+        return None 
     
     # define a search query "ARTIST - SONG NAME"
     search_term = f"{artist} - {song_name}"
