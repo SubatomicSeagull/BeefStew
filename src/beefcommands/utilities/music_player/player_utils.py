@@ -100,6 +100,7 @@ async def play_track(ctx, url, title):
         "-bufsize 192k",
         "-maxrate 96k"
     ]
+    
     source = discord.FFmpegOpusAudio(source=audio_url, executable=exepath, options=options, before_options=before_options)
     
     # define behaviour after playing a track

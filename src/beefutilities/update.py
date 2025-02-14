@@ -20,7 +20,7 @@ async def update_info(interaction: discord.Interaction, bot):
         
     current_dir = os.path.dirname(__file__)
     file_path = os.path.join(current_dir, "..", "assets", "profile")
-    img_path = os.path.join(file_path, "banner.png")
+    img_path = os.path.join(file_path, "update.png")
     
     # embed header
     update_embed = discord.Embed(title="Beefstew has been updated!", description=f"# Version {version} is here!\n ## Here's whats changed:", color=discord.Color.lighter_grey())
@@ -57,8 +57,8 @@ async def update_info(interaction: discord.Interaction, bot):
         update_embed.add_field(name="Comments:", value=comments, inline=False)
     
     # embed footer
-    file = discord.File(img_path,filename="banner.png")
-    update_embed.set_image(url="attachment://banner.png")
+    file = discord.File(img_path,filename="update.png")
+    update_embed.set_image(url="attachment://update.png")
 
 
     await interaction.followup.send(file=file, embed=update_embed)

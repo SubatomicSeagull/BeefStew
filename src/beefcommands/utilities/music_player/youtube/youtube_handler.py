@@ -38,10 +38,25 @@ def sync_get_youtube_title(url):
 def get_metadata_youtube(ctx, url):
     # define the youtube audio options
     ydl_opts = {
-        'format': 'bestaudio/best',
-        'noplaylist': True,
-        'quiet': True,
+        "format": "bestaudio/best",
+        "quiet": True,
+        "noplaylist": True,
+        "socket_timeout": 30,
+        "retries": 10,
+        "extractor_args": {
+            "youtube": {
+                "player_client": ["android_creator"],
+                "skip": ["hls", "dash"]
+            }
+        },
+        "postprocessors": [{
+            "key": "FFmpegExtractAudio",
+            "preferredcodec": "opus",
+            "preferredquality": "192"
+        }],
+        "cookiesfile":"cookies.txt"
     }
+    
 
     # extract the metadata from the youtube video
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
