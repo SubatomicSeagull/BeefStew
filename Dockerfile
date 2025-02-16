@@ -4,8 +4,8 @@ RUN apt-get update -y
 RUN apt-get upgrade -y
 RUN apt-get install git -y
 RUN apt-get install libpq-dev gcc -y
+RUN apt install -y ffmpeg libopus-dev
 
-RUN git clone https://github.com/SubatomicSeagull/BeefStew.git
 
 WORKDIR /BeefStew
 

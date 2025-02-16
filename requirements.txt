@@ -5,3 +5,6 @@ Pillow
 requests
 psycopg2
 paramiko
+yt_dlp
+urllib3
+spotipy
