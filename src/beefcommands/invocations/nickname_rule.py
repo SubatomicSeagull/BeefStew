@@ -16,13 +16,15 @@ async def change_nickname(ctx, victim: discord.Member, new_name: str):
                     await interaction.response.send_message(f"**{interaction.user.name}** tried to invoke the rule on themselves... for some reason")
                 else:
                     try:
+                        print(f"> \033[32m{interaction.user.name} invoked the rule on {victim.name}\033[0m")
                         await victim.edit(nick=new_name)
                         await interaction.response.send_message(f"**{interaction.user.name}** invoked the rule on **{victim.global_name}**!\n{await nicknameprint(victim)}")           
                     except discord.Forbidden as e:
-                        print(e)
+                        print(f"\031[32mError while trying to invoke the rule: {e}\033[0m")
                         await interaction.response.send_message(f"**{interaction.user.name}** tried to invoked the rule on **{victim.global_name}**!\nbut it didnt work :( next time get some permissions pal")
                     except Exception as e:
-                        print(e)
+                        print(f"\031[32mError while trying to invoke the rule: {e}\033[0m")
+                        
             else:
                 await interaction.response.send_message(f"**{interaction.user.name}** tried to invoked the rule on **{victim.global_name}**!\nnice try fucker...")
                 
@@ -35,10 +37,11 @@ async def change_nickname(ctx, victim: discord.Member, new_name: str):
                     await message.channel.send(f"**{message.author.name}** tried to invoke the rule on themselves... for some reason")
                 else:
                     try:
+                        print(f"> \033[32m{message.author.name} invoked the rule on {victim.name}\033[0m")
                         await victim.edit(nick=new_name)
                         await message.channel.send(f"**{message.author.name}** invoked the rule on **{victim.global_name}**!\n{await nicknameprint(victim)}")
                     except Exception as e:
-                        print(e)
+                        print(f"\031[32mError while trying to invoke the rule: {e}\033[0m")
                         await message.channel.send(f"**{message.author.name}** tried to invoked the rule on **{victim.global_name}**!\nbut it didnt work :( next time get some permissions okay?")
             else:
                 await message.channel.send(f"**{message.author.name}** tried to invoked the rule on **{victim.global_name}**!\nnice try fucker...")
@@ -48,7 +51,6 @@ async def nicknameprint(victim: discord.Member):
     responses = load_element("responses.json", "nickname_change_responses")
     
     chosen_response = random.choice(responses)
-    print(chosen_response)
     chosen_response = chosen_response.format(name=victim.global_name, tag=victim.mention)
     return chosen_response
 

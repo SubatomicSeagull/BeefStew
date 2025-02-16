@@ -89,6 +89,8 @@ async def play_track(ctx, url, title):
         "-hide_banner",
         "-loglevel info",
         "-reconnect 1",
+        "-reconnect_at_eof 1",
+        "-reconnect_on_network_error 1",
         "-reconnect_streamed 1",
         "-reconnect_delay_max 5"]
     
@@ -98,7 +100,8 @@ async def play_track(ctx, url, title):
         "-ar 48000",
         "-b:a 96k",
         "-bufsize 192k",
-        "-maxrate 96k"
+        "-maxrate 96k",
+        " -rw_timeout 10000000"
     ]
     
     source = discord.FFmpegOpusAudio(source=audio_url, executable=exepath, options=options, before_options=before_options)

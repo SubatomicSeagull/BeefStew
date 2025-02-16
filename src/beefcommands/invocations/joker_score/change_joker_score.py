@@ -30,12 +30,15 @@ async def change_joke_score(self: discord.Member, user: discord.Member, value):
         await postgres.write(f"UPDATE user_joker_score SET member_name = '{user.nick}' WHERE user_id = '{user.id}';")
         
         # decide is it a +2 or -2
-        if score > 0: 
+        if score > 0:
+            print(f"> \033[32m{self.name} +2'd {user.name}\033[0m")   
             return (await get_joke_response_positive(user))
         else:
+            print(f"> \033[32m{self.name} +2'd {user.name}\033[0m")  
             return (await get_joke_response_negative(user))
     except Exception as e:
         await postgres.log_error(e)
+        print(f"> \033[31mError while changing the joker score for {user.name}: {e}\033[0m")   
         return (f"couldnt change score for {user.name} :( ({e}))")
 
 async def clear_joke_score(user: discord.Member):

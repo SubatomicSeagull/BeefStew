@@ -28,13 +28,15 @@ class EventListenerCog(commands.Cog):
     # message edit listener
     @commands.Cog.listener()
     async def on_message_edit(self, before: discord.Message, after: discord.Message):
+        if not after.author.bot and before.content != after.content: print(f"> \033[32m{before.author.name} edited a message in #{before.channel.name}\033[0m")
         await beefcommands.events.message_events.message_edit_event(self.bot, before, after)
 
     # message delete listener
     @commands.Cog.listener()
     async def on_message_delete(self, message: discord.Message):
+        if not message.author.bot: print(f"> \033[32m{message.author.name} deleted a message in #{message.channel.name}\033[0m")
         await beefcommands.events.message_events.message_delete_event(self.bot, message)
 
 async def setup(bot):
-    print("- event cog setup")
+    print("- \033[91mbeefcommands.cogs.event_listener_cog\033[0m")
     await bot.add_cog(EventListenerCog(bot))

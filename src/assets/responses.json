@@ -79,6 +79,14 @@
     "yeag":{
       "type":"text",
       "content":"yeag"
+    },
+    "fortnite":{
+      "type":"media",
+      "content":"fortnite-card.gif"
+    },
+    "fortnight":{
+      "type":"media",
+      "content":"fortnite-card.gif"
     }
   },
   "nickname_change_responses": [

@@ -9,9 +9,10 @@ class IncantationsCog(commands.Cog):
      # vicious mockery
     @discord.app_commands.command(name="mock", description="cast vicious mockery on someone")
     async def vicious_mockery(self, interaction: discord.Interaction, victim: discord.Member):
+        print(f"> \033[32m{interaction.user.name} mocked {victim.name}\033[32m")
         await beefcommands.incantations.vicious_mockery.insult(interaction, victim)
 
 # cog startup
 async def setup(bot):
-    print("- incantation cog setup")
+    print("- \033[93mbeefcommands.cogs.incantations_cog\033[0m")
     await bot.add_cog(IncantationsCog(bot))

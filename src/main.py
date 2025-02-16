@@ -35,7 +35,7 @@ banned_members = set()
 
 # load the commands though the cogs
 async def load_cogs():
-    print("registering cogs...")
+    print("> registering cogs...")
     await bot.load_extension("beefcommands.cogs.event_listener_cog")
     await bot.load_extension("beefcommands.cogs.incantations_cog")
     await bot.load_extension("beefcommands.cogs.invocations_cog")
@@ -60,7 +60,7 @@ async def on_ready():
     await bot.tree.sync()
     
     # go!
-    print(f"{bot.user} is now online, may god help us all...")
+    print(f"> \033[1;91m{bot.user} is now online, may god help us all...\033[0m")
 
 # entrypoint
 if __name__ == "__main__":
