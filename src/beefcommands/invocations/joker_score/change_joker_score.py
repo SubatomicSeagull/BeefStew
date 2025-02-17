@@ -17,7 +17,7 @@ async def change_joke_score(self: discord.Member, user: discord.Member, value):
     # but you can -2 yourself
     elif self.id == user.id and value < 0:
         
-        await postgres.write(f"UPDATE user_joker_score SET joke_score = joke_score + {value} WHERE user_id = '{user.id}';")
+        await postgres.write(f"UPDATE user_joker_score SET joke_score = joke_score + {value} WHERE user_id = '{user.id}' AND guild_id = '{user.guild.id};")
         await postgres.write(f"UPDATE user_joker_score SET member_name = '{user.nick}' WHERE user_id = '{user.id}';")
         return f"{self.mention} -2'd themselves for some reason... oh well!\n {await get_joke_response_negative(user)}"
     
@@ -26,7 +26,7 @@ async def change_joke_score(self: discord.Member, user: discord.Member, value):
         # get the multiplier (dont think we really need to do this anymore)
         mult = await get_multilplier(user)
         score = value * mult
-        await postgres.write(f"UPDATE user_joker_score SET joke_score = joke_score + {score} WHERE user_id = '{user.id}';")
+        await postgres.write(f"UPDATE user_joker_score SET joke_score = joke_score + {score} WHERE user_id = '{user.id} AND guild_id = '{user.guild.id}';")
         await postgres.write(f"UPDATE user_joker_score SET member_name = '{user.nick}' WHERE user_id = '{user.id}';")
         
         # decide is it a +2 or -2
@@ -42,7 +42,7 @@ async def change_joke_score(self: discord.Member, user: discord.Member, value):
         return (f"couldnt change score for {user.name} :( ({e}))")
 
 async def clear_joke_score(user: discord.Member):
-    await postgres.write(f"UPDATE user_joker_score SET joke_score = 0 WHERE user_id = '{user.id}';")
+    await postgres.write(f"UPDATE user_joker_score SET joke_score = 0 WHERE user_id = '{user.id}' AND guild_id = '{user.guild.id};")
     
 async def get_joke_response_positive(member: discord.Member):     
     jokertag = type('Joker', (object,), {"mention": member.mention})()
