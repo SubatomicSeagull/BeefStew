@@ -66,7 +66,44 @@ async def message_send_event(bot, message):
             file=discord.File(file_path)
         )
         return
-
+    
+    if any(phrase in message.content.lower() for phrase in [
+        "i love you beefstew", 
+        "i love beefstew", 
+        "beefstew i love you", 
+        "<@1283805971524747304> i love you", 
+        "i love you <@1283805971524747304>", 
+        "i love u beefstew", 
+        "beefstew i love u", 
+        "i love u <@1283805971524747304>", 
+        "<@1283805971524747304> i love u",
+        
+        "ily beefstew", 
+        "beefstew ily", 
+        "<@1283805971524747304> ily", 
+        "ily <@1283805971524747304>", 
+        "ily beefstew", 
+        "beefstew ily", 
+        "ily <@1283805971524747304>", 
+        "<@1283805971524747304> ily",
+        ]):
+        
+        reply = randint(1, 3)
+        match reply:
+            case 1:
+                await message.reply(content="ily2", file=discord.File(os.path.join(os.path.dirname(__file__), '..', '..', 'assets', 'stews', "lovestew.png")))
+            case 2:
+                await message.reply(file=discord.File(os.path.join(os.path.dirname(__file__), '..', '..', 'assets', 'stews', "smilestew.png")))
+            case 3:
+                await message.reply(content="yay!", file=discord.File(os.path.join(os.path.dirname(__file__), '..', '..', 'assets', 'stews', "blushstew.png")))
+        return
+    
+    if any(phrase in message.content.lower() for phrase in ["design", "desin", "desing"]):
+        reply = randint(1, 5)
+        await message.reply(content="This is my design:", file = discord.File(os.path.join(os.path.dirname(__file__), '..', '..', 'assets', 'media', f"design{reply}.png")))
+        return
+    
+    
     if any(phrase in message.content.lower() for phrase in [
         "i hate you beefstew", "i hate beefstew", "beefstew i hate you",
         "<@1283805971524747304> i hate you", "i hate you <@1283805971524747304>",

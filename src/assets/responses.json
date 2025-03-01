@@ -87,6 +87,22 @@
     "fortnight":{
       "type":"media",
       "content":"fortnite-card.gif"
+    },
+    "turk":{
+      "type":"media",
+      "content":"turkey.gif"
+    },
+    "curley":{
+      "type":"media",
+      "content":"SPOILER_curleh.png"
+    },
+    "curly":{
+      "type":"media",
+      "content":"SPOILER_curleh.png"
+    },
+    "curleh":{
+      "type":"media",
+      "content":"SPOILER_curleh.png"
     }
   },
   "nickname_change_responses": [
