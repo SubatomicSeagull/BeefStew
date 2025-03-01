@@ -97,11 +97,11 @@ async def message_send_event(bot, message):
     
 async def message_edit_event(bot, before, after):
     # dont alert to bot edits
-    if before.author == bot.user:
+    if before.author.bot:
         return
     
     # dont alert if its the same
-    if before == after:
+    if before.content == after.content:
         return
     
     # get the log channel
@@ -115,18 +115,30 @@ async def message_edit_event(bot, before, after):
     await channel.send(embed=embed)
     
 async def message_delete_event(bot, message):
-    #dont alert to bot deletion
-    if message.author == bot.user:
+    # dont alert to bot edits
+    if message.author.bot:
         return
     
     # get the log channel
     channel = await bot.fetch_channel(await read_guild_log_channel(message.guild.id))
     
+    # if there are any attchments, add the urls to a list
+    if message.attachments:
+        attachments = []
+        for url in message.attachments:
+            attachments.append(url)
+        print(attachments)
+        
     #embed header
     embed = discord.Embed(title="Message Deleted", color=discord.Color.orange())
     embed.set_author(name=message.author, icon_url=message.author.avatar.url)
     #embed body
-    embed.add_field(name="Message", value=f"```{message.content}```", inline=False)
+    if message.content:
+        embed.add_field(name="Message", value=f"```{message.content}```", inline=False)
+    if attachments:
+        embed.add_field(name="Attachments:" , value=f"", inline=False)
+        for url in attachments:
+            embed.add_field(name="File - ", value=f"{url}", inline=True)
     #embed footer
     embed.add_field(name="", value=f"{message.author.guild.name} - {datetime.now().strftime('%d/%m/%Y %H:%M')}")  
     await channel.send(embed=embed)
