@@ -2,7 +2,8 @@ import discord
 from PIL import Image
 from io import BytesIO
 import os
-from beefutilities.user import get_avatar_image
+from beefutilities.users.user import get_avatar_image
+from beefutilities.IO import file_io
 from data import postgres
 
 async def add_speech_bubble_pfp(victim: discord.Member):
@@ -10,9 +11,8 @@ async def add_speech_bubble_pfp(victim: discord.Member):
     user_pfp = await get_avatar_image(victim)
     
     # cnstruct a file path to the assets folder
-    current_dir = os.path.dirname(__file__)
-    file_path = os.path.join(current_dir, '..', '..')
-    speech_bubble = Image.open(os.path.join(file_path, "assets", "pfp_manipulation", "speechbubble.png"))
+    speech_bubble = Image.open(file_io.construct_assets_path("pfp_manipulation/speechbubble.png"))
+    
     
     # paste the speech bubble templte over the image
     user_pfp.paste(speech_bubble, (0,0), speech_bubble)

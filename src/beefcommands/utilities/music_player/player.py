@@ -1,4 +1,4 @@
-from beefutilities import voice_channel
+from beefutilities.guilds import voice_channel
 from beefcommands.utilities.music_player import queue
 from beefcommands.utilities.music_player.player_utils import play_next
 

@@ -1,7 +1,7 @@
 import random
 import discord
 import os
-from beefutilities.json_handling import load_element
+from beefutilities.IO.json_handling import load_element
 from data.postgres import log_error
 
 # nickname rule, handles logic for they call you slash command

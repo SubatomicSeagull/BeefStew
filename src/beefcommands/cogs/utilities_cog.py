@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from beefcommands.utilities.ccping import ccping
-from beefutilities.guilds import set_info, set_logs, set_quotes
+from beefutilities.guilds.text_channel import set_info, set_logs, set_quotes
 from beefcommands.utilities.help import help
 from beefutilities.update import update_info
 

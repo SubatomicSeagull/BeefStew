@@ -1,6 +1,6 @@
 import discord
 from data import postgres
-from beefutilities.json_handling import load_element
+from beefutilities.IO.json_handling import load_element
 import random
 from beefcommands.invocations.joker_score.read_joker_score import get_multilplier
 from beefcommands.invocations.joker_score.joker_registration import is_registered, register_user
@@ -34,7 +34,7 @@ async def change_joke_score(self: discord.Member, user: discord.Member, value):
             print(f"> \033[32m{self.name} +2'd {user.name}\033[0m")   
             return (await get_joke_response_positive(user))
         else:
-            print(f"> \033[32m{self.name} +2'd {user.name}\033[0m")  
+            print(f"> \033[32m{self.name} -2'd {user.name}\033[0m")  
             return (await get_joke_response_negative(user))
     except Exception as e:
         await postgres.log_error(e)

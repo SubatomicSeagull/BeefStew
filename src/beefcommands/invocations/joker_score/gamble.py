@@ -2,6 +2,7 @@ import discord
 from data import postgres
 from random import randint
 import os
+from beefutilities.IO import file_io
 
 async def gamble_points(interaction: discord.Interaction):
     await interaction.response.defer()
@@ -52,8 +53,7 @@ async def gamble_points(interaction: discord.Interaction):
     await postgres.write(query)
     
     # find the path to the media folder
-    current_dir = os.path.dirname(__file__)
-    file_path = os.path.join(current_dir,'..', '..', '..', 'assets', 'media', 'slots', media)
+    file_path = file_io.construct_media_path(f"slots/{media}")
     
     # send the corresponding gif
     file=discord.File(file_path)

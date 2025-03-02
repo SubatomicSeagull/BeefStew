@@ -4,7 +4,7 @@ import yt_dlp
 import os
 import platform
 from beefcommands.utilities.music_player import queue
-from beefutilities import voice_channel
+from beefutilities.guilds import voice_channel
 from main import executor
 
 async def play_next(ctx):

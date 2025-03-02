@@ -1,6 +1,7 @@
 import paramiko
 import os
 from data import postgres
+from beefutilities.IO import file_io
 
 async def retrive_containers_json():
    # retrive the server credentials
@@ -17,8 +18,7 @@ async def retrive_containers_json():
         ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
         # construct the filepath to the ssh key
-        project_root = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", ".."))
-        ssh_key_path = os.path.join(project_root, ".ssh", "id_ecdsa")
+        ssh_key_path = file_io.construct_root_path(".ssh/id_ecdsa")
     
         # add the ssh key to the ssh client
         sshkey = paramiko.ECDSAKey.from_private_key_file(ssh_key_path)
@@ -29,7 +29,7 @@ async def retrive_containers_json():
         sftp = ssh_client.open_sftp()
         
         # retrive the remote containers.json
-        sftp.get(os.getenv("SFTPREMOTEDIR"), (os.path.join(project_root, "src", "data", "server_info", "containers.json")))
+        sftp.get(os.getenv("SFTPREMOTEDIR"), (file_io.construct_data_path("server_info/containers.json")))
         
         #close the ssh connection
         sftp.close()

@@ -2,7 +2,8 @@ import socket
 import time
 import json
 import os
-from beefutilities.generate_hosts import generate_hosts_file
+from beefutilities.IO.generate_hosts import generate_hosts_file
+from beefutilities.IO import file_io
 import discord
 from datetime import datetime
 
@@ -49,7 +50,7 @@ async def ping_host(host, port, timeout, retries):
  # ping embed constructor
 async def pingembed(interaction: discord.Interaction, icon_url, guild_name):
     # construct a path to hosts.json
-    hosts_path = os.path.join((os.path.dirname(os.path.abspath(__file__))), "hosts.json")
+    hosts_path = file_io.construct_data_path("server_info/hosts.json")
     
     # if it doesnt exits, create it
     if not os.path.exists(hosts_path):

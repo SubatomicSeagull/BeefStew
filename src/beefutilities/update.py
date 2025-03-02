@@ -1,6 +1,7 @@
 import discord
 import os
 import re
+from beefutilities.IO import file_io
 
 async def update_info(interaction: discord.Interaction, bot):
     await interaction.response.defer()
@@ -18,9 +19,7 @@ async def update_info(interaction: discord.Interaction, bot):
     misc = info["misc"]
     comments = info["comments"]
         
-    current_dir = os.path.dirname(__file__)
-    file_path = os.path.join(current_dir, "..", "assets", "profile")
-    img_path = os.path.join(file_path, "update.png")
+    img_path = file_io.construct_assets_path("profile/update.png")
     
     # embed header
     update_embed = discord.Embed(title="Beefstew has been updated!", description=f"# Version {version} is here!\n ## Here's whats changed:", color=discord.Color.lighter_grey())
@@ -59,16 +58,11 @@ async def update_info(interaction: discord.Interaction, bot):
     # embed footer
     file = discord.File(img_path,filename="update.png")
     update_embed.set_image(url="attachment://update.png")
-
-
-    await interaction.followup.send(file=file, embed=update_embed)
-    
+    await interaction.followup.send(content="@here", file=file, embed=update_embed, allowed_mentions=discord.AllowedMentions(everyone=True))
     
 async def parse_update_file():
     # construct the file path to patchnotes.md
-    current_dir = os.path.dirname(__file__)
-    file_path = os.path.join(current_dir, "..", "..")
-    markdown_path = os.path.join(file_path, "patchnotes.md")
+    markdown_path = file_io.construct_root_path("patchnotes.md")
     
     with open(markdown_path, "r") as file:
         lines = file.read().splitlines()

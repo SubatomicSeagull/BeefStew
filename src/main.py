@@ -43,14 +43,11 @@ async def load_cogs():
     await bot.load_extension("beefcommands.cogs.utilities_cog")
     await bot.load_extension("beefcommands.cogs.visage_cog")
     await bot.load_extension("beefcommands.cogs.music_player_cog")
+    await bot.load_extension("beefcommands.cogs.task_scheduler_cog")
 
 
 @bot.event
 async def on_ready():    
-    # deregister all the slash command and refesh them
-    for command in bot.tree.get_commands():
-        print(f"removing {command.name}")
-        await bot.tree.remove_command(command.name)
     await bot.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name="you..."))
         
     # load the cogs

@@ -2,7 +2,8 @@ import discord
 from PIL import Image
 from io import BytesIO
 import os
-from beefutilities.user import get_avatar_image
+from beefutilities.users.user import get_avatar_image
+from beefutilities.IO import file_io
 from data import postgres
 
 async def gay_baby_jail_pfp(victim: discord.Member):
@@ -12,9 +13,7 @@ async def gay_baby_jail_pfp(victim: discord.Member):
     user_pfp = avatar.resize(new_size, Image.Resampling.BILINEAR)
     
     # construct a file path to the assets folder 
-    current_dir = os.path.dirname(__file__)
-    file_path = os.path.join(current_dir, '..', '..')
-    template = Image.open(os.path.join(file_path, "assets", "pfp_manipulation", "GBJ.png"))
+    template = Image.open(file_io.construct_assets_path("pfp_manipulation/GBJ.png"))
     
     # resize the template
     base_width, base_height = user_pfp.size
@@ -42,8 +41,7 @@ async def GBJ(interaction: discord.Interaction, victim: discord.Member):
     await interaction.response.defer()
     try:
         gbj_pfp = await gay_baby_jail_pfp(victim)
-        await interaction.channel.send(f"{victim.mention} about time they locked that fucker away...")
-        await interaction.followup.send(file=discord.File(fp=gbj_pfp, filename=f"{victim.name} jailed.png"))
+        await interaction.followup.send(content= f"{victim.mention} about time they locked that fucker away...", file=discord.File(fp=gbj_pfp, filename=f"{victim.name} jailed.png"))
         
         # clear the bytesio buffer.
         gbj_pfp.close()
