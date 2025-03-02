@@ -1,10 +1,9 @@
 import discord
-from beefcommands.invocations.joker_score.change_joker_score import change_joke_score
+from beefcommands.invocations.joker_score.change_joker_score import change_joke_score, hawk_tuah_penalty
 from beefcommands.invocations.nickname_rule import change_nickname
 from beefcommands.utilities.music_player.youtube import yt_utils
 from data.postgres import log_error
 from random import randint
-import os
 from time import sleep
 from beefutilities.guilds.text_channel import read_guild_log_channel
 
@@ -102,7 +101,7 @@ async def message_send_event(bot, message):
         return
     
     if any(phrase in message.content.lower() for phrase in ["design", "desin", "desing"]):
-        reply = randint(1, 5)
+        reply = randint(1, 6)
         await message.reply(content="This is my design:", file = discord.File(file_io.construct_media_path(f"design{reply}.png")))
 
         return
@@ -142,8 +141,24 @@ async def message_send_event(bot, message):
         await message.channel.send(content=f"guys new kay video... **[{title}](https://www.youtube.com/watch?v={url})**", file=file)
         return
     
+    if "crazy" in message.content.lower():
+        await message.channel.send("Crazy...?")
+        sleep(1)
+        await message.channel.send("I was crazy once...")
+        sleep(0.5)
+        await message.channel.send("They locked me in a room with rubber rats")
+        sleep(0.5)
+        await message.channel.send("And the rubber rats made me go crazy!!!!!!!!!!!!!!!!!")
+        return
+        
+    if "tuah" in message.content.lower():
+        jar_total = await hawk_tuah_penalty(message.author)
+        file = discord.File(file_io.construct_media_path("hawktuahjar.gif"))
+        await message.reply(content=f"{message.author.mention} pays the Hawk Tuah Penaly!!! Another 2 points to the jar...\n**Jar Points: {jar_total}**", file=file)
+        return
     
     await get_response(message)
+    
     
     
 async def message_edit_event(bot, before, after):

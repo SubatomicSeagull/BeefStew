@@ -77,3 +77,11 @@ async def minus2(interaction: discord.Interaction, member: discord.Member):
         return
     
     await interaction.followup.send(await change_joke_score(interaction.user, member, -2))
+    
+async def hawk_tuah_penalty(victim: discord.Member):
+    await postgres.write(f"UPDATE user_joker_score SET joke_score = joke_score - 2 WHERE user_id = '{victim.id}';")
+    await postgres.write(f"UPDATE user_joker_score SET joke_score = joke_score + 2 WHERE user_id = '99';")
+    await postgres.write(f"UPDATE user_joker_score SET member_name = '{victim.nick}' WHERE user_id = '{victim.id}';")
+    joke_score = await (postgres.read(f"SELECT joke_score FROM user_joker_score WHERE user_id = '99';"))
+    score = joke_score[0][0]
+    return score

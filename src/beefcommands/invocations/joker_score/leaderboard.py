@@ -35,6 +35,9 @@ async def retrive_low_scores(interaction: discord.Interaction, bot):
     else:
         leaderboard_content = ""
         for rank, row in enumerate(rows, start=1):
-            leaderboard_content += f"**{rank}.** <@{row[0]}> - `{row[1]}` points\n"
+            if row[0] == 99:
+                leaderboard_content += f"**{rank}.** Hawk Tuah Jar: `{row[1]}` points\n"
+            else:
+                leaderboard_content += f"**{rank}.** <@{row[0]}>: `{row[1]}` points\n"
         leaderboard.description = leaderboard_content
     await interaction.followup.send(embed=leaderboard)
