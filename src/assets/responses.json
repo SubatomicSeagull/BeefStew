@@ -103,6 +103,18 @@
     "curleh":{
       "type":"media",
       "content":"SPOILER_curleh.png"
+    },
+    "goblin":{
+      "type":"media",
+      "content":"goblin.gif"
+    },
+    "rumple":{
+      "type":"media",
+      "content":"rumple.png"
+    },
+    "nothing ever happens":{
+      "type":"media",
+      "content":"nothing.png"
     }
   },
   "nickname_change_responses": [
