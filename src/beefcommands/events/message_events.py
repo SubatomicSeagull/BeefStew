@@ -1,11 +1,13 @@
 import discord
 from beefcommands.invocations.joker_score.change_joker_score import change_joke_score
 from beefcommands.invocations.nickname_rule import change_nickname
+from beefcommands.utilities.music_player.youtube import yt_utils
 from data.postgres import log_error
 from random import randint
 import os
 from time import sleep
 from beefutilities.guilds.text_channel import read_guild_log_channel
+
 import json
 from datetime import datetime
 from beefutilities.IO import file_io
@@ -131,6 +133,16 @@ async def message_send_event(bot, message):
         await message.channel.send("Hate...")
         return
 
+
+    if "new kay" in message.content.lower():
+        kayupdate = await message.channel.send(content= "checking for new kay video...", file=None)
+        name, url, title = await yt_utils.find_newest_yt_video("https://www.youtube.com/@KaysCooking")
+        file = discord.File(file_io.construct_media_path("newkay.gif"))
+        await kayupdate.delete()
+        await message.channel.send(content=f"guys new kay video... **[{title}](https://www.youtube.com/watch?v={url})**", file=file)
+        return
+    
+    
     await get_response(message)
     
     
