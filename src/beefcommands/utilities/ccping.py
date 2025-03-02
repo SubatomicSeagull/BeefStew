@@ -2,8 +2,9 @@ import discord
 import os
 import json
 from beefutilities.ping import ping_host
-from beefutilities.generate_hosts import generate_hosts_file
+from beefutilities.IO.generate_hosts import generate_hosts_file
 from datetime import datetime
+from beefutilities.IO import file_io
 
 
 async def ccping(bot, interaction: discord.Interaction):
@@ -16,14 +17,12 @@ async def ccping(bot, interaction: discord.Interaction):
     # retrive the bots pfp
     boturl = bot.user.avatar.url
     
-    embed = await pingembed(interaction, boturl, interaction.channel.guild.name)
-    await interaction.followup.send(embed=embed)
+    embed, thumbail = await pingembed(boturl, interaction.channel.guild.name)
+    await interaction.followup.send(embed=embed, file=thumbail)
     
-async def pingembed(interaction: discord.Interaction, icon_url, guild_name):
+async def pingembed(icon_url, guild_name):
     # construct a file path to hosts.json
-    current_dir = os.path.dirname(__file__)
-    file_path = os.path.join(current_dir, '..', '..')
-    hosts_path = os.path.join(file_path, "data", "server_info", "hosts.json")
+    hosts_path = file_io.construct_data_path("server_info/hosts.json")
     
     # generate a new hosts file if there isnt one
     if not os.path.exists(hosts_path):
@@ -45,7 +44,8 @@ async def pingembed(interaction: discord.Interaction, icon_url, guild_name):
     
     #embed header
     pingembed = discord.Embed(title=f"Pinged CCServer with {host_count} results:", description="", color=discord.Color.lighter_grey())
-    pingembed.set_thumbnail(url=icon_url) # change to ccserver icon, actaully figure out how to add local files this time plz
+    thumbnail = discord.File(file_io.construct_assets_path('profile/ccserver_icon.png'), filename="ccserver_icon.png")
+    pingembed.set_thumbnail(url=f"attachment://ccserver_icon.png") # change to ccserver icon, actaully figure out how to add local files this time plz
     pingembed.set_author(name="Beefstew", icon_url=icon_url)
     
     #ping each host:port
@@ -63,5 +63,5 @@ async def pingembed(interaction: discord.Interaction, icon_url, guild_name):
     pingembed.add_field(name="", value=f"with an average response time of {round((total_response_time / host_count),2)}ms.", inline=False)
     pingembed.add_field(name="", value=f"{guild_name} - {datetime.now().strftime('%d/%m/%Y %H:%M')}")
     
-    return pingembed
+    return pingembed, thumbnail
     

@@ -2,7 +2,8 @@ import discord
 from PIL import Image
 from io import BytesIO
 import os
-from beefutilities.user import get_avatar_image
+from beefutilities.users.user import get_avatar_image
+from beefutilities.IO import file_io
 from data import postgres
 
 async def bless_pfp(victim: discord.Member):
@@ -17,9 +18,7 @@ async def bless_pfp(victim: discord.Member):
     user_pfp = user_pfp.rotate(30, resample=Image.BICUBIC, expand=True)
     
     # construct a file path to the assets folder
-    current_dir = os.path.dirname(__file__)
-    file_path = os.path.join(current_dir, '..', '..')
-    template = Image.open(os.path.join(file_path, "assets", "pfp_manipulation", "jesus.png"))
+    template = Image.open(file_io.construct_assets_path("pfp_manipulation/jesus.png"))
     
     # define the overlay to be the same size as the template
     base_width, base_height = user_pfp.size
@@ -45,8 +44,7 @@ async def bless(interaction: discord.Interaction, victim: discord.Member):
     await interaction.response.defer()
     try:
         jesus_pfp = await bless_pfp(victim)
-        await interaction.channel.send(f"{victim.mention} bless you my child...")
-        await interaction.followup.send(file=discord.File(fp=jesus_pfp, filename=f"{victim.name} with jesus.png"))
+        await interaction.followup.send(content= f"{victim.mention} bless you my child...", file=discord.File(fp=jesus_pfp, filename=f"{victim.name} with jesus.png"))
         
         # clear the bytesio buffer
         jesus_pfp.close()

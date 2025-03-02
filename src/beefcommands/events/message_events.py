@@ -5,9 +5,10 @@ from data.postgres import log_error
 from random import randint
 import os
 from time import sleep
-from beefutilities.guilds import read_guild_log_channel
+from beefutilities.guilds.text_channel import read_guild_log_channel
 import json
 from datetime import datetime
+from beefutilities.IO import file_io
 
 
 async def message_send_event(bot, message):
@@ -57,8 +58,7 @@ async def message_send_event(bot, message):
         result = randint(1, 6)
         result_filename = f"DDM-{result}.gif"
         
-        current_dir = os.path.dirname(__file__)
-        file_path = os.path.join(current_dir, '..', '..', 'assets', 'media', result_filename)
+        file_path = file_io.construct_media_path(result_filename)
         
         await message.reply(
             f"🎲 The deadly dice man rolled his deadly dice 🎲\n"
@@ -91,16 +91,18 @@ async def message_send_event(bot, message):
         reply = randint(1, 3)
         match reply:
             case 1:
-                await message.reply(content="ily2", file=discord.File(os.path.join(os.path.dirname(__file__), '..', '..', 'assets', 'stews', "lovestew.png")))
+                await message.reply(content="ily2", file=discord.File(file_io.construct_assets_path("stews/lovestew.png")))
+                
             case 2:
-                await message.reply(file=discord.File(os.path.join(os.path.dirname(__file__), '..', '..', 'assets', 'stews', "smilestew.png")))
+                await message.reply(file=discord.File(file_io.construct_assets_path("stews/smilestew.png")))
             case 3:
-                await message.reply(content="yay!", file=discord.File(os.path.join(os.path.dirname(__file__), '..', '..', 'assets', 'stews', "blushstew.png")))
+                await message.reply(content="yay!", file=discord.File(file_io.construct_assets_path("stews/blushstew.png")))
         return
     
     if any(phrase in message.content.lower() for phrase in ["design", "desin", "desing"]):
         reply = randint(1, 5)
-        await message.reply(content="This is my design:", file = discord.File(os.path.join(os.path.dirname(__file__), '..', '..', 'assets', 'media', f"design{reply}.png")))
+        await message.reply(content="This is my design:", file = discord.File(file_io.construct_media_path(f"design{reply}.png")))
+
         return
     
     
@@ -183,9 +185,7 @@ async def message_delete_event(bot, message):
     
 async def get_response(message: discord.Message):
     # pathfind to the responses.json
-    current_dir = os.path.dirname(__file__)
-    file_path = os.path.join(current_dir, '..', '..')
-    file_path = os.path.join(file_path, 'assets', 'responses.json')
+    file_path = file_io.construct_assets_path('responses.json')
     with open(file_path, "r") as file:
         responses = json.load(file)
         
@@ -199,7 +199,7 @@ async def get_response(message: discord.Message):
             
             # pathfind to the media folder
             if isinstance(response, dict) and response_type == "media":
-                media_path = os.path.join(current_dir,'..', '..', 'assets', 'media', (content))
+                media_path = file_io.construct_media_path(content)
                 await message.reply(file=discord.File(media_path))
                 return
             

@@ -1,6 +1,7 @@
 import json
 import os
 from collections import OrderedDict
+from beefutilities.IO import file_io
 
 # global assets folder path
 ASSETS_FOLDER = os.path.join(os.path.dirname(__file__), '..', 'assets')
@@ -73,8 +74,8 @@ def update_element(file_name, element, value):
 ### uhhhh these are reused from generate hosts and i dont know which ones are used
 # plz fix 
 def containers_json_reformat():
-    hosts_path = os.path.join((os.path.dirname(os.path.abspath(__file__))), "data", "server_info", "hosts.json")
-    containers_path = os.path.join((os.path.dirname(os.path.abspath(__file__))), "data", "server_info", "containers.json")
+    containers_path = file_io.construct_data_path("server_info/containers.json")
+    hosts_path = file_io.construct_data_path("server_info/hosts.json")
     with open(containers_path, "r", encoding="utf-8-sig") as file:
         data = json.load(file)
         

@@ -43,6 +43,7 @@ async def load_cogs():
     await bot.load_extension("beefcommands.cogs.utilities_cog")
     await bot.load_extension("beefcommands.cogs.visage_cog")
     await bot.load_extension("beefcommands.cogs.music_player_cog")
+    await bot.load_extension("beefcommands.cogs.task_scheduler_cog")
 
 
 @bot.event

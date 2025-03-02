@@ -1,6 +1,6 @@
 import asyncio
 from discord.ext import commands
-from beefutilities import voice_channel
+from beefutilities.guilds import voice_channel
 from beefcommands.utilities.music_player import player
 from beefcommands.utilities.music_player import queue
 

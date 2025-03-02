@@ -2,13 +2,12 @@ import os
 import json
 from collections import OrderedDict
 from data.server_info.server_interactions import retrive_containers_json
+from beefutilities.IO import file_io
 
 async def containers_json_reformat():
     # construct server info file path
-    current_dir = os.path.dirname(__file__)
-    file_path = os.path.join(current_dir, '..')
-    hosts_path = os.path.join(file_path, "data", "server_info", "hosts.json")
-    containers_path = os.path.join(file_path, "data", "server_info", "containers.json")
+    containers_path = file_io.construct_data_path("server_info/containers.json")
+    hosts_path = file_io.construct_data_path("server_info/hosts.json")
     
     # open containers.json
     with open(containers_path, "r", encoding="utf-8-sig") as file:
@@ -76,9 +75,7 @@ async def generate_hosts_file():
     await containers_json_reformat()
     
     # pathfind to containers.json
-    current_dir = os.path.dirname(__file__)
-    file_path = os.path.join(current_dir, '..')
-    containers_path = os.path.join(file_path, "data", "server_info", "containers.json")
+    containers_path = file_io.construct_data_path("server_info/containers.json")
     
     # delete containers.json after hosts.json has been created
     os.remove(containers_path)

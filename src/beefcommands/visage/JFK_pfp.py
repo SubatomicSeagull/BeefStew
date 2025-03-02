@@ -2,7 +2,8 @@ import discord
 from PIL import Image, ImageEnhance
 from io import BytesIO
 import os
-from beefutilities.user import get_avatar_image
+from beefutilities.users.user import get_avatar_image
+from beefutilities.IO import file_io
 from data import postgres
 
 async def jfk(victim: discord.Member):
@@ -16,9 +17,7 @@ async def jfk(victim: discord.Member):
     user_pfp = enhancer.enhance(0)
     
     # construct a file path to the assets folder
-    current_dir = os.path.dirname(__file__)
-    file_path = os.path.join(current_dir, '..', '..')
-    template = Image.open(os.path.join(file_path, "assets", "pfp_manipulation", "jfk.png"))
+    template = Image.open(file_io.construct_assets_path("pfp_manipulation/jfk.png"))
     
     # resize the template
     base_width, base_height = user_pfp.size
@@ -44,8 +43,7 @@ async def watch_out(interaction: discord.Interaction, victim: discord.Member):
     await interaction.response.defer()
     try:
         jfk_pfp = await jfk(victim)
-        await interaction.channel.send(f"{victim.mention} MR PRESIDENT GET DOWN!!!!!!")
-        await interaction.followup.send(file=discord.File(fp=jfk_pfp, filename=f"{victim.name} is jfk.png"))
+        await interaction.followup.send(content= f"{victim.mention} MR PRESIDENT GET DOWN!!!!!!", file=discord.File(fp=jfk_pfp, filename=f"{victim.name} is jfk.png"))
         
         # clear the bytesio buffer
         jfk_pfp.close()

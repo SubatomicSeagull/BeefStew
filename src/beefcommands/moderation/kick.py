@@ -1,9 +1,9 @@
 import discord
-from beefutilities.json_handling import load_element
+from beefutilities.IO.json_handling import load_element
 from datetime import datetime
 import random
 import os
-from beefutilities.guilds import read_guild_log_channel
+from beefutilities.guilds.text_channel import read_guild_log_channel
 from data import postgres
 
 async def kick_member(interaction: discord.Interaction, bot, member: discord.Member, reason: str, kicked_members: set): 

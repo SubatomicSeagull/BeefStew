@@ -2,7 +2,8 @@ import discord
 from PIL import Image
 from io import BytesIO
 import os
-from beefutilities.user import get_avatar_image
+from beefutilities.users.user import get_avatar_image
+from beefutilities.IO import file_io
 from data import postgres
 
 async def drain_overlay(victim: discord.Member):
@@ -14,7 +15,7 @@ async def drain_overlay(victim: discord.Member):
     # construct a file path to the assets folder
     current_dir = os.path.dirname(__file__)
     file_path = os.path.join(current_dir, '..', '..')
-    template = Image.open(os.path.join(file_path, "assets", "pfp_manipulation", "drain.png"))
+    template = Image.open(file_io.construct_assets_path("pfp_manipulation/drain.png"))
 
     # resize the template
     base_width, base_height = user_pfp.size
@@ -40,8 +41,7 @@ async def down_the_drain(interaction: discord.Interaction, victim: discord.Membe
     await interaction.response.defer()
     try:
         drain_pfp = await drain_overlay(victim)
-        await interaction.channel.send(f"yeah sorry we dropped {victim.mention} in there we cant get them out ://")
-        await interaction.followup.send(file=discord.File(fp=drain_pfp, filename=f"{victim.name} dropped down the drain.png"))
+        await interaction.followup.send(content= f"yeah sorry we dropped {victim.mention} in there we cant get them out ://", file=discord.File(fp=drain_pfp, filename=f"{victim.name} dropped down the drain.png"))
         
         # clear the bytesio buffer
         drain_pfp.close()

@@ -47,6 +47,12 @@ class VisageCog(commands.Cog):
     async def JFK(self, interaction: discord.Interaction, victim: discord.Member):
         print(f"> \033[32m{interaction.user.name} used /jfk on {victim.name}\033[0m")
         await beefcommands.visage.JFK_pfp.watch_out(interaction, victim)
+        
+    # resends the picutre but with a reaction
+    #@discord.app_commands.context_menu(name="React")
+    async def react(self, interaction: discord.Interaction, message: discord.Message):
+        print(f"> \033[32m{interaction.user.name} used /react on {message.author.name}\033[0m")
+        pass
 
 # cog startup
 async def setup(bot):

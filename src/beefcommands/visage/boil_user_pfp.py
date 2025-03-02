@@ -2,7 +2,8 @@ import discord
 from PIL import Image
 from io import BytesIO
 import os
-from beefutilities.user import get_avatar_image
+from beefutilities.users.user import get_avatar_image
+from beefutilities.IO import file_io
 from data import postgres
 
 async def boil_pfp(victim: discord.Member):
@@ -14,7 +15,7 @@ async def boil_pfp(victim: discord.Member):
     # construct a file path to the assets folder
     current_dir = os.path.dirname(__file__)
     file_path = os.path.join(current_dir, '..', '..')
-    template = Image.open(os.path.join(file_path, "assets", "pfp_manipulation", "boiling_pan_1.png"))
+    template = Image.open(file_io.construct_assets_path("pfp_manipulation/boiling_pan_1.png"))
     
     # create the tint overlay
     tint = Image.new("RGBA",user_pfp.size, (255, 0, 0))
@@ -44,8 +45,7 @@ async def boil(interaction: discord.Interaction, victim: discord.Member):
     await interaction.response.defer()
     try:
         boiled_pfp = await boil_pfp(victim)
-        await interaction.followup.send(file=discord.File(fp=boiled_pfp, filename=f"{victim.name} boiled.png"))
-        await interaction.channel.send(f"{victim.mention} WAS BOILED!!!!")
+        await interaction.followup.send(content= f"{victim.mention} WAS BOILED!!!!", file=discord.File(fp=boiled_pfp, filename=f"{victim.name} boiled.png"))
         
         # clear the bytesio buffer
         boiled_pfp.close()
