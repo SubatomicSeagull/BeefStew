@@ -145,7 +145,14 @@
     "by the power invested in me i now pronounce you to be {tag}!",
     "{name}, be glad its not..like.. idk, {name}smells.. or like {name}isgay or something",
     "really not appropriate guys is it....",
-    "mfw they call you {tag}: <:beefstew:1285630081829437614>"
+    "mfw they call you {tag}: <:beefstew:1285630081829437614>",
+    "{tag} please come to brazil!!!",
+    "as per decree of the council thou shalt be henceforth declared to be refered to the moniker {tag} forevermore...",
+    "pov ur {tag}",
+    "hhhhhh fineee.....",
+    "lol {tag}",
+    "lmao {tag}",
+    "MODS!!! rename them to {tag}"
   ],
 
   "insults": [
@@ -245,7 +252,8 @@
     "{joker.mention} uhhhh....",
     "te hee hee a two point for thee {joker.mention} +2",
     "{joker.mention} tnx chat +2",
-    "what is this, joke city???? +2 {joker.mention}"
+    "what is this, joke city???? +2 {joker.mention}",
+    "Rare footage of {joker.mention} being funny 📸 4k (real)"
   ],
 
   "joke_responses_negative": [
@@ -265,6 +273,7 @@
     "alright.. pack it in {joker.mention}",
     "another {joker.mention} flop.",
     "this is me when {joker.mention}'s joke doesnt land -2",
-    "mfw {joker.mention} gets another -2: <:beefstew:1285630081829437614>"
+    "mfw {joker.mention} gets another -2: <:beefstew:1285630081829437614>",
+    "you are the reason we cant have nice things..."
   ]
 }
