@@ -4,7 +4,7 @@ from collections import OrderedDict
 from beefutilities.IO import file_io
 
 # global assets folder path
-ASSETS_FOLDER = os.path.join(os.path.dirname(__file__), '..', 'assets')
+ASSETS_FOLDER = os.path.join(os.path.dirname(__file__), "..", "..", "assets")
 
 def load_element(file_name, element):
     # construct the file path
