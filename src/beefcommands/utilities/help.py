@@ -15,11 +15,11 @@ async def help(bot, interaction: discord.Interaction):
     view = HelpEmbed()
     page0embed = discord.Embed(title="Beefstew Help", description="You don't want to know what I can *really* do...", color=discord.Color.lighter_grey())
     page0embed.set_thumbnail(url=bot.user.avatar.url)
-    page0embed.set_author(name="Beefstew", icon_url=bot.user.avatar.url)
+    page0embed.set_author(name="Help", icon_url=bot.user.avatar.url)
     #embed body
     page0embed.add_field(name="",value="⠀", inline=False)
     page0embed.add_field(name="Commands:",value="", inline=False)
-    page0embed.add_field(name="",value="Click on the buttons below for command lists", inline=False)
+    page0embed.add_field(name="",value="Click on the buttons below for a list of commands", inline=False)
     page0embed.add_field(name="",value="⠀", inline=False)
     page0embed.add_field(name="\nOther info:\n",value="", inline=False)
     page0embed.add_field(name="", value="Privacy Policy", inline=True)
@@ -40,6 +40,7 @@ class HelpEmbed(discord.ui.View):
         page1embed.add_field(name="Commands:",value="", inline=False)
         page1embed.add_field(name="", value="`/warn`: 🫵YOU", inline=False)
         page1embed.add_field(name="", value="`/mute`: SHHHHHHHHHH", inline=False)
+        page1embed.add_field(name="", value="`/unmute`: HHHHHHHHHHS", inline=False)
         page1embed.add_field(name="", value="`/kick`: OOT MAH HOOSE", inline=False)
         page1embed.add_field(name="", value="`/ban`: KILL KILL KILL!!!", inline=False)
         await interaction.response.edit_message(embed=page1embed)
@@ -54,6 +55,7 @@ class HelpEmbed(discord.ui.View):
         page2embed.add_field(name="", value="`/set_logs`: sets the current channel as the logs channel", inline=False)
         page2embed.add_field(name="", value="`/set_info`: sets the current channel as the info channel", inline=False)
         page2embed.add_field(name="", value="`/set_quotes`: sets the current channel as the quotes channel", inline=False)
+        page2embed.add_field(name="", value="`/update`: whats new?", inline=False)
         page2embed.add_field(name="", value="`/test`: <- jamie delete this", inline=False)
         await interaction.response.edit_message(embed=page2embed)
             
@@ -73,6 +75,9 @@ class HelpEmbed(discord.ui.View):
         page4embed.add_field(name="", value="`[@victim] they call you [nickname]`: invoke the rule...", inline=False)
         page4embed.add_field(name="", value="`[@victim] +2`: good joke <:beefsmile:1308701407007739974>", inline=False)
         page4embed.add_field(name="", value="`[@victim] -2`: bad joke <:beefhusk:1287094093989679124>", inline=False)
+        page4embed.add_field(name="", value="`/leaderboard`: top 10 jokers", inline=False)
+        page4embed.add_field(name="", value="`/loserboard`: bottom 10 jokers", inline=False)
+        page4embed.add_field(name="", value="`/gamble`: spend a joke point to gamble it all...", inline=False)     
         page4embed.add_field(name="", value="`/score`: how funny r u?", inline=False)
         await interaction.response.edit_message(embed=page4embed)
         
@@ -84,4 +89,28 @@ class HelpEmbed(discord.ui.View):
         page5embed.add_field(name="", value="`/boil`: boils the user", inline=False)
         page5embed.add_field(name="", value="`/slander`: i cant belive they just said that...", inline=False)
         page5embed.add_field(name="", value="`/drain`: yea we dropped them down there they got stucl ://", inline=False)
+        page5embed.add_field(name="", value="`/bless`: bless you my child...", inline=False)
+        page5embed.add_field(name="", value="`/jail`: go directly to jail!", inline=False)
+        page5embed.add_field(name="", value="`/jfk`: MISTER PRESIDENT WATCH OUT", inline=False)
+
+        await interaction.response.edit_message(embed=page5embed)
+        
+    @discord.ui.button(label="Music Player", style=discord.ButtonStyle.primary)    
+    async def page_6(self, interaction: discord.Interaction, button: discord.ui.Button):
+        self.currentpage = 6
+        page5embed = discord.Embed(title="Help - Music Player", description="DJ DJ DDDD DJ DJ        DJ", color=discord.Color.lighter_grey())
+        page5embed.add_field(name="Commands:",value="", inline=False)
+        page5embed.add_field(name="", value="The music player can take tracks from:\n Direct youtube links (e.g youtube.com/watch____)\nSpotify links (e.g open.spotify.com/track/______)\n Search Terms (e.g 'jellyish fields forever')", inline=False)
+        page5embed.add_field(name="", value="`/play [link]`: adds the track to the front of the queue and starts playing", inline=False)
+        page5embed.add_field(name="", value="`/queue [link]`: adds the track to the back of the queue", inline=False)
+        page5embed.add_field(name="", value="`/pause`: pauses the current track", inline=False)
+        page5embed.add_field(name="", value="`/resume`: resumes the current track", inline=False)
+        page5embed.add_field(name="", value="`/skip`: skips the current track", inline=False)
+        page5embed.add_field(name="", value="`/list`: lists all tracks in the queue", inline=False)
+        page5embed.add_field(name="", value="`/shuffle`: shuffles the queue", inline=False)
+        page5embed.add_field(name="", value="`/clear`: clears the queue", inline=False)
+        page5embed.add_field(name="", value="`/loop`: loops the current track", inline=False)
+        page5embed.add_field(name="", value="`/join`: joins the voice channel", inline=False)
+        page5embed.add_field(name="", value="`/leave`: leaves the voice channel", inline=False)
+        
         await interaction.response.edit_message(embed=page5embed)
