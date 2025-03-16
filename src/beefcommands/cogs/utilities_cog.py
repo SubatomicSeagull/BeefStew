@@ -4,7 +4,7 @@ from beefcommands.utilities.ccping import ccping
 from beefutilities.guilds.text_channel import set_info, set_logs, set_quotes
 from beefcommands.utilities.help import help
 from beefutilities.update import update_info
-
+from beefcommands.visage.bday import bday
 class UtilitiesCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -51,8 +51,16 @@ class UtilitiesCog(commands.Cog):
         await update_info(interaction, self.bot)    
     
     @discord.app_commands.command(name="test", description="jamie delete this")
-    async def test(self, interaction: discord.Interaction):
-        await update_info(interaction, self.bot)
+    async def test(self, interaction: discord.Interaction, victim: discord.Member):
+        await bday(interaction, victim)
+        
+    @commands.command(name="say", description="say something")
+    async def say(self, ctx, *, message):
+        print(f"> \033[32m{ctx.author.name} used /say \"{message}\"\033[0m")
+        await ctx.message.delete()
+        
+        if message != "" and message != None:
+            await ctx.send(message)
 
 # cog setup
 async def setup(bot):

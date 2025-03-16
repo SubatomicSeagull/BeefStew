@@ -34,7 +34,7 @@ class EventListenerCog(commands.Cog):
     # message delete listener
     @commands.Cog.listener()
     async def on_message_delete(self, message: discord.Message):
-        if not message.author.bot: print(f"> \033[32m{message.author.name} deleted a message in #{message.channel.name}\033[0m")
+        if not message.author.bot and not "/say" in message.content.lower(): print(f"> \033[32m{message.author.name} deleted a message in #{message.channel.name}\033[0m")
         await beefcommands.events.message_events.message_delete_event(self.bot, message)
 
 async def setup(bot):
