@@ -11,11 +11,11 @@ class TaskSchedulerCog(commands.Cog):
         print(f"scheduling tasks...")
         self.test_task.start()
         print(f"\033[32mall tasks scheduled successfully!\033[0m")
-       
+
     @tasks.loop(time=testtime)
     async def test_task(self):
         print(f"{testtime} scheduled task ran at", datetime.datetime.now())
- 
+
         
     async def scheduled_yearly_event_check(self):
         pass

@@ -3,7 +3,9 @@ from data import postgres
 from beefcommands.invocations.joker_score.joker_registration import is_registered, register_user
 
 async def retrieve_joke_score(user: discord.Member):
-    joke_score = await (postgres.read(f"SELECT joke_score FROM user_joker_score WHERE user_id = '{user.id}';"))
+    if not await is_registered(user):
+        await register_user(user)
+    joke_score = await (postgres.read(f"SELECT current_score FROM joke_scores WHERE user_id = '{user.id}';"))
     score = joke_score[0][0]
     return int(score)
 
