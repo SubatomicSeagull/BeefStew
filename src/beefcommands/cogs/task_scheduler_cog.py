@@ -17,20 +17,39 @@ class TaskSchedulerCog(commands.Cog):
         print(f"{testtime} scheduled task ran at", datetime.datetime.now())
  
         
-        
+    async def scheduled_yearly_event_check(self):
+        pass
+        # task is scheduled to check for yearly events every day, for some reason theres no way to schedule yearly tasks??
+        # calls checks for birthdays and holidays
 
-    async def schedule_birthday(self, user:discord.User, birthday):
+    async def scheduled_birthday_check(self):
+        pass
         # birthdy is currently an argument but will be defined locally as read from the db and converted to a datetime.
         # task is scheduled to read the db every day to check for matching birthdays
-        # if there are any, list the users and run the below logic
+        # if there is a match, the bot will send a message to the info channel adn give them 15 points
         
-        # schedule a task to run at the datetime value of the users bday
-        channel = beefutilities.guilds.text_channel.read_guild_info_channel(self.bot.guild.id)
-        await channel.send(f"Happy Birthday {user.mention}!")
-        # add a custom imaghe to send along with it
-        #add 20 points to the users score
-
-        # actaully all yearly tasks will need to be scheduled this way as there is no support for yearly tasks in discord.ext for some reason
+    async def scheduled_holiday_check(self):
+        pass
+        # task is scheduled to check for holidays every day
+        # currently christmas (25/12), new years (1/1) and halloween (31/10)
+        # if there is a match, the bot will send a message to the info channel and differing amounts of points
+        
+    async def image_of_the_day_check(self):
+        pass
+        # take the current date and match against the list of IOTD's
+        # if there is a match, send the image to the info channel
+        
+    async def random_swing_check(self):
+        pass
+        # if a user has the msg flag you get from being sniffed, they will be eligable for a random swing
+        # a random swing event has a chance to happen 4 times a day, 8am, 12om, 4pm and 8pm
+        # there is a low chance of a swing happeneing at one of these times, like 1/100
+        # of this 1 in 100 chance, 1/3 chance to be an insult from, 1/3 chance to be neutral, 1/3 chance to be an image (swing responses in responses.json)
+        # also of this 1 in 100 chance, there is a 1/3 chance for it to be in the info channel, and 2/3 chance for it to be a DM.
+        
+        # at one of the 4 times, all the flagged users will be gathered and one will be picked at random
+        # 1/100 check for the swing to happen, then check for type, and then check for channel
+        # send the message to the channel or user
 
         
 async def setup(bot):
