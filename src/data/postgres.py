@@ -5,7 +5,7 @@ async def connect_to_db():
     try:
         # connect to the db with environment credentials
         connection = psycopg2.connect(
-            dbname=os.getenv("SFTPUSERNAME"),
+            dbname="bs_users_and_guilds",
             user=os.getenv("DBUSER"),
             password=os.getenv("DBPASS"),
             host=os.getenv("DBHOST"),
