@@ -59,7 +59,7 @@ async def write(command: str, params: tuple = ()):
         connection.close()
         
     except (Exception, psycopg2.Error) as error:
-        await log_error(error)
+        await print(error)
         return None
     
     # close the connection even in the event of an error

@@ -1,11 +1,10 @@
 import discord
 from data import postgres
 from beefcommands.invocations.joker_score.joker_registration import is_registered, register_user
+from beefutilities.guilds import text_channel
 
 async def retrieve_joke_score(user: discord.Member):
-    if not await is_registered(user):
-        await register_user(user)
-    joke_score = await (postgres.read(f"SELECT current_score FROM joke_scores WHERE user_id = '{user.id}';"))
+    joke_score = await (postgres.read(f"SELECT current_score FROM joke_scores WHERE user_id = '{user.id}' AND guild_id = '{user.guild.id}';"))
     score = joke_score[0][0]
     return int(score)
 
@@ -35,5 +34,5 @@ async def score(interaction: discord.Interaction, user: discord.Member):
         score = await retrieve_joke_score(user)
         await interaction.followup.send(f"{user.mention}'s joker score: **{score}**!")
     except Exception as e:
-        postgres.log_error(e)
+        print(e)
         await interaction.followup.send(f"couldnt find {user.name}'s score :( ({e}))")
