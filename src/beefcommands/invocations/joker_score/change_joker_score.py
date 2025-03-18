@@ -19,7 +19,7 @@ async def change_joke_score(self: discord.Member, user: discord.Member, value):
         
         await postgres.write(f"UPDATE public.joke_scores SET current_score = current_score + {value} WHERE user_id = '{user.id}' AND guild_id = '{user.guild.id}';")
         await postgres.write(f"UPDATE public.joke_scores SET user_display_name = '{user.nick}' WHERE user_id = '{user.id}' AND guild_id = '{user.guild.id}';")
-        await set_highest_score(user, retrieve_joke_score(user))
+        await set_highest_score(user, await retrieve_joke_score(user))
         return f"{self.mention} -2'd themselves for some reason... oh well!\n {await get_joke_response_negative(user)}"
     
     
@@ -27,8 +27,8 @@ async def change_joke_score(self: discord.Member, user: discord.Member, value):
         # update the score and the display name in the db
         await postgres.write(f"UPDATE public.joke_scores SET current_score = current_score + {value} WHERE user_id = '{user.id}' AND guild_id = '{user.guild.id}';")
         await postgres.write(f"UPDATE public.joke_scores SET user_display_name = '{user.nick}' WHERE user_id = '{user.id}' AND guild_id = '{user.guild.id}';")
-        await set_highest_score(user, retrieve_joke_score(user))
-        await set_lowest_score(user, retrieve_joke_score(user))
+        await set_highest_score(user, await retrieve_joke_score(user))
+        await set_lowest_score(user, await retrieve_joke_score(user))
         
         # decide is it a +2 or -2
         if value > 0:
@@ -85,21 +85,21 @@ async def hawk_tuah_penalty(victim: discord.Member):
         await register_user(victim)
         
     # take 2 points from the victim and update lowest score
-    await postgres.write(f"UPDATE public.joke_scores SET joke_score = current_score - 2 WHERE user_id = '{victim.id}' AND guild_id = '{victim.guild.id}';")
-    await set_lowest_score(victim, retrieve_joke_score(victim))
+    await postgres.write(f"UPDATE public.joke_scores SET current_score = current_score - 2 WHERE user_id = '{victim.id}' AND guild_id = '{victim.guild.id}';")
+    await set_lowest_score(victim, await retrieve_joke_score(victim))
 
     # give 2 points to the jar
-    await postgres.write(f"UPDATE public.joke_scores SET joke_score = current_score + 2 WHERE user_id = '99' AND guild_id = '{victim.guild.id}';")
-    await postgres.write(f"UPDATE public.joke_scorese SET user_display_name = '{victim.nick}' WHERE user_id = '{victim.id}' AND guild_id = '{victim.guild.id}';")
+    await postgres.write(f"UPDATE public.joke_scores SET current_score = current_score + 2 WHERE user_id = '99' AND guild_id = '{victim.guild.id}';")
+    await postgres.write(f"UPDATE public.joke_scores SET user_display_name = '{victim.nick}' WHERE user_id = '{victim.id}' AND guild_id = '{victim.guild.id}';")
     
     joke_score = await (postgres.read(f"SELECT current_score FROM public.joke_scores WHERE user_id = '99' AND guild_id = '{victim.guild.id}';"))
     score = joke_score[0][0]
     return score
 
 async def set_highest_score(user: discord.Member , score):
-    if score > get_user_highest_score(user):
+    if score > await get_user_highest_score(user):
         await postgres.write(f"UPDATE public.joke_scores SET highest_score = {score} WHERE user_id = '{user.id}' AND guild_id = '{user.guild.id}';")
         
 async def set_lowest_score(user: discord.Member, score):
-    if score < get_user_lowest_score(user):
+    if score < await get_user_lowest_score(user):
         await postgres.write(f"UPDATE public.joke_scores SET lowest_score = {score} WHERE user_id = '{user.id}' AND guild_id = '{user.guild.id}';")
