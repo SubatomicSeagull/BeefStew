@@ -4,7 +4,7 @@ from data import postgres
 async def retrive_top_scores(interaction: discord.Interaction, bot):
     await interaction.response.defer()
     # read the top 10 scores from the db
-    rows = await postgres.read("SELECT user_id, joke_score FROM user_joker_score ORDER BY joke_score DESC LIMIT 10")
+    rows = await postgres.read(f"SELECT user_id, current_score FROM joke_scores WHERE guild_id = '{interaction.guild.id}' ORDER BY joke_score DESC LIMIT 10;")
     
     # embed header
     leaderboard = discord.Embed(title= "Joke Score Leaderboard", color=discord.Color.gold())
@@ -26,7 +26,7 @@ async def retrive_top_scores(interaction: discord.Interaction, bot):
 async def retrive_low_scores(interaction: discord.Interaction, bot):
     await interaction.response.defer()
     # read the lowest 10 scores from the db
-    rows = await postgres.read("SELECT user_id, joke_score FROM user_joker_score ORDER BY joke_score ASC LIMIT 10")
+    rows = await postgres.read(f"SELECT user_id, current_score FROM joke_scores WHERE guild_id = '{interaction.guild.id}' ORDER BY joke_score ASC LIMIT 10;")
     
     # embed header
     leaderboard = discord.Embed(title= "Joke Score Loserboard", color=discord.Color.fuchsia())
