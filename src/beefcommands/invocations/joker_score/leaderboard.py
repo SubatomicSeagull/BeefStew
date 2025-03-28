@@ -6,8 +6,6 @@ async def retrive_top_scores(interaction: discord.Interaction, bot):
     # read the top 10 scores from the db
     rows = await postgres.read(f"SELECT user_id, current_score FROM joke_scores WHERE guild_id = '{interaction.guild.id}' ORDER BY current_score DESC LIMIT 10;")
     highest = await postgres.read(f"SELECT user_id, highest_score FROM joke_scores WHERE guild_id = '{interaction.guild.id}' ORDER BY highest_score DESC LIMIT 1;")
-
-    print(highest)
     
     # embed header
     leaderboard = discord.Embed(title= "Joke Score Leaderboard", color=discord.Color.gold())

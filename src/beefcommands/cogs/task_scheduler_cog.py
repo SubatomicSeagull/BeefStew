@@ -1,16 +1,17 @@
 import discord
 from discord.ext import commands, tasks
 import datetime
-import beefutilities
-import beefutilities.guilds.text_channel
+from beefcommands.visage.bday import party_pfp
+from beefutilities.guilds.text_channel import read_guild_info_channel
 from data import postgres
+from beefcommands.events.tasks.birthday_check import check_for_birthdays
 testtime = datetime.time(hour=8, minute=58, tzinfo=datetime.timezone.utc)
 
 class TaskSchedulerCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         print(f"scheduling tasks...")
-        self.test_task.start()
+        self.scheduled_birthday_check.start()
         print(f"\033[32mall tasks scheduled successfully!\033[0m")
 
     @tasks.loop(time=testtime)
@@ -23,14 +24,10 @@ class TaskSchedulerCog(commands.Cog):
         # task is scheduled to check for yearly events every day, for some reason theres no way to schedule yearly tasks??
         # calls checks for birthdays and holidays
     
-    @commands.command(name="bdaytest", description="test the birthday check")
+    # task is scheduled to check for birthdays every day at 10am
+    @tasks.loop(time=datetime.time(10, 0, 0))
     async def scheduled_birthday_check(self):
-        # birthdy is currently an argument but will be defined locally as read from the db and converted to a datetime.
-        # task is scheduled to read the db every day to check for matching birthdays
-        # if there is a match, the bot will send a message to the info channel adn give them 15 points
-        users = await postgres.read(f"SELECT user_id, user_name, birthday FROM users;")
-        print(users)
-
+        await check_for_birthdays(self.bot)
         
         
     async def scheduled_holiday_check(self):

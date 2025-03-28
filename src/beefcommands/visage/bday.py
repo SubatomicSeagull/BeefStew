@@ -40,17 +40,3 @@ async def party_pfp(victim: discord.Member):
     final_image.save(image_binary, 'PNG')
     image_binary.seek(0)
     return image_binary
-
-# usage of the above
-async def bday(interaction: discord.Interaction, victim: discord.Member):
-    await interaction.response.defer()
-    try:
-        bday_pfp = await party_pfp(victim)
-        await interaction.followup.send(content= f"{victim.mention} Yippee its ur birthday!!!", file=discord.File(fp=bday_pfp, filename=f"{victim.name}_bday.png"))
-        
-        # clear the bytesio buffer.
-        bday_pfp.close()
-        
-    except Exception as e:
-        postgres.log_error(e)
-        await interaction.followup.send(f"{interaction.user.mention} tried to put {victim.name} in gay baby jail but it didnt work :// ({e})")
