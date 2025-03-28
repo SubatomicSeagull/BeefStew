@@ -4,7 +4,7 @@ from beefcommands.utilities.ccping import ccping
 from beefutilities.guilds.text_channel import set_info, set_logs, set_quotes
 from beefcommands.utilities.help import help
 from beefutilities.update import update_info
-from beefcommands.visage.bday import bday
+from beefcommands.visage.sniff import sniff_user
 from beefutilities.users import user
 class UtilitiesCog(commands.Cog):
     def __init__(self, bot):
@@ -63,8 +63,8 @@ class UtilitiesCog(commands.Cog):
     
     @discord.app_commands.command(name="sniff", description="what do u smell like")
     async def sniff(self, interaction: discord.Interaction):
-        await interaction.response.defer()
-        await interaction.followup.send(await user.set_msg_flag(interaction.user, True))
+        await user.set_msg_flag(interaction.user, True)
+        await sniff_user(interaction, interaction.user)
         
     @commands.command(name="unsniff", description="what do u smell like")
     async def unsniff(self, ctx):
