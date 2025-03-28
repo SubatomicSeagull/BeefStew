@@ -3,6 +3,7 @@ from discord.ext import commands, tasks
 import datetime
 import beefutilities
 import beefutilities.guilds.text_channel
+from data import postgres
 testtime = datetime.time(hour=8, minute=58, tzinfo=datetime.timezone.utc)
 
 class TaskSchedulerCog(commands.Cog):
@@ -21,12 +22,16 @@ class TaskSchedulerCog(commands.Cog):
         pass
         # task is scheduled to check for yearly events every day, for some reason theres no way to schedule yearly tasks??
         # calls checks for birthdays and holidays
-
+    
+    @commands.command(name="bdaytest", description="test the birthday check")
     async def scheduled_birthday_check(self):
-        pass
         # birthdy is currently an argument but will be defined locally as read from the db and converted to a datetime.
         # task is scheduled to read the db every day to check for matching birthdays
         # if there is a match, the bot will send a message to the info channel adn give them 15 points
+        users = await postgres.read(f"SELECT user_id, user_name, birthday FROM users;")
+        print(users)
+
+        
         
     async def scheduled_holiday_check(self):
         pass
