@@ -9,10 +9,8 @@ async def is_registered(user: discord.Member):
     
     user = await (postgres.read(f"SELECT * FROM public.users WHERE user_id = '{user.id}';"))
     if user == []:
-        print("user not found")
         return False
     else:
-        print("user found")
         return True
     
 async def register_user(user: discord.Member):
