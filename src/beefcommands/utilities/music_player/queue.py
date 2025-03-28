@@ -67,7 +67,7 @@ async def handle_queue(ctx, url, insert):
                 queue.append(track)
             added += 1
     if added == 1:
-        await status.edit(content=f"**{ctx.author.name}** added 1 track to the queue")
+        await status.edit(content=f"**{ctx.author.name}** added **{track[1]}** to the queue")
     else:
         await status.edit(content=f"**{ctx.author.name}** added {added} tracks to the queue")
 
