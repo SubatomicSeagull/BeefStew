@@ -4,7 +4,7 @@ import datetime
 from beefcommands.visage.bday import party_pfp
 from beefutilities.guilds.text_channel import read_guild_info_channel
 from data import postgres
-from beefcommands.events.tasks.birthday_check import check_for_birthdays
+from beefcommands.events.tasks import holiday_check, birthday_check
 testtime = datetime.time(hour=8, minute=58, tzinfo=datetime.timezone.utc)
 
 class TaskSchedulerCog(commands.Cog):
@@ -12,6 +12,7 @@ class TaskSchedulerCog(commands.Cog):
         self.bot = bot
         print(f"scheduling tasks...")
         self.scheduled_birthday_check.start()
+        self.scheduled_holiday_check.start()
         print(f"\033[32mall tasks scheduled successfully!\033[0m")
 
     @tasks.loop(time=testtime)
@@ -27,14 +28,11 @@ class TaskSchedulerCog(commands.Cog):
     # task is scheduled to check for birthdays every day at 10am
     @tasks.loop(time=datetime.time(10, 0, 0))
     async def scheduled_birthday_check(self):
-        await check_for_birthdays(self.bot)
+        await birthday_check.check_for_birthdays(self.bot)
         
-        
+    @tasks.loop(time=datetime.time(22, 16, 0))
     async def scheduled_holiday_check(self):
-        pass
-        # task is scheduled to check for holidays every day
-        # currently christmas (25/12), new years (1/1) and halloween (31/10)
-        # if there is a match, the bot will send a message to the info channel and differing amounts of points
+        await holiday_check.check_for_holiday(self.bot)
         
     async def image_of_the_day_check(self):
         pass
