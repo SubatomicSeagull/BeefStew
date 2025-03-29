@@ -5,8 +5,6 @@ from beefcommands.visage.bday import party_pfp
 from beefutilities.guilds.text_channel import read_guild_info_channel
 from data import postgres
 from beefcommands.events.tasks import holiday_check, birthday_check
-testtime = datetime.time(hour=8, minute=58, tzinfo=datetime.timezone.utc)
-
 class TaskSchedulerCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -14,11 +12,6 @@ class TaskSchedulerCog(commands.Cog):
         self.scheduled_birthday_check.start()
         self.scheduled_holiday_check.start()
         print(f"\033[32mall tasks scheduled successfully!\033[0m")
-
-    @tasks.loop(time=testtime)
-    async def test_task(self):
-        print(f"{testtime} scheduled task ran at", datetime.datetime.now())
-
         
     async def scheduled_yearly_event_check(self):
         pass
@@ -30,7 +23,7 @@ class TaskSchedulerCog(commands.Cog):
     async def scheduled_birthday_check(self):
         await birthday_check.check_for_birthdays(self.bot)
         
-    @tasks.loop(time=datetime.time(22, 16, 0))
+    @tasks.loop(time=datetime.time(23, 6, 0))
     async def scheduled_holiday_check(self):
         await holiday_check.check_for_holiday(self.bot)
         

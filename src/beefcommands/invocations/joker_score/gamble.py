@@ -52,6 +52,8 @@ async def gamble_points(interaction: discord.Interaction):
     # comit the change in the db
     await postgres.write(query)
     
+    # make sure to update highest and lowest scores
+    
     # find the path to the media folder
     file_path = file_io.construct_media_path(f"slots/{media}")
     
