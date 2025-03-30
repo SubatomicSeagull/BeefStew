@@ -8,6 +8,7 @@
 - added holiday events!
 - /bday to tell bstew what your birthday is and u get a present :)
 - /sniff ....
+- beefstew will now send funny images sometimes 
 
 ## Fixes:
 - fixed a bug where messages without attachments werent being picked up by the message event listener
