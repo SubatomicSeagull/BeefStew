@@ -4,6 +4,7 @@ from random import randint
 import os
 from beefutilities.IO import file_io
 from beefcommands.invocations.joker_score.read_joker_score import retrieve_joke_score
+from beefcommands.invocations.joker_score.change_joker_score import set_highest_score, set_lowest_score
 
 async def gamble_points(interaction: discord.Interaction):
     await interaction.response.defer()
@@ -52,7 +53,9 @@ async def gamble_points(interaction: discord.Interaction):
     # comit the change in the db
     await postgres.write(query)
     
-    # make sure to update highest and lowest scores
+    # update highest and lowest scores
+    await set_highest_score(user, await retrieve_joke_score(user))
+    await set_lowest_score(user, await retrieve_joke_score(user))
     
     # find the path to the media folder
     file_path = file_io.construct_media_path(f"slots/{media}")
