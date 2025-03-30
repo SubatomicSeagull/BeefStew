@@ -19,15 +19,21 @@ class TaskSchedulerCog(commands.Cog):
         # calls checks for birthdays and holidays
     
     # task is scheduled to check for birthdays every day at 10am
-    @tasks.loop(time=datetime.time(10, 0, 0))
+    @tasks.loop(time=datetime.time(9, 43, 0))
     async def scheduled_birthday_check(self):
         await birthday_check.check_for_birthdays(self.bot)
         
     @tasks.loop(time=datetime.time(23, 6, 0))
     async def scheduled_holiday_check(self):
         await holiday_check.check_for_holiday(self.bot)
+    
+    @commands.command(name="iotd")  
+    async def image_of_the_day_check(self, ctx):
+        today = datetime.datetime.now().date()
+        dotw = today.strftime("%A")
+        print(f"checking for IOTD for {dotw}")
+        print (f"checking IOTD for {today}")
         
-    async def image_of_the_day_check(self):
         pass
         # take the current date and match against the list of IOTD's
         # if there is a match, send the image to the info channel
