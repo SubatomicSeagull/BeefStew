@@ -2,10 +2,10 @@ import discord
 from data import postgres
 from beefutilities.guilds import text_channel
 
-async def is_registered(user: discord.Member):
+async def is_registered(user: discord.Member):  # Added guild argument
     # if the guild isnt registered, register it
-    if not await text_channel.guild_exists(user.guild.id):
-        await text_channel.add_guild(user.guild.id, user.guild.name)
+    if not await text_channel.guild_exists(user.guild.id):  # Updated to use guild.id
+        await text_channel.add_guild(user.guild.id, user.guild.name)  # Updated to use guild.id and guild.name
     
     user = await (postgres.read(f"SELECT * FROM public.users WHERE user_id = '{user.id}';"))
     if user == []:

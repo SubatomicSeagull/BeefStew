@@ -1,32 +1,33 @@
 import discord
 from discord.ext import commands, tasks
 import datetime
-from beefcommands.visage.bday import party_pfp
-from beefutilities.guilds.text_channel import read_guild_info_channel
-from data import postgres
+from zoneinfo import ZoneInfo
+import pytz
 from beefcommands.events.tasks import holiday_check, birthday_check
 class TaskSchedulerCog(commands.Cog):
+    
+    TIMEZONE = ZoneInfo("Europe/London")
+    
     def __init__(self, bot):
         self.bot = bot
+        print(f"Timezone set to {self.TIMEZONE}")
         print(f"scheduling tasks...")
         self.scheduled_birthday_check.start()
         self.scheduled_holiday_check.start()
         print(f"\033[32mall tasks scheduled successfully!\033[0m")
-        
-    async def scheduled_yearly_event_check(self):
-        pass
-        # task is scheduled to check for yearly events every day, for some reason theres no way to schedule yearly tasks??
-        # calls checks for birthdays and holidays
     
     # task is scheduled to check for birthdays every day at 10am
-    @tasks.loop(time=datetime.time(9, 43, 0))
+    @tasks.loop(time=datetime.time(10, 0, 0, tzinfo=TIMEZONE))
     async def scheduled_birthday_check(self):
         await birthday_check.check_for_birthdays(self.bot)
-        
-    @tasks.loop(time=datetime.time(23, 6, 0))
-    async def scheduled_holiday_check(self):
+    
+    # task is scheduled to check for holidays every day at 8am
+    @tasks.loop(time=datetime.time(8, 0, 0, tzinfo=TIMEZONE))
+    async def scheduled_holiday_check(self, ctx):
         await holiday_check.check_for_holiday(self.bot)
     
+    # task is scheduled to check for IOTD every day at 9am
+    #@tasks.loop(time=datetime.time(9, 0, 0, tzinfo=TIMEZONE))
     @commands.command(name="iotd")  
     async def image_of_the_day_check(self, ctx):
         today = datetime.datetime.now().date()
@@ -54,3 +55,4 @@ class TaskSchedulerCog(commands.Cog):
 async def setup(bot):
     print("- \033[95mbeefcommands.cogs.task_scheduler_cog\033[0m")
     await bot.add_cog(TaskSchedulerCog(bot))
+    

@@ -17,9 +17,9 @@ async def change_joke_score(self: discord.Member, user: discord.Member, value):
     # but you can -2 yourself
     elif self.id == user.id and value < 0:
         
-        await postgres.write(f"UPDATE public.joke_scores SET current_score = current_score + {value} WHERE user_id = '{user.id}' AND guild_id = '{user.guild.id}';")
+        await postgres.write(f"UPDATE public.joke_scores SET current_score = current_score -2 WHERE user_id = '{user.id}' AND guild_id = '{user.guild.id}';")
         await postgres.write(f"UPDATE public.joke_scores SET user_display_name = '{user.nick}' WHERE user_id = '{user.id}' AND guild_id = '{user.guild.id}';")
-        await set_highest_score(user, await retrieve_joke_score(user))
+        await set_lowest_score(user, await retrieve_joke_score(user))
         return f"{self.mention} -2'd themselves for some reason... oh well!\n {await get_joke_response_negative(user)}"
     
     

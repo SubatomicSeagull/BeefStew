@@ -22,7 +22,7 @@ async def get_user_avatar(user: discord.Member):
 
 async def register_user_bday(user: discord.Member, birthday):
     # check if the user is already registered
-    if not await is_registered(user):
+    if not await is_registered(user):  # Added user.guild as the guild argument
         await register_user(user)
     
     try:
@@ -34,7 +34,7 @@ async def register_user_bday(user: discord.Member, birthday):
     
 async def set_msg_flag(user: discord.Member, flag: bool):
     # check if the user is already registered
-    if not await is_registered(user):
+    if not await is_registered(user):  # Added user.guild as the guild argument
         await register_user(user)
     
     # set the msg flag for the user

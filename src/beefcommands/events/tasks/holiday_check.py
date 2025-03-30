@@ -9,50 +9,71 @@ async def check_for_holiday(bot):
     today = datetime.datetime.now().date()
     holidays = {
         (1, 1): "New Year's Day",
-        (29, 3): "Christmas",
-        (31, 10): "Halloween"
+        (25, 12): "Christmas",
+        (30, 10): "Halloween"
     }
-    guild_id = 1015579904005386250
-    channel = bot.get_channel(await read_guild_info_channel(guild_id))
+    guild = await bot.fetch_guild(1015579904005386250)
+    
     print("checking for holidays...")
     for date, holiday_name in holidays.items():
         print(f"checking {date} against {today.day, today.month}")
         if date == (today.day, today.month):
             if holiday_name == "New Year's Day":
-                print(f"New Year's Day event triggered")
-                await new_years_event(channel)
+                await new_years_event(guild)
                 return
             elif holiday_name == "Christmas":
-                print(f"christmas event triggered")
-                await christmas_event(channel, guild_id)
+                await christmas_event(guild)
                 return
             elif holiday_name == "Halloween":
-                print(f"halloween event triggered")
-                await halloween_event(channel, guild_id)
+                await halloween_event(guild)
                 return
                 
 
-async def christmas_event(channel, guild_id):
-    await postgres.write(f"UPDATE public.joke_scores SET current_score = current_score + 10 WHERE guild_id = {guild_id};")
-    # make sure to update highest scores
-    # do not give the hawk tuah jar points
-    
-    print("sending christmas event message")
-    await channel.send(content="# 🎄HAPPY BEEFMAS!! 🎄\nWHat has ol' st. stew claus brought u...\n ho ho ho 10 points to everyone!", file=discord.File(fp=file_io.construct_assets_path("stews/christmasstew.png"), filename="christmasstew.png"))
-    print("christmas event message sent")
+async def christmas_event(guild: discord.Guild):
+    await postgres.write(f"UPDATE public.joke_scores SET current_score = current_score + 10 WHERE guild_id = {guild.id} AND user_id != 99;")
 
-async def new_years_event(channel):
+    users = await postgres.read(f"SELECT * FROM public.joke_scores WHERE guild_id = {guild.id};")
+    
+    for user in users:
+        user_id = user[0]
+        guild_id = user[1]
+        score = user[2]
+        highest_score = user[3]
+
+        if highest_score < score:
+            await postgres.write(f"UPDATE public.joke_scores SET highest_score = {score} WHERE user_id = '{user_id}' AND guild_id = '{guild_id}';")
+
+    
+    channel = await guild.fetch_channel(await read_guild_info_channel(guild.id))
+    
+    await channel.send(
+        content="# 🎄HAPPY BEEFMAS!! 🎄\nwhat has ol' st. stew brought u...\n ho ho ho 10 points to everyone!",
+        file=discord.File(fp=file_io.construct_assets_path("stews/christmasstew.png"), filename="christmasstew.png")
+        )
+
+async def new_years_event(guild: discord.Guild):
+    channel = await guild.fetch_channel(await read_guild_info_channel(guild.id))
     await channel.send(
         content=f"# 🎇 HNY {datetime.datetime.now().date().year}!!! 🎇", 
         file=discord.File(fp=file_io.construct_assets_path("stews/nyestew.png"), filename="newyearsstew.png")
         )
 
-async def halloween_event(channel, guild_id):
-    await postgres.write(f"UPDATE public.joke_scores SET current_score = current_score + 5 WHERE guild_id = {guild_id};")
-    # make sure to update highest scores
-    # do not give the hawk tuah jar points
+async def halloween_event(guild: discord.Guild):
+    channel = await guild.fetch_channel(await read_guild_info_channel(guild.id))
+    await postgres.write(f"UPDATE public.joke_scores SET current_score = current_score + 5 WHERE guild_id = {guild.id} AND user_id != 99;")
     
+    users = await postgres.read(f"SELECT * FROM public.joke_scores WHERE guild_id = {guild.id};")
+    
+    for user in users:
+        user_id = user[0]
+        guild_id = user[1]
+        score = user[2]
+        highest_score = user[3]
+
+        if highest_score < score:
+            await postgres.write(f"UPDATE public.joke_scores SET highest_score = {score} WHERE user_id = '{user_id}' AND guild_id = '{guild_id}';")
+
     await channel.send(
-        content="ooOOOOoooOOooo.... BOO! AHHHH im so scared on halloween today!!\n...trick or treat..?\n my beefstew treat +5 points for u!", 
+        content="ooOOOOoooOOooo.... BOO! AHHHH im so scared on halloween today!!\n...trick or treat..?\n my beefstew treat... +5 points for u!", 
         file=discord.File(fp=file_io.construct_assets_path("stews/halloweenstew.png"), filename="halloweenstew.png")
         )
