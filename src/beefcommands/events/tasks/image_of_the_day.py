@@ -16,5 +16,5 @@ async def image_of_the_day(bot):
             
 async def send_image_of_the_day(bot, image):
     guild = await bot.fetch_guild(1015579904005386250)
-    channel = bot.fetch_channel(await read_guild_info_channel(guild.id))
-    channel.send(content=f"", file=discord.File(fp=file_io.construct_assets_path(f"IOTD/{image}"), filename=image))
+    channel = await bot.fetch_channel(await read_guild_info_channel(guild.id))
+    await channel.send(content=f"", file=discord.File(fp=file_io.construct_assets_path(f"IOTD/{image}"), filename=image))
