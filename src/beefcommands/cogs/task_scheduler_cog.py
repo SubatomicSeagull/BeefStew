@@ -37,10 +37,10 @@ class TaskSchedulerCog(commands.Cog):
         return
 
     @tasks.loop(time=[
-        datetime.time(hour=15, minute=55, tzinfo=TIMEZONE),
-        datetime.time(hour=14, minute=30, tzinfo=TIMEZONE),
-        datetime.time(hour=14, minute=35, tzinfo=TIMEZONE),
-        datetime.time(hour=14, minute=36, tzinfo=TIMEZONE)
+        datetime.time(hour=8, tzinfo=TIMEZONE),
+        datetime.time(hour=12, tzinfo=TIMEZONE),
+        datetime.time(hour=18, tzinfo=TIMEZONE),
+        datetime.time(hour=22, tzinfo=TIMEZONE)
     ])
     async def random_swing_check(self):
         await random_swing.random_swing_check(self.bot)
