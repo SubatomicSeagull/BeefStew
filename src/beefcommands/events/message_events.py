@@ -177,7 +177,7 @@ async def message_edit_event(bot, before, after):
     # get the log channel
     channel = await bot.fetch_channel(await read_guild_log_channel(before.guild.id))
     
-    embed = discord.Embed(title="Message Edited", color=discord.Color.yellow())
+    embed = discord.Embed(title=f"Message Edited in {channel.mention}", color=discord.Color.yellow())
     embed.add_field(name="Original", value=f"```{before.content}```", inline=False)
     embed.add_field(name="Edited", value=f"```{after.content}```", inline=False)
     embed.set_author(name=before.author, icon_url=before.author.avatar.url)
@@ -205,7 +205,7 @@ async def message_delete_event(bot, message):
     print(attachments)
         
     #embed header
-    embed = discord.Embed(title="Message Deleted", color=discord.Color.orange())
+    embed = discord.Embed(title=f"Message Deleted in {channel.mention}", color=discord.Color.orange())
     embed.set_author(name=message.author, icon_url=message.author.avatar.url)
     #embed body
     if message.content:
