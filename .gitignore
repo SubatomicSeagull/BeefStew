@@ -167,3 +167,5 @@ hosts.json
 .cache
 src\beefcommands\utilities\music_player\yt_cookies.txt
 cookies.txt
+.vscode/launch.json
+launch.json

@@ -2,7 +2,7 @@ import discord
 from data import postgres
 from beefutilities.IO.json_handling import load_element
 import random
-from beefcommands.invocations.joker_score.read_joker_score import get_multilplier
+from beefcommands.invocations.joker_score.read_joker_score import get_multilplier, retrieve_joke_score, get_user_highest_score, get_user_lowest_score
 from beefcommands.invocations.joker_score.joker_registration import is_registered, register_user
 
 
@@ -17,20 +17,21 @@ async def change_joke_score(self: discord.Member, user: discord.Member, value):
     # but you can -2 yourself
     elif self.id == user.id and value < 0:
         
-        await postgres.write(f"UPDATE user_joker_score SET joke_score = joke_score + {value} WHERE user_id = '{user.id}';")
-        await postgres.write(f"UPDATE user_joker_score SET member_name = '{user.nick}' WHERE user_id = '{user.id}';")
+        await postgres.write(f"UPDATE public.joke_scores SET current_score = current_score -2 WHERE user_id = '{user.id}' AND guild_id = '{user.guild.id}';")
+        await postgres.write(f"UPDATE public.joke_scores SET user_display_name = '{user.nick}' WHERE user_id = '{user.id}' AND guild_id = '{user.guild.id}';")
+        await set_lowest_score(user, await retrieve_joke_score(user))
         return f"{self.mention} -2'd themselves for some reason... oh well!\n {await get_joke_response_negative(user)}"
     
     
     try:
-        # get the multiplier (dont think we really need to do this anymore)
-        mult = await get_multilplier(user)
-        score = value * mult
-        await postgres.write(f"UPDATE user_joker_score SET joke_score = joke_score + {score} WHERE user_id = '{user.id}';")
-        await postgres.write(f"UPDATE user_joker_score SET member_name = '{user.nick}' WHERE user_id = '{user.id}';")
+        # update the score and the display name in the db
+        await postgres.write(f"UPDATE public.joke_scores SET current_score = current_score + {value} WHERE user_id = '{user.id}' AND guild_id = '{user.guild.id}';")
+        await postgres.write(f"UPDATE public.joke_scores SET user_display_name = '{user.nick}' WHERE user_id = '{user.id}' AND guild_id = '{user.guild.id}';")
+        await set_highest_score(user, await retrieve_joke_score(user))
+        await set_lowest_score(user, await retrieve_joke_score(user))
         
         # decide is it a +2 or -2
-        if score > 0:
+        if value > 0:
             print(f"> \033[32m{self.name} +2'd {user.name}\033[0m")   
             return (await get_joke_response_positive(user))
         else:
@@ -42,7 +43,7 @@ async def change_joke_score(self: discord.Member, user: discord.Member, value):
         return (f"couldnt change score for {user.name} :( ({e}))")
 
 async def clear_joke_score(user: discord.Member):
-    await postgres.write(f"UPDATE user_joker_score SET joke_score = 0 WHERE user_id = '{user.id}';")
+    await postgres.write(f"UPDATE public.joke_scores SET current_score = 0 WHERE user_id = '{user.id}' AND guild_id = '{user.guild.id}';")
     
 async def get_joke_response_positive(member: discord.Member):     
     jokertag = type('Joker', (object,), {"mention": member.mention})()
@@ -79,9 +80,26 @@ async def minus2(interaction: discord.Interaction, member: discord.Member):
     await interaction.followup.send(await change_joke_score(interaction.user, member, -2))
     
 async def hawk_tuah_penalty(victim: discord.Member):
-    await postgres.write(f"UPDATE user_joker_score SET joke_score = joke_score - 2 WHERE user_id = '{victim.id}';")
-    await postgres.write(f"UPDATE user_joker_score SET joke_score = joke_score + 2 WHERE user_id = '99';")
-    await postgres.write(f"UPDATE user_joker_score SET member_name = '{victim.nick}' WHERE user_id = '{victim.id}';")
-    joke_score = await (postgres.read(f"SELECT joke_score FROM user_joker_score WHERE user_id = '99';"))
+    # register the user in the db if theyre not already
+    if not await is_registered(victim):
+        await register_user(victim)
+        
+    # take 2 points from the victim and update lowest score
+    await postgres.write(f"UPDATE public.joke_scores SET current_score = current_score - 2 WHERE user_id = '{victim.id}' AND guild_id = '{victim.guild.id}';")
+    await set_lowest_score(victim, await retrieve_joke_score(victim))
+
+    # give 2 points to the jar
+    await postgres.write(f"UPDATE public.joke_scores SET current_score = current_score + 2 WHERE user_id = '99' AND guild_id = '{victim.guild.id}';")
+    await postgres.write(f"UPDATE public.joke_scores SET user_display_name = '{victim.nick}' WHERE user_id = '{victim.id}' AND guild_id = '{victim.guild.id}';")
+    
+    joke_score = await (postgres.read(f"SELECT current_score FROM public.joke_scores WHERE user_id = '99' AND guild_id = '{victim.guild.id}';"))
     score = joke_score[0][0]
     return score
+
+async def set_highest_score(user: discord.Member , score):
+    if score > await get_user_highest_score(user):
+        await postgres.write(f"UPDATE public.joke_scores SET highest_score = {score} WHERE user_id = '{user.id}' AND guild_id = '{user.guild.id}';")
+        
+async def set_lowest_score(user: discord.Member, score):
+    if score < await get_user_lowest_score(user):
+        await postgres.write(f"UPDATE public.joke_scores SET lowest_score = {score} WHERE user_id = '{user.id}' AND guild_id = '{user.guild.id}';")

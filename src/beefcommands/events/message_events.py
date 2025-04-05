@@ -17,6 +17,9 @@ async def message_send_event(bot, message):
     if message.author.bot or not message.content:
             return
         
+    if "/say" in message.content.lower():
+        return
+        
         # check for mentions or replies
     if message.mentions or message.reference:
         user = None
@@ -154,7 +157,7 @@ async def message_send_event(bot, message):
     if "tuah" in message.content.lower():
         jar_total = await hawk_tuah_penalty(message.author)
         file = discord.File(file_io.construct_media_path("hawktuahjar.gif"))
-        await message.reply(content=f"{message.author.mention} pays the Hawk Tuah Penaly!!! Another 2 points to the jar...\n**Jar Points: {jar_total}**", file=file)
+        await message.reply(content=f"{message.author.mention} pays the Hawk Tuah Penalty!!! Another 2 points to the jar...\n**Jar Points: {jar_total}**", file=file)
         return
     
     await get_response(message)
@@ -169,11 +172,12 @@ async def message_edit_event(bot, before, after):
     # dont alert if its the same
     if before.content == after.content:
         return
+
     
     # get the log channel
     channel = await bot.fetch_channel(await read_guild_log_channel(before.guild.id))
     
-    embed = discord.Embed(title="Message Edited", color=discord.Color.yellow())
+    embed = discord.Embed(title=f"Message Edited in {channel.mention}", color=discord.Color.yellow())
     embed.add_field(name="Original", value=f"```{before.content}```", inline=False)
     embed.add_field(name="Edited", value=f"```{after.content}```", inline=False)
     embed.set_author(name=before.author, icon_url=before.author.avatar.url)
@@ -185,6 +189,10 @@ async def message_delete_event(bot, message):
     if message.author.bot:
         return
     
+    # dont send an embed if its through the /say command
+    if "/say" in message.content.lower():
+        return
+    
     # get the log channel
     channel = await bot.fetch_channel(await read_guild_log_channel(message.guild.id))
     
@@ -193,10 +201,11 @@ async def message_delete_event(bot, message):
         attachments = []
         for url in message.attachments:
             attachments.append(url)
-        print(attachments)
+    else: attachments = None
+    print(attachments)
         
     #embed header
-    embed = discord.Embed(title="Message Deleted", color=discord.Color.orange())
+    embed = discord.Embed(title=f"Message Deleted in {channel.mention}", color=discord.Color.orange())
     embed.set_author(name=message.author, icon_url=message.author.avatar.url)
     #embed body
     if message.content:

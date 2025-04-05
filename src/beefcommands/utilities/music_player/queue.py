@@ -67,28 +67,29 @@ async def handle_queue(ctx, url, insert):
                 queue.append(track)
             added += 1
     if added == 1:
-        await status.edit(content=f"**{ctx.author.name}** added 1 track to the queue")
+        await status.edit(content=f"**{ctx.author.name}** added **{track[1]}** to the queue")
     else:
         await status.edit(content=f"**{ctx.author.name}** added {added} tracks to the queue")
 
 async def qlist(ctx):
     # retrive the queue array
         queue = get_queue()
-        if not queue:
+        if not queue and not g_current_track:
             await ctx.send("the queue is empty")
             return
         
         content = ""
         
         # for each song in the queue up to a limit of 10, print just the title with an index number and add it to the content
-        for i in range(len(queue)):
-            if i < 10:
-                content += f"**{i+1}**. {queue[i][1]}\n"
-            else:
-                # add if there are more than 10 songs
-                content += f"... and {len(queue) - 10} more tracks."
-                break
-      
+        if queue:
+            for i in range(len(queue)):
+                if i < 10:
+                    content += f"**{i+1}**. {queue[i][1]}\n"
+                else:
+                    # add if there are more than 10 songs
+                    content += f"... and {len(queue) - 10} more tracks."
+                    break
+        
       # generate the list embed
         listembed = discord.Embed(title="StewQueue", description="\n", color=discord.Color.orange())
         

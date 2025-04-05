@@ -1,43 +1,50 @@
 import discord
+import asyncio
 from discord.ext import commands, tasks
-import beefutilities
-import beefutilities.guilds.text_channel
-
+import datetime
+from data import postgres
+import random
+from zoneinfo import ZoneInfo
+from beefcommands.events.tasks import holiday_check, birthday_check, image_of_the_day, random_swing
 class TaskSchedulerCog(commands.Cog):
+    
+    TIMEZONE = ZoneInfo("Europe/London")
+    
     def __init__(self, bot):
         self.bot = bot
-        
-    async def schedule_birthday(self, user:discord.User, birthday):
-        # birthdy is currently an argument but will be defined locally as read from the db.
-        # birthday event isnt scheduled for users who havent regisered or dont have a bday.
-        # event is scheduled when they register a bday using /birthday
-        
-        # schedule a task to run at the datetime value of the users bday
-        await discord.utils.sleep_until(birthday)
-        channel = beefutilities.guilds.text_channel.read_guild_info_channel(self.bot.guild.id)
-        await channel.send(f"Happy Birthday {user.mention}!")
-        # add a custom imaghe to send along with it
-        #add 20 points to the users score
-        
-        
-    async def schedule_christmas(self):
-        # schedule a task to run at the datetime value of christmas day
-        await discord.utils.sleep_until("12/25")
-        channel = beefutilities.guilds.text_channel.read_guild_info_channel(self.bot.guild.id)
-        await channel.send(f"Merry Christmas! What did ol' St. Stew get u huh?\n +10 to everyone :)")
-        # add a custom image to send along with it
-        # add 10 points to each users score
-        
-    async def schedule_halloween(self):
-        # schedule a task to run at the datetime value of christmas day
-        await discord.utils.sleep_until("10/31")
-        channel = beefutilities.guilds.text_channel.read_guild_info_channel(self.bot.guild.id)
-        await channel.send(f"ooooOOOoooo! Happy Halloween!! Trick or Treat? fine.. heres some candy.\n +5 to everyone")
-        # add a custom image to send along with it
-        # add 5 points to each users score
-        
-        
-        
+        print(f"> Timezone set to {self.TIMEZONE}")
+        print(f"> Scheduling Tasks...")
+        self.scheduled_birthday_check.start()
+        self.scheduled_holiday_check.start()
+        self.image_of_the_day_check.start()
+        self.random_swing_check.start()
+        print(f"\033[32mall tasks scheduled successfully!\033[0m")
+    
+    # task is scheduled to check for birthdays every day at 10am
+    @tasks.loop(time=datetime.time(10, 0, 0, tzinfo=TIMEZONE))
+    async def scheduled_birthday_check(self):
+        await birthday_check.check_for_birthdays(self.bot)
+    
+    # task is scheduled to check for holidays every day at 8am
+    @tasks.loop(time=datetime.time(8, 0, 0, tzinfo=TIMEZONE))
+    async def scheduled_holiday_check(self):
+        await holiday_check.check_for_holiday(self.bot)
+    
+    # task is scheduled to check for IOTD every day at 9am
+    @tasks.loop(time=datetime.time(9, 0, 0, tzinfo=TIMEZONE))
+    async def image_of_the_day_check(self):
+        await image_of_the_day.image_of_the_day(self.bot)
+        return
+
+    @tasks.loop(time=[
+        datetime.time(hour=8, tzinfo=TIMEZONE),
+        datetime.time(hour=12, tzinfo=TIMEZONE),
+        datetime.time(hour=18, tzinfo=TIMEZONE),
+        datetime.time(hour=22, tzinfo=TIMEZONE)
+    ])
+    async def random_swing_check(self):
+        await random_swing.random_swing_check(self.bot)
+
 async def setup(bot):
     print("- \033[95mbeefcommands.cogs.task_scheduler_cog\033[0m")
     await bot.add_cog(TaskSchedulerCog(bot))

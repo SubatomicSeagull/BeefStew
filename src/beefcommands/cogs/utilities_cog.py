@@ -4,7 +4,8 @@ from beefcommands.utilities.ccping import ccping
 from beefutilities.guilds.text_channel import set_info, set_logs, set_quotes
 from beefcommands.utilities.help import help
 from beefutilities.update import update_info
-
+from beefcommands.visage.sniff import sniff_user
+from beefutilities.users import user
 class UtilitiesCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -51,8 +52,31 @@ class UtilitiesCog(commands.Cog):
         await update_info(interaction, self.bot)    
     
     @discord.app_commands.command(name="test", description="jamie delete this")
-    async def test(self, interaction: discord.Interaction):
-        await update_info(interaction, self.bot)
+    async def test(self, interaction: discord.Interaction, bday: str):
+        pass
+        #await interaction.response.send_message (await register_user_bday(interaction.user, bday))
+        
+    @discord.app_commands.command(name="bday", description="format like dd/mm/yyyy")
+    async def set_bday(self, interaction: discord.Interaction, bday: str):
+        await interaction.response.defer()
+        await interaction.followup.send(await user.register_user_bday(interaction.user, bday))
+    
+    @discord.app_commands.command(name="sniff", description="what do u smell like")
+    async def sniff(self, interaction: discord.Interaction):
+        await user.set_msg_flag(interaction.user, True)
+        await sniff_user(interaction, interaction.user)
+        
+    @commands.command(name="unsniff", description="what do u smell like")
+    async def unsniff(self, ctx):
+        await user.set_msg_flag(ctx.author, False)
+        
+    @commands.command(name="say", description="say something")
+    async def say(self, ctx, *, message):
+        print(f"> \033[32m{ctx.author.name} used /say \"{message}\"\033[0m")
+        await ctx.message.delete()
+        
+        if message != "" and message != None:
+            await ctx.send(message)
 
 # cog setup
 async def setup(bot):

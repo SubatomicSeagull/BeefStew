@@ -9,6 +9,7 @@ from concurrent.futures import ThreadPoolExecutor
 from spotipy.oauth2 import SpotifyClientCredentials
 import spotipy
 
+
 # instantiate the thread pool executor
 executor = ThreadPoolExecutor(max_workers=4)
 
@@ -52,7 +53,7 @@ async def on_ready():
         
     # load the cogs
     await load_cogs()
-    
+
     # re-register all the command
     await bot.tree.sync()
     
