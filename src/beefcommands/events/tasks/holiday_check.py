@@ -3,6 +3,7 @@ from data import postgres
 import datetime
 from beefutilities.guilds.text_channel import read_guild_info_channel
 from beefutilities.IO import file_io
+import os
 
 async def check_for_holiday(bot):
     print(f"> \033[95mscheduled holiday check ran at {datetime.datetime.now()}\033[0m")
@@ -15,7 +16,7 @@ async def check_for_holiday(bot):
     }
 
     # fetch the guild object from the guild id
-    guild = await bot.fetch_guild(1015579904005386250)
+    guild = await bot.fetch_guild(os.getenv("GUILDID"))
 
     # compare the current date to the holidays list
     for date, holiday_name in holidays.items():
