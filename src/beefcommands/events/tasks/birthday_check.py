@@ -4,6 +4,7 @@ import datetime
 from beefutilities.guilds.text_channel import read_guild_info_channel
 from beefcommands.visage.bday import party_pfp
 from beefcommands.invocations.joker_score import read_joker_score, change_joker_score
+import os
 
 
 async def check_for_birthdays(bot):
@@ -19,7 +20,7 @@ async def check_for_birthdays(bot):
         if birthday.month == today.month and birthday.day == today.day:
             
             # fetch a member object from the guild
-            guild = await bot.fetch_guild(1015579904005386250)
+            guild = await bot.fetch_guild(os.getenv("GUILDID"))
             user_obj = await guild.fetch_member(user_id)
             
             channel = bot.get_channel(await read_guild_info_channel(guild.id))
