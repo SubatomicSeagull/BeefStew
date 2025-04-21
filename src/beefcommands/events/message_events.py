@@ -6,6 +6,7 @@ from data.postgres import log_error
 from random import randint
 from time import sleep
 from beefutilities.guilds.text_channel import read_guild_log_channel
+import beefcommands.invocations.channel_name_rule as channel_name_rule
 
 import json
 from datetime import datetime
@@ -160,6 +161,13 @@ async def message_send_event(bot, message):
         await message.reply(content=f"{message.author.mention} pays the Hawk Tuah Penalty!!! Another 2 points to the jar...\n**Jar Points: {jar_total}**", file=file)
         return
     
+    if "why are we in " or "we are in " in message.content.lower():
+        channel_name_split = message.content.split(" in ", 1)
+        if len(channel_name_split) > 1:
+            newname = channel_name_split[1].strip()
+            await channel_name_rule.invoke_channel_name_rule(message, newname)
+        return
+        
     await get_response(message)
     
     
