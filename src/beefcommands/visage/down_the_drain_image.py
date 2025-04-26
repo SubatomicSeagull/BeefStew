@@ -9,7 +9,7 @@ from beefutilities.IO.file_io import fetch_from_source
 async def drain_overlay(img):
     template = Image.open(file_io.construct_assets_path("pfp_manipulation/drain.png"))
 
-    new_size = (int(img.width * 0.), int(img.height * 0.5))
+    new_size = (int(img.width * 0.5), int(img.height * 0.5))
     img = img.resize(new_size, Image.Resampling.BILINEAR)
 
     # resize the template
