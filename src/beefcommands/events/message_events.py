@@ -7,6 +7,7 @@ from random import randint
 from time import sleep
 from beefutilities.guilds.text_channel import read_guild_log_channel
 import beefcommands.invocations.channel_name_rule as channel_name_rule
+from beefcommands.utilities.showme import show
 
 import json
 from datetime import datetime
@@ -71,6 +72,11 @@ async def message_send_event(bot, message):
             file=discord.File(file_path)
         )
         return
+    if any(phrase in message.content.lower() for phrase in [
+        "beefstew show me", "<@1283805971524747304> show me"    
+    ]):
+        show_split = message.content.split("show me ", 1)
+        await show(message, show_split[1])
     
     if any(phrase in message.content.lower() for phrase in [
         "i love you beefstew", 
