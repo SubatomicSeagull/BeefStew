@@ -1,37 +1,27 @@
 import discord
-from PIL import Image, ImageEnhance, ImageOps
+from PIL import Image
 from io import BytesIO
 import os
 from beefutilities.IO import file_io
 from data import postgres
+from beefutilities.IO.file_io import get_attachment, fetch_from_source
 
 async def react(interaction: discord.Interaction, message: discord.Message):
     try:
-        reaction = await add_reaction(message)
+        src = await fetch_from_source(message)
+        if src is None:
+            await interaction.followup.send(f"i dont think that worked sry :// for now its only pngs and jpgs lol", ephemeral=True)
+            return
+        reaction = await add_reaction(src)
         await interaction.response.send_message(content= "", file=discord.File(fp=reaction, filename=f"reaction.png"))
         
         # clear the bytesio buffer
         reaction.close()
         
     except Exception as e:
-        postgres.log_error(e)
-        await interaction.response.send_message(f"i dont think that worked sry :// for now its only pngs and jpgs lol", ephemeral=True)
+        await interaction.response.send_message(f"i dont think that worked sry :// for now its only pngs and jpgs lol {e}", ephemeral=True)
 
-async def get_attachment(message: discord.Message):
-    if not message.attachments:
-        return None
-    attachment = next((image for image in message.attachments if image.content_type.endswith(('png', 'jpg', 'jpeg', 'gif'))), None)
-    
-    if attachment is None:
-        return None
-    return await attachment.read()
-
-
-async def add_reaction(message: discord.Message):
-    
-    # scan the message for an attachement
-    image = Image.open(BytesIO(await get_attachment(message)))
-    image = image.convert("RGBA")
+async def add_reaction(image):
     
     # construct a file path to the assets folder and oipen reaction image
     reaction = Image.open(file_io.construct_assets_path("pfp_manipulation/react.png"))

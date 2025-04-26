@@ -55,21 +55,25 @@ class UtilitiesCog(commands.Cog):
     async def test(self, interaction: discord.Interaction, bday: str):
         pass
         #await interaction.response.send_message (await register_user_bday(interaction.user, bday))
-        
+    
+    # registered the users bday in the database
     @discord.app_commands.command(name="bday", description="format like dd/mm/yyyy")
     async def set_bday(self, interaction: discord.Interaction, bday: str):
-        await interaction.response.defer()
-        await interaction.followup.send(await user.register_user_bday(interaction.user, bday))
+        print(f"> \033[32m{interaction.user.name} set their birthday to {bday}\033[0m")
+        await interaction.response.send_message(await user.register_user_bday(interaction.user, bday), ephemeral=True)
     
+    # sets the random swing message flag to true and sendds a picture
     @discord.app_commands.command(name="sniff", description="what do u smell like")
     async def sniff(self, interaction: discord.Interaction):
         await user.set_msg_flag(interaction.user, True)
         await sniff_user(interaction, interaction.user)
-        
+    
+    # sets the random swing message flag to false
     @commands.command(name="unsniff", description="what do u smell like")
     async def unsniff(self, ctx):
         await user.set_msg_flag(ctx.author, False)
-        
+    
+    # repeats the users message underneath and deletes the original
     @commands.command(name="say", description="say something")
     async def say(self, ctx, *, message):
         print(f"> \033[32m{ctx.author.name} used /say \"{message}\"\033[0m")
