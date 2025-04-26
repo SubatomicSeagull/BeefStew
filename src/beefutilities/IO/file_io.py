@@ -45,6 +45,9 @@ async def fetch_from_source(source):
         src = await get_avatar_image(source)
     else:
         attachment = await get_attachment(source)
-        src = Image.open(BytesIO(attachment))
-        src = src.convert('RGBA')
+        try:
+            src = Image.open(BytesIO(attachment))
+            src = src.convert('RGBA')
+        except Exception as e:
+            return None
     return src

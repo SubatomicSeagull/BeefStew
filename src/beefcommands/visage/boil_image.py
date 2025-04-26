@@ -40,11 +40,13 @@ async def boil(interaction: discord.Interaction, source):
     #retrive the image bytes from source, either a user or an attachment
     try:
         src = await fetch_from_source(source)
+        if src is None:
+            await interaction.followup.send(f"i dont think that worked sry :// for now its only pngs and jpgs lol", ephemeral=True)
+            return
         src = ImageOps.fit(src, (350, 350))
     except Exception as e:
         await postgres.log_error(e)
-        await interaction.followup.send(f"i dont think that worked sry :// for now its only pngs and jpgs lol", ephemeral=True)
-        return
+
 
     img = Image.new("RGBA", src.size, (255,255,255))
     img.paste(src, (0,0))

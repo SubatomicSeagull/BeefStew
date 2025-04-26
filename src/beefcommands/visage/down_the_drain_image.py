@@ -38,6 +38,9 @@ async def drain(interaction: discord.Interaction, source):
     #retrive the image bytes from source, either a user or an attachment
     try:
         src = await fetch_from_source(source)
+        if src is None:
+            await interaction.followup.send(f"i dont think that worked sry :// for now its only pngs and jpgs lol", ephemeral=True)
+            return
         src = ImageOps.fit(src, (350, 350))
     except Exception as e:
         await postgres.log_error(e)

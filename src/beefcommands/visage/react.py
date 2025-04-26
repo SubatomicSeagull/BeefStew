@@ -9,6 +9,9 @@ from beefutilities.IO.file_io import get_attachment, fetch_from_source
 async def react(interaction: discord.Interaction, message: discord.Message):
     try:
         src = await fetch_from_source(message)
+        if src is None:
+            await interaction.followup.send(f"i dont think that worked sry :// for now its only pngs and jpgs lol", ephemeral=True)
+            return
         reaction = await add_reaction(src)
         await interaction.response.send_message(content= "", file=discord.File(fp=reaction, filename=f"reaction.png"))
         
