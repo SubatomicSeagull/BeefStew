@@ -13,7 +13,7 @@ async def invoke_channel_name_rule(ctx, new_name: str):
         if interaction.user.voice.channel.name != new_name:
             try:
                 await interaction.user.voice.channel.edit(name=new_name)
-                await interaction.response.send_message(f"yea why are we in {new_name}") #pick from response.json
+                await interaction.response.send_message(f"yea why *are* we in {new_name}")
                 return
             
             except Exception as e:
@@ -34,7 +34,7 @@ async def invoke_channel_name_rule(ctx, new_name: str):
         if message.author.voice.channel.name != new_name:
             try:
                 await message.author.voice.channel.edit(name=new_name)
-                await message.channel.send(f"yea why are we in {new_name}") #pick from response.json
+                await message.channel.send(f"yea why *are* we in {new_name}")
                 return
             
             except Exception as e:
