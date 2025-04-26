@@ -72,6 +72,7 @@ async def message_send_event(bot, message):
             file=discord.File(file_path)
         )
         return
+    
     if any(phrase in message.content.lower() for phrase in [
         "beefstew show me", "<@1283805971524747304> show me"    
     ]):
@@ -172,12 +173,10 @@ async def message_send_event(bot, message):
         if len(channel_name_split) > 1:
             newname = channel_name_split[1].strip()
             await channel_name_rule.invoke_channel_name_rule(message, newname)
-        return
+            return
         
     await get_response(message)
-    
-    
-    
+
 async def message_edit_event(bot, before, after):
     # dont alert to bot edits
     if before.author.bot:
