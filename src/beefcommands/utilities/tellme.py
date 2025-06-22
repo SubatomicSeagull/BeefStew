@@ -2,7 +2,7 @@ import discord
 import wikipediaapi
 import requests
 
-query = "iona being born in a test tube"
+query = "monkeys"
 wiki = wikipediaapi.Wikipedia("BeefStew", "en")
 page = wiki.page(query)
 if not page.exists():
