@@ -8,3 +8,5 @@ paramiko
 yt_dlp
 urllib3
 spotipy
+pytz
+tzdata
