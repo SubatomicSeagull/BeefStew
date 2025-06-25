@@ -8,5 +8,6 @@ paramiko
 yt_dlp
 urllib3
 spotipy
+wikipedia-api
 pytz
 tzdata
