@@ -15,7 +15,12 @@ async def retrieve_image(query):
     data = resp.json()
     items = data.get("items", [])
     links = [item["link"] for item in items]
-    return random.choice(links)
+    while links:
+        index = random.randint(0, len(links) - 1)
+        img = links.pop(index)
+        if not "instagram" in img and not "crawler" in img:
+            return img
+    return "I had a look and i cant find it im sorry :("
 
 async def show(message: discord.Message, query):
     if isinstance(message.channel, discord.DMChannel):

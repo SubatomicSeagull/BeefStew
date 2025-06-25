@@ -187,7 +187,7 @@ async def message_send_event(bot, message):
         await message.reply(content=f"{message.author.mention} pays the Hawk Tuah Penalty!!! Another 2 points to the jar...\n**Jar Points: {jar_total}**", file=file)
         return
     
-    if "why are we in " or "we are in " in message.content.lower():
+    if any(phrase in message.content.lower() for phrase in ["why are we in ", "we are in "]):
         channel_name_split = message.content.split(" in ", 1)
         if len(channel_name_split) > 1:
             newname = channel_name_split[1].strip()
