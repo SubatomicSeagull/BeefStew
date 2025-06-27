@@ -8,6 +8,7 @@ from time import sleep
 from beefutilities.guilds.text_channel import read_guild_log_channel
 import beefcommands.invocations.channel_name_rule as channel_name_rule
 from beefcommands.utilities.showme import show
+from beefcommands.utilities.tellme import tellme
 
 import json
 from datetime import datetime
@@ -72,12 +73,31 @@ async def message_send_event(bot, message):
             file=discord.File(file_path)
         )
         return
+    
     if any(phrase in message.content.lower() for phrase in [
         "beefstew show me", "<@1283805971524747304> show me"    
     ]):
         show_split = message.content.split("show me ", 1)
         await show(message, show_split[1])
-    
+        
+    if any(phrase in message.content.lower() for phrase in [
+        "beefstew tell me about", "<@1283805971524747304> tell me about",
+        "beefstew what is", "<@1283805971524747304> what is",
+        "beefstew whats", "<@1283805971524747304> whats",
+        "beefstew what's", "<@1283805971524747304> what's",
+        "beefstew what are", "<@1283805971524747304> what are",
+        "beefstew what're", "<@1283805971524747304> what're"
+    ]):
+        lower_content = message.content.lower()
+        for phrase in [
+            "tell me about", "what is", "whats", "what's", "what are", "what're"
+        ]:
+            if phrase in lower_content:
+                tell_split = lower_content.split(phrase, 1)
+                if len(tell_split) > 1:
+                    query = tell_split[1].strip()
+                    await tellme(message, query)
+
     if any(phrase in message.content.lower() for phrase in [
         "i love you beefstew", 
         "i love beefstew", 
@@ -167,17 +187,15 @@ async def message_send_event(bot, message):
         await message.reply(content=f"{message.author.mention} pays the Hawk Tuah Penalty!!! Another 2 points to the jar...\n**Jar Points: {jar_total}**", file=file)
         return
     
-    if "why are we in " or "we are in " in message.content.lower():
+    if any(phrase in message.content.lower() for phrase in ["why are we in ", "we are in "]):
         channel_name_split = message.content.split(" in ", 1)
         if len(channel_name_split) > 1:
             newname = channel_name_split[1].strip()
             await channel_name_rule.invoke_channel_name_rule(message, newname)
-        return
+            return
         
     await get_response(message)
-    
-    
-    
+
 async def message_edit_event(bot, before, after):
     # dont alert to bot edits
     if before.author.bot:

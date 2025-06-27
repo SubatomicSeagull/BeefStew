@@ -1,17 +1,12 @@
-# BEEFSTEW has been fixed!
+# BEEFSTEW has been updated!
 
-## Beefstew version 1.5.2 patchnotes:
+## Beefstew version 1.5.3 patchnotes:
 
 ## Features:
-- user request lanabarnes special feature
-- you can ask beefstew to show you stuff and he will fetch images
-- some visage commands you can now use in the context menu!
-- a new invocation rule.... ppl in vc try using "why are we in ______" and see what happens.... 
+- you can ask beefstew to to tell you about stuff and he will do his best!
 
 ## Fixes:
-- made the birthday registration messages ephemeral
-- beefstew can now resolve images from urls so /react and stuff works with links
+- fixed the "why are we in" flagging every use of the word in to change the voice channel name... 
+- BeefSearch will now exclude instagram and crawlers from the "show me" search
 
 ## Misc:
-
-first user request feature!!! (other than like the initial features like the music player and +2s) all requests do go on the trello so plz suggest some more!!!
