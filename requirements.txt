@@ -11,3 +11,4 @@ spotipy
 wikipedia-api
 pytz
 tzdata
+py-trello
