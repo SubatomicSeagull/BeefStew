@@ -6,6 +6,7 @@ from beefcommands.utilities.help import help
 from beefutilities.update import update_info
 from beefcommands.visage.sniff import sniff_user
 from beefutilities.users import user
+from beefcommands.utilities.suggest_feature import create_suggestion
 class UtilitiesCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -65,12 +66,20 @@ class UtilitiesCog(commands.Cog):
     # sets the random swing message flag to true and sendds a picture
     @discord.app_commands.command(name="sniff", description="what do u smell like")
     async def sniff(self, interaction: discord.Interaction):
+        print(f"> \033[32m{interaction.user.name} used sniff\033[0m")
         await user.set_msg_flag(interaction.user, True)
         await sniff_user(interaction, interaction.user)
+        
+    # sets the random swing message flag to true and sendds a picture
+    @discord.app_commands.command(name="feature", description="what else do you want from me?????")
+    async def feature(self, interaction: discord.Interaction, name: str, description: str):
+        print(f"> \033[32m{interaction.user.name} suggested a feature \"{name}\"\033[0m")
+        await create_suggestion(interaction, name, description)
     
     # sets the random swing message flag to false
     @commands.command(name="unsniff", description="what do u smell like")
     async def unsniff(self, ctx):
+        print(f"> \033[32m{ctx.author.name} used unsniff \033[0m")
         await user.set_msg_flag(ctx.author, False)
     
     # repeats the users message underneath and deletes the original

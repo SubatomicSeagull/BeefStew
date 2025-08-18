@@ -8,6 +8,7 @@ import asyncio
 from concurrent.futures import ThreadPoolExecutor
 from spotipy.oauth2 import SpotifyClientCredentials
 import spotipy
+from trello import TrelloClient
 
 
 # instantiate the thread pool executor
@@ -26,6 +27,8 @@ except Exception as e:
 
 # log in to the spotify api
 sp_client = spotipy.Spotify(client_credentials_manager = SpotifyClientCredentials(client_id=os.getenv("SPOTIFYCLIENTID"), client_secret=os.getenv("SPOTIFYCLIENTSECRET")))
+
+trello_client = TrelloClient(api_key=(os.getenv("TRELLOAPIKEY")), api_secret=(os.getenv("TRELLOAPISECRET")), token=(os.getenv("TRELLOTOKEN")))
 
 # create client and intents objects
 intents = discord.Intents.all()
