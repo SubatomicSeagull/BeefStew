@@ -18,7 +18,11 @@ from beefutilities.IO import file_io
 async def message_send_event(bot, message):
     # dont respond if its a bot message
     if message.author.bot or not message.content:
-            return
+        return
+    
+    # dont respond to links
+    if message.content.lower().startswith("http"):
+        return
         
     if "/say" in message.content.lower():
         return

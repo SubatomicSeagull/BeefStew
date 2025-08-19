@@ -69,18 +69,18 @@ class UtilitiesCog(commands.Cog):
         print(f"> \033[32m{interaction.user.name} used sniff\033[0m")
         await user.set_msg_flag(interaction.user, True)
         await sniff_user(interaction, interaction.user)
-        
-    # sets the random swing message flag to true and sendds a picture
-    @discord.app_commands.command(name="feature", description="what else do you want from me?????")
-    async def feature(self, interaction: discord.Interaction, name: str, description: str):
-        print(f"> \033[32m{interaction.user.name} suggested a feature \"{name}\"\033[0m")
-        await create_suggestion(interaction, name, description)
     
     # sets the random swing message flag to false
     @commands.command(name="unsniff", description="what do u smell like")
     async def unsniff(self, ctx):
         print(f"> \033[32m{ctx.author.name} used unsniff \033[0m")
         await user.set_msg_flag(ctx.author, False)
+    
+        # adds a trello cards suggesting new features
+    @discord.app_commands.command(name="feature", description="what else do you want from me?????")
+    async def feature(self, interaction: discord.Interaction, name: str, description: str):
+        print(f"> \033[32m{interaction.user.name} suggested a feature \"{name}\"\033[0m")
+        await create_suggestion(interaction, name, description)
     
     # repeats the users message underneath and deletes the original
     @commands.command(name="say", description="say something")
