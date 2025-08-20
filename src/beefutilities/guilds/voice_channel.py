@@ -13,21 +13,33 @@ async def join_vc(ctx):
         await ctx.author.voice.channel.connect()
         
         # automatically start playing the queue
-        await player.play_next(ctx)
+        try:
+            await player.play_next(ctx)
+        except Exception as e:
+            pass
         
     # move voice channels if it doesnt match the users vc
     elif ctx.voice_client.channel != ctx.author.voice.channel:
         await ctx.voice_client.move_to(ctx.author.voice.channel)
-        await player.play_next(ctx)
+        try:
+            await player.play_next(ctx)
+        except Exception as e:
+            pass
     else:
         return
     
 async def leave_vc(ctx):
-            # clear the queue
-    queue.clear_queue()
-        
-        # clear the current track
-    queue.clear_current_track()
+    # clear the queue
+    try:
+        queue.clear_queue()
+    except Exception as e:
+        pass
+    
+    # clear the current track
+    try:
+        queue.clear_current_track()
+    except Exception as e:
+        pass
     
     # if a voice connection is established, disconnect
     if ctx.voice_client:

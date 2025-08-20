@@ -1,4 +1,7 @@
 import pyttsx3
+import discord
+import datetime
+from beefutilities.IO import file_io
 
 def init_tts_engine():
     # initialise TTS engine
@@ -24,11 +27,18 @@ def init_tts_engine():
 
     return engine
 
-tts = init_tts_engine()
 
-tts.save_to_file("I had a look and i cant find it im sorry :(", 'test.mp3')
-tts.runAndWait()
-
+def generate_speech(text):
+    tts = init_tts_engine()
+    
+    filename = f"output-{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.wav"
+    
+    tts.save_to_file(text, filename)
+    tts.runAndWait()
+    
+    filepath = file_io.construct_root_path(filename)
+    
+    return filepath
 
 # list all installed voices
 #for i, v in enumerate(voices):

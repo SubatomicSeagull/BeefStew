@@ -65,6 +65,10 @@ async def message_send_event(bot, message):
                 except Exception as e:
                     await log_error(e)
 
+    if "speak" in message.content.lower():
+        from beefutilities.TTS.speak import speak
+        await speak(message)
+    
     if "deadly dice man" in message.content.lower():
         result = randint(1, 6)
         result_filename = f"DDM-{result}.gif"
