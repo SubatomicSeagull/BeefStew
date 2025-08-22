@@ -133,7 +133,7 @@ async def play_track(ctx, url, title):
 async def disconnect_timeout(ctx):
     try:
         # wait 5 minutes for another song to be queued
-        await asyncio.sleep(300)
+        await asyncio.sleep(3000)
         if not queue.get_queue() and not ctx.voice_client.is_playing():
             await ctx.send("YAAAWNNN thers no more songs in the queue IM BORED!!! cya")
             await ctx.voice_client.disconnect()
@@ -141,3 +141,7 @@ async def disconnect_timeout(ctx):
     # interupt the timer when the queue is no longer empty
     except asyncio.CancelledError:
         pass
+    
+    
+    
+    

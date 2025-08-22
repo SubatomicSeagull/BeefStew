@@ -2,6 +2,7 @@ import wikipediaapi
 import requests
 import discord
 from beefutilities.IO import file_io
+from beefutilities.TTS import speak
 
 
 async def wikifetchpage(query):
@@ -49,4 +50,5 @@ async def tellme(message: discord.Message, query):
             content += sentence
         content = (f"<:nerdstew:1387429699625681090> {content}.")
     await message.reply(content=content, file=discord.File(image, filename=f"beefstew doesnt know about {query}.png"))
+    speak.speak_output(message, content)
     return

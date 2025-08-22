@@ -9,6 +9,7 @@ from beefutilities.guilds.text_channel import read_guild_log_channel
 import beefcommands.invocations.channel_name_rule as channel_name_rule
 from beefcommands.utilities.showme import show
 from beefcommands.utilities.tellme import tellme
+from beefutilities.TTS import speak
 
 import json
 from datetime import datetime
@@ -64,10 +65,6 @@ async def message_send_event(bot, message):
                     await change_nickname(message, user, newname)
                 except Exception as e:
                     await log_error(e)
-
-    if "speak" in message.content.lower():
-        from beefutilities.TTS.speak import speak
-        await speak(message)
     
     if "deadly dice man" in message.content.lower():
         result = randint(1, 6)
@@ -127,21 +124,23 @@ async def message_send_event(bot, message):
         "<@1283805971524747304> ily",
         ]):
         
-        reply = randint(1, 3)
+        reply = randint(1, 4)
         match reply:
             case 1:
                 await message.reply(content="ily2", file=discord.File(file_io.construct_assets_path("stews/lovestew.png")))
+                await speak.speak_output(message, "ILY 2")
                 
             case 2:
                 await message.reply(file=discord.File(file_io.construct_assets_path("stews/smilestew.png")))
             case 3:
                 await message.reply(content="yay!", file=discord.File(file_io.construct_assets_path("stews/blushstew.png")))
+                await speak.speak_output(message, "Yay!")
         return
     
     if any(phrase in message.content.lower() for phrase in ["design", "desin", "desing"]):
         reply = randint(1, 6)
         await message.reply(content="This is my design:", file = discord.File(file_io.construct_media_path(f"design{reply}.png")))
-
+        await speak.speak_output(message, "This is my design.")
         return
     
     
@@ -152,6 +151,7 @@ async def message_send_event(bot, message):
         "<@1283805971524747304> i hate u"
     ]):
         await message.reply("Hate. Let me tell you how much I've come to hate you since I began to live...")
+        await speak.speak_output(message, "Hate. Let me tell you how much I've come to hate you since I began to live...")
         sleep(2)
         await message.channel.send(
             "There are four-thousand six-hundred and 20 millimetres of printed circuits "
@@ -281,4 +281,7 @@ async def get_response(message: discord.Message):
             
             else:
                 await message.reply(content)
+                await speak.speak_output(message, content)
                 return
+
+
