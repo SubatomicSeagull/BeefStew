@@ -37,7 +37,10 @@ async def play_next(ctx):
 
 async def handle_after_playing(ctx, error):
     # allow the voice handshake and ffmpeg process to settle
-    await asyncio.sleep(1)
+    await asyncio.sleep(0.5)
+    
+    if not queue.get_queue() and not queue.get_current_track():
+        return
     
     # play the current_track link again and dont take from the queue
     if queue.get_loop_flag() == True:

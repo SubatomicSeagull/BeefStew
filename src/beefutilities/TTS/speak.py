@@ -3,7 +3,7 @@ import re
 import platform
 import os
 from beefutilities.TTS import ttsengine
-from beefcommands.utilities.music_player.player_utils import handle_after_playing
+#from beefcommands.utilities.music_player.player_utils import handle_after_playing
 
 async def sanitise_output(ctx, message):
 
@@ -59,7 +59,10 @@ async def sanitise_output(ctx, message):
 
 async def speak_output(ctx, message):
     voice_client: discord.VoiceClient = ctx.guild.voice_client
+    
     prev_content = None
+    prev_callback = None
+    
     # check if the bot is connected to a voice channel
     if not voice_client or not voice_client.is_connected():
         print("Bot is not connected to a voice channel.")
@@ -84,6 +87,8 @@ async def speak_output(ctx, message):
     
     if voice_client.is_playing():
         prev_content = voice_client.source
+        # insert line to retrive previous callback
+        
         voice_client.pause()
         
     audio_source = discord.FFmpegPCMAudio(tts_file, executable=exepath)
@@ -92,18 +97,15 @@ async def speak_output(ctx, message):
         if error:
             print(f"Error during playback: {error}")
         else:
-            print("Finished playing TTS message.")
+            print("Finished playing TTS message.") 
         if os.path.exists(tts_file):
             os.remove(tts_file)
             print(f"Deleted temporary file: {tts_file}")
         if prev_content:
-            voice_client.play(prev_content)
+            voice_client.play(prev_content, after=lambda e: prev_callback)
             print("Resumed previous audio.")
 
-    
-    
     voice_client.play(audio_source, after=lambda e: after_playing(e))
-
     return
 
 
