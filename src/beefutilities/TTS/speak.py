@@ -1,9 +1,16 @@
 import discord
+from discord.ext import commands
 import re
 import platform
 import os
-from beefutilities.TTS import ttsengine
-#from beefcommands.utilities.music_player.player_utils import handle_after_playing
+from beefutilities.TTS import tts_engine
+import asyncio
+
+
+def init(bot):
+    """Initialize the module with a bot instance."""
+    global _bot
+    _bot = bot
 
 async def sanitise_output(ctx, message):
 
@@ -58,10 +65,12 @@ async def sanitise_output(ctx, message):
     return sanitised_text
 
 async def speak_output(ctx, message):
+    
+    loop = asyncio.get_event_loop()
+    
     voice_client: discord.VoiceClient = ctx.guild.voice_client
     
     prev_content = None
-    prev_callback = None
     
     # check if the bot is connected to a voice channel
     if not voice_client or not voice_client.is_connected():
@@ -77,7 +86,7 @@ async def speak_output(ctx, message):
     # dont return just beefstew
     if message_text == "beefstew.": return
     
-    tts_file = ttsengine.generate_speech(message_text)
+    tts_file = tts_engine.generate_speech(message_text)
     
     if platform.system().lower() == "windows":
         exepath = os.getenv("FFMPEGEXE")
@@ -101,8 +110,28 @@ async def speak_output(ctx, message):
         if os.path.exists(tts_file):
             os.remove(tts_file)
             print(f"Deleted temporary file: {tts_file}")
+        
         if prev_content:
-            voice_client.play(prev_content, after=lambda e: prev_callback)
+            def retrace_prev_callback(error):
+                print("callback from previous audio:")
+
+                from beefcommands.utilities.music_player import player
+                
+                async def resume_music():
+                    print("retreiving context for /play command")
+                    command_ctx = await _bot.get_context(ctx) # returns none type context because reasons idk if we can just pass the ctx properly this will work
+                    print("Running /play")
+                    await player.play(command_ctx)
+                    
+                print("running resume_music in main loop")
+                future = asyncio.run_coroutine_threadsafe(resume_music(), loop)
+                try:
+                    future.result(timeout=5)  # wait for it to complete or raise
+                except Exception as e:
+                    print("Exception in resume_music:", e)
+
+                
+            voice_client.play(prev_content, after=retrace_prev_callback)
             print("Resumed previous audio.")
 
     voice_client.play(audio_source, after=lambda e: after_playing(e))

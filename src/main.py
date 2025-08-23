@@ -9,6 +9,7 @@ from concurrent.futures import ThreadPoolExecutor
 from spotipy.oauth2 import SpotifyClientCredentials
 import spotipy
 from trello import TrelloClient
+from beefutilities.TTS import speak
 
 
 # instantiate the thread pool executor
@@ -34,9 +35,10 @@ trello_client = TrelloClient(api_key=(os.getenv("TRELLOAPIKEY")), api_secret=(os
 intents = discord.Intents.all()
 intents.message_content = True
 bot = commands.Bot(command_prefix="/", intents=intents)
+speak.init(bot)
+
 kicked_members = set()
 banned_members = set()
-
 # load the commands though the cogs
 async def load_cogs():
     print("> registering cogs...")
@@ -51,10 +53,11 @@ async def load_cogs():
 
 
 @bot.event
-async def on_ready():    
+async def on_ready():   
+    bot.loop_ref = asyncio.get_running_loop() 
     await bot.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name="you..."))
         
-    # load the cogs
+    # load the cogs 
     await load_cogs()
 
     # re-register all the command
