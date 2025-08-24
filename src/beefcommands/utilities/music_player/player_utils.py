@@ -11,7 +11,7 @@ async def play_next(ctx):
     # dont play anything if the bot isnt connected
     if not ctx.voice_client:
         return
-    
+
     # retrive the queue
     queue_list = queue.get_queue()
     if queue.get_loop_flag() == True:
@@ -21,7 +21,7 @@ async def play_next(ctx):
         if current_track:
             await play_track(ctx, current_track[0], current_track[1])
             return
-        
+
     # if the queue is not empty
     if queue_list:       
         # move the top of the queue to the currently playing
@@ -38,10 +38,10 @@ async def play_next(ctx):
 async def handle_after_playing(ctx, error):
     # allow the voice handshake and ffmpeg process to settle
     await asyncio.sleep(0.5)
-    
+
     if not queue.get_queue() and not queue.get_current_track():
         return
-    
+
     # play the current_track link again and dont take from the queue
     if queue.get_loop_flag() == True:
         current_track = queue.get_current_track()
@@ -55,13 +55,13 @@ async def play_track(ctx, url, title):
     # if the bot isnt in a voice channel, join it
     if not ctx.voice_client:
         await voice_channel.establish_voice_connection(ctx)
-    
+
     # find the ffmpeg executable based on the OS
     if platform.system().lower() == "windows":
         exepath = os.getenv("FFMPEGEXE")
     else:
         exepath = "/usr/bin/ffmpeg"
-    
+
     # define the audio options
     ydl_ops = {
         "format": "bestaudio/best",
@@ -80,13 +80,13 @@ async def play_track(ctx, url, title):
         
         metadata =  await loop.run_in_executor(executor, lambda: yt_dlp.YoutubeDL(ydl_ops).extract_info(url, download=False))
         audio_url = metadata["url"]   
-    
+
     except Exception as e:
         await ctx.send(f"couldnt play {title} ({e})")
         return
-    
+
     # define the source to play in discord voice client
-    
+
     before_options=[
         "-nostdin",
         "-hide_banner",
@@ -96,7 +96,7 @@ async def play_track(ctx, url, title):
         "-reconnect_on_network_error 1",
         "-reconnect_streamed 1",
         "-reconnect_delay_max 5"]
-    
+
     options=[
         "-vn",
         "-ac 2",
@@ -140,11 +140,8 @@ async def disconnect_timeout(ctx):
         if not queue.get_queue() and not ctx.voice_client.is_playing():
             await ctx.send("YAAAWNNN thers no more songs in the queue IM BORED!!! cya")
             await ctx.voice_client.disconnect()
-    
+
     # interupt the timer when the queue is no longer empty
     except asyncio.CancelledError:
         pass
-    
-    
-    
-    
+

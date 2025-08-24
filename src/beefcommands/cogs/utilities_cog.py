@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from beefcommands.utilities.ccping import ccping
+from beefutilities.TTS import speak
 from beefutilities.guilds.text_channel import set_info, set_logs, set_quotes
 from beefcommands.utilities.help import help
 from beefutilities.update import update_info
@@ -52,10 +53,10 @@ class UtilitiesCog(commands.Cog):
         print(f"> \033[32m{interaction.user.name} used update\033[0m")
         await update_info(interaction, self.bot)    
     
-    @discord.app_commands.command(name="test", description="jamie delete this")
-    async def test(self, interaction: discord.Interaction, input: str):
+    @commands.command(name="test", description="jamie delete this")
+    async def test(self, ctx, input: str):
         from beefutilities.TTS.speak import sanitise_output
-        print(sanitise_output(interaction.message))
+        await speak.speak_output(ctx, input)
         #await interaction.response.send_message (await register_user_bday(interaction.user, bday))
     
     # registered the users bday in the database

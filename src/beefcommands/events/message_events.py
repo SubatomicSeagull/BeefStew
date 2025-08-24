@@ -10,12 +10,17 @@ import beefcommands.invocations.channel_name_rule as channel_name_rule
 from beefcommands.utilities.showme import show
 from beefcommands.utilities.tellme import tellme
 from beefutilities.TTS import speak
+from discord.ext import commands 
 
 
 import json
 from datetime import datetime
 from beefutilities.IO import file_io
 
+def init(bot: commands.Bot):
+    """Initialize the module with a bot instance."""
+    global _bot
+    _bot = bot
 
 async def message_send_event(bot, message):
     # dont respond if its a bot message
@@ -282,7 +287,9 @@ async def get_response(message: discord.Message):
             
             else:
                 await message.reply(content)
-                await speak.speak_output(message, content)
+                print(str(message))
+                ctx = await _bot.get_context(message)
+                await speak.speak_output(ctx, content)
                 return
 
 

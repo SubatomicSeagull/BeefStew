@@ -3,6 +3,7 @@ import sys
 from dotenv import load_dotenv
 import discord
 from discord.ext import commands
+from beefcommands.events import message_events
 from data import postgres
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
@@ -36,6 +37,7 @@ intents = discord.Intents.all()
 intents.message_content = True
 bot = commands.Bot(command_prefix="/", intents=intents)
 speak.init(bot)
+message_events.init(bot)
 
 kicked_members = set()
 banned_members = set()
