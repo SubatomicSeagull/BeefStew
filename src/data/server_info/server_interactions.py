@@ -26,7 +26,6 @@ async def retrive_containers_json():
     try:
         ssh_client.connect(hostname=host, port=port, username=user, pkey=sshkey, timeout=2)
     except TimeoutError as e:
-        print("Connection to server timed out.")
         raise TimeoutError("Connection to server timed out.")
     
     sftp = ssh_client.open_sftp()

@@ -71,7 +71,7 @@ class UtilitiesCog(commands.Cog):
         await sniff_user(interaction, interaction.user)
     
     # sets the random swing message flag to false
-    @commands.command(name="unsniff", description="what do u smell like")
+    @commands.command(name="unsniff", description="what dont u smell like")
     async def unsniff(self, ctx):
         print(f"> \033[32m{ctx.author.name} used unsniff \033[0m")
         await user.set_msg_flag(ctx.author, False)
