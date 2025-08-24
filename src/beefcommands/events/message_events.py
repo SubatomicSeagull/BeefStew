@@ -217,7 +217,7 @@ async def message_edit_event(bot, before, after):
     embed.add_field(name="Original", value=f"```{before.content}```", inline=False)
     embed.add_field(name="Edited", value=f"```{after.content}```", inline=False)
     embed.set_author(name=before.author, icon_url=before.author.avatar.url)
-    embed.add_field(name="", value=f"{before.author.guild.name} - {datetime.now().strftime('%d/%m/%Y %H:%M')}")  
+    embed.add_field(name="", value=f"{before.author.guild.name} - {datetime.now().strftime('%d/%m/%Y - %H:%M')}")  
     await channel.send(embed=embed)
     
 async def message_delete_event(bot, message):
@@ -251,7 +251,7 @@ async def message_delete_event(bot, message):
         for url in attachments:
             embed.add_field(name="File - ", value=f"{url}", inline=True)
     #embed footer
-    embed.add_field(name="", value=f"{message.author.guild.name} - {datetime.now().strftime('%d/%m/%Y %H:%M')}")  
+    embed.add_field(name="", value=f"{message.author.guild.name} - {datetime.now().strftime('%d/%m/%Y - %H:%M')}")  
     await channel.send(embed=embed)
     
     

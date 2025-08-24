@@ -14,17 +14,19 @@ async def member_remove_event(bot, member: discord.Member, kicked_members, banne
         # retreive the log channel
         channel_id = await read_guild_log_channel(member.guild.id)
         channel = await bot.fetch_channel(channel_id)
-        await channel.send(embed=await leave_message_embed(member, bot.user.avatar.url, member.guild.name))
+        await channel.send(embed=await leave_message_embed(member, bot, member.guild.name))
         
-async def leave_message_embed(user: discord.Member, icon_url, guild_name):
+async def leave_message_embed(user: discord.Member, bot, guild_name):
+    user = await bot.fetch_user(user.id)
+    
     # embed header
     leaveembed = discord.Embed(title=f"cya", color=discord.Color.purple())
     leaveembed.set_thumbnail(url=user.avatar.url)
     # embed body
-    leaveembed.add_field(name="", value=f"<@{user.id}> **left.**", inline=False)
+    leaveembed.add_field(name="", value=f"@{user.name} **left.**", inline=False)
     leaveembed.add_field(name="", value="", inline=False)
     leaveembed.add_field(name="", value="", inline=False)
-    leaveembed.set_author(name="Beefstew", icon_url=icon_url)
+    leaveembed.set_author(name="Beefstew", icon_url=bot.user.avatar.url)
     # embed footer
-    leaveembed.add_field(name="", value=f"{guild_name} - {datetime.now().strftime('%d/%m/%Y %H:%M')}")      
+    leaveembed.add_field(name="", value=f"{guild_name} - {datetime.now().strftime('%d/%m/%Y - %H:%M')}")      
     return leaveembed

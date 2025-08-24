@@ -19,5 +19,5 @@ async def join_message_embed(user: discord.Member, icon_url, guild_name):
         joinembed.add_field(name="", value="", inline=False)
         joinembed.set_author(name="Beefstew", icon_url=icon_url)
         # embed footer
-        joinembed.add_field(name="", value=f"{guild_name} - {datetime.now().strftime('%d/%m/%Y %H:%M')}")      
+        joinembed.add_field(name="", value=f"{guild_name} - {datetime.now().strftime('%d/%m/%Y - %H:%M')}")      
         return joinembed
