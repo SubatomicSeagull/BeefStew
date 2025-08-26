@@ -2,16 +2,16 @@ import asyncio
 from beefcommands import music_player
 
 async def join_vc(voice_client, user):
-    
-    # if the bot isnt already in a channel, connect
+    # if the bot isn't already in a channel, connect
     if not voice_client:
-        await user.voice.channel.connect()
+        return await user.voice.channel.connect()
 
-    # move voice channels if it doesnt match the users vc
+    # move voice channels if it doesn't match the user's vc
     elif voice_client.channel != user.voice.channel:
         await voice_client.move_to(user.voice.channel)
-    else:
-        return
+        return voice_client
+
+    return voice_client
     
 async def leave_vc(voice_client,  user):
     # if a voice connection is established, disconnect
