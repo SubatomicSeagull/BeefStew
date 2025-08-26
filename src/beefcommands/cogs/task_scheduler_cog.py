@@ -5,7 +5,7 @@ import datetime
 from data import postgres
 import random
 from zoneinfo import ZoneInfo
-from beefcommands.events.tasks import holiday_check, birthday_check, image_of_the_day, random_swing
+from beefcommands.events.tasks import cleanup_tts, holiday_check, birthday_check, image_of_the_day, random_swing
 class TaskSchedulerCog(commands.Cog):
     
     TIMEZONE = ZoneInfo("Europe/London")
@@ -18,8 +18,14 @@ class TaskSchedulerCog(commands.Cog):
         self.scheduled_holiday_check.start()
         self.image_of_the_day_check.start()
         self.random_swing_check.start()
+        self.clean_temp_tts_files.start()
         print(f"\033[32mall tasks scheduled successfully!\033[0m")
     
+    # task to clean out any old temp tts files that might have been left every day at midnight
+    @tasks.loop(time=datetime.time(0, 0, 0, tzinfo=TIMEZONE))
+    async def clean_temp_tts_files(self):
+        await cleanup_tts.cleanup()
+        
     # task is scheduled to check for birthdays every day at 10am
     @tasks.loop(time=datetime.time(10, 0, 0, tzinfo=TIMEZONE))
     async def scheduled_birthday_check(self):
