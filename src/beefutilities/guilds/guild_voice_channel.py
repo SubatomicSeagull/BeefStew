@@ -1,5 +1,6 @@
 import asyncio
 from beefcommands import music_player
+from beefutilities.TTS.speak import set_lock_state
 
 async def join_vc(voice_client, user):
     # if the bot isn't already in a channel, connect
@@ -14,6 +15,8 @@ async def join_vc(voice_client, user):
     return voice_client
     
 async def leave_vc(voice_client):
+    print("lock off")
+    set_lock_state(False)
     # if a voice connection is established, disconnect
     if voice_client:
         await music_player.clear()

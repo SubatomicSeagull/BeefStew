@@ -10,17 +10,10 @@ import beefcommands.invocations.channel_name_rule as channel_name_rule
 from beefcommands.utilities.showme import show
 from beefcommands.utilities.tellme import tellme
 from beefutilities.TTS import speak
-from discord.ext import commands 
-
 
 import json
 from datetime import datetime
 from beefutilities.IO import file_io
-
-def init(bot: commands.Bot):
-    """Initialize the module with a bot instance."""
-    global _bot
-    _bot = bot
 
 async def message_send_event(bot, message):
     # dont respond if its a bot message
@@ -30,7 +23,8 @@ async def message_send_event(bot, message):
     # dont respond to links
     if message.content.lower().startswith("http"):
         return
-        
+    
+    # dont respond to /say command messages
     if "/say" in message.content.lower():
         return
         
@@ -50,12 +44,16 @@ async def message_send_event(bot, message):
 
         # +2 logic
         if any(phrase in message.content.lower() for phrase in ["+2", "plus 2", "plus two"]):
-            await message.channel.send(await change_joke_score(message.author, user, 2))
+            response = await change_joke_score(message.author, user, 2)
+            await message.channel.send(response)
+            await speak.speak_output(message, response)
             return
 
         # -2 logic
         elif any(phrase in message.content.lower() for phrase in ["-2", "minus 2", "minus two"]):
-            await message.channel.send(await change_joke_score(message.author, user, -2))
+            response = await change_joke_score(message.author, user, -2)
+            await message.channel.send(response)
+            await speak.speak_output(message, response)
             return
 
         # they call you logic
@@ -83,6 +81,7 @@ async def message_send_event(bot, message):
             f"It was a **{result}**!!!\nYou my friend... have made... an unlucky gamble...",
             file=discord.File(file_path)
         )
+        await speak.speak_output(message, f"The deadly dice man rolled his deadly dice... it was a {result}!!! You my friend... have made... an unlucky gamble...")
         return
     
     if any(phrase in message.content.lower() for phrase in [
@@ -146,7 +145,7 @@ async def message_send_event(bot, message):
     if any(phrase in message.content.lower() for phrase in ["design", "desin", "desing"]):
         reply = randint(1, 6)
         await message.reply(content="This is my design:", file = discord.File(file_io.construct_media_path(f"design{reply}.png")))
-        await speak.speak_output(message, "This is my design.")
+        await speak.speak_output(message, "This... is my design.")
         return
     
     
@@ -183,6 +182,7 @@ async def message_send_event(bot, message):
         file = discord.File(file_io.construct_media_path("newkay.gif"))
         await kayupdate.delete()
         await message.channel.send(content=f"guys new kay video... **[{title}](https://www.youtube.com/watch?v={url})**", file=file)
+        await speak.speak_output(message, f"Guys new kay video... {title}")
         return
     
     if "crazy" in message.content.lower():
@@ -193,12 +193,14 @@ async def message_send_event(bot, message):
         await message.channel.send("They locked me in a room with rubber rats")
         sleep(0.5)
         await message.channel.send("And the rubber rats made me go crazy!!!!!!!!!!!!!!!!!")
+        await speak.speak_output(message, "Crazy...? I was crazy once... They locked me in a room with rubber rats and the rubber rats made me go crazy!")
         return
         
     if "tuah" in message.content.lower():
         jar_total = await hawk_tuah_penalty(message.author)
         file = discord.File(file_io.construct_media_path("hawktuahjar.gif"))
         await message.reply(content=f"{message.author.mention} pays the Hawk Tuah Penalty!!! Another 2 points to the jar...\n**Jar Points: {jar_total}**", file=file)
+        await speak.speak_output(message, f"{message.author.mention} pays the Hawk Tuah Penalty!!! Another 2 points to the jar...")
         return
     
     if any(phrase in message.content.lower() for phrase in ["why are we in ", "we are in "]):

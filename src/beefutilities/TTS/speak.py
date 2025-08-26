@@ -70,6 +70,13 @@ async def sanitise_output(ctx, message):
     return sanitised_text
 
 async def speak_output(ctx, message):
+    
+    if isinstance(ctx, discord.Message):
+        user = ctx.author
+    
+    elif isinstance(ctx, discord.Interaction):
+        user = ctx.user
+        
     if get_lock_state():
         print("TTS LOCKED!!!!")
         return
@@ -85,9 +92,9 @@ async def speak_output(ctx, message):
     
     # check if the bot is connected to a voice channel
     if not voice_client or not voice_client.is_connected():
-        if ctx.author.voice:
+        if user.voice:
             from beefutilities.guilds import guild_voice_channel
-            voice_client = await guild_voice_channel.join_vc(ctx.guild.voice_client, ctx.author)
+            voice_client = await guild_voice_channel.join_vc(ctx.guild.voice_client, user)
         else:
             print("=========================== TTS LOCK Off")
             set_lock_state(False)
@@ -97,6 +104,7 @@ async def speak_output(ctx, message):
     
     if message_text is None or message_text.strip() == "":
         print("No valid text to speak.")
+        set_lock_state(False)
         return
     
     # dont return just beefstew

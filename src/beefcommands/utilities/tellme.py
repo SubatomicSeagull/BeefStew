@@ -38,7 +38,8 @@ async def tellme(message: discord.Message, query):
     if not page.exists():
         content = f"i dont know anything about {query} :("
         image = file_io.construct_media_path("idk_monkey.png")
-        
+        await message.reply(content=content, file=discord.File(fp=image, filename=f"beefstew doesnt know about {query}.png"))
+
     else:
         summary = (page.summary).split('. ')
         content = ""
@@ -49,6 +50,6 @@ async def tellme(message: discord.Message, query):
                 content += ". "
             content += sentence
         content = (f"<:nerdstew:1387429699625681090> {content}.")
-    await message.reply(content=content, file=discord.File(image, filename=f"beefstew doesnt know about {query}.png"))
-    speak.speak_output(message, content)
+    await message.reply(content=content)
+    await speak.speak_output(message, content)
     return

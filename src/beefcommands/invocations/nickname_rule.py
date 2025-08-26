@@ -2,6 +2,7 @@ import random
 import discord
 import os
 from beefutilities.IO.json_handling import load_element
+from beefutilities.TTS import speak
 from data.postgres import log_error
 
 # nickname rule, handles logic for they call you slash command
@@ -18,7 +19,9 @@ async def change_nickname(ctx, victim: discord.Member, new_name: str):
                     try:
                         print(f"> \033[32m{interaction.user.name} invoked the rule on {victim.name}\033[0m")
                         await victim.edit(nick=new_name)
-                        await interaction.response.send_message(f"**{interaction.user.name}** invoked the rule on **{victim.global_name}**!\n{await nicknameprint(victim)}")           
+                        response = await nicknameprint(victim)
+                        await interaction.response.send_message(f"**{interaction.user.name}** invoked the rule on **{victim.global_name}**!\n{response}")           
+                        await speak.speak_output(interaction, f"{interaction.user.name} invoked the rule on {victim.global_name}!{response}")
                     except discord.Forbidden as e:
                         print(f"\031[32mError while trying to invoke the rule: {e}\033[0m")
                         await interaction.response.send_message(f"**{interaction.user.name}** tried to invoked the rule on **{victim.global_name}**!\nbut it didnt work :( next time get some permissions pal")
@@ -27,7 +30,8 @@ async def change_nickname(ctx, victim: discord.Member, new_name: str):
                         
             else:
                 await interaction.response.send_message(f"**{interaction.user.name}** tried to invoked the rule on **{victim.global_name}**!\nnice try fucker...")
-                
+                await speak.speak_output(interaction, f"{interaction.user.name} tried to invoked the rule on {victim.global_name}! nice try fucker...")
+
         elif isinstance(ctx, discord.Message):
             message = ctx
             # not allowed to rename the bot
@@ -39,7 +43,10 @@ async def change_nickname(ctx, victim: discord.Member, new_name: str):
                     try:
                         print(f"> \033[32m{message.author.name} invoked the rule on {victim.name}\033[0m")
                         await victim.edit(nick=new_name)
-                        await message.channel.send(f"**{message.author.name}** invoked the rule on **{victim.global_name}**!\n{await nicknameprint(victim)}")
+                        response = await nicknameprint(victim)
+                        await message.channel.send(f"**{message.author.name}** invoked the rule on **{victim.global_name}**!\n{response}")
+                        await speak.speak_output(interaction, f"{interaction.user.name} invoked the rule on {victim.global_name}!{response}")
+
                     except Exception as e:
                         print(f"\031[32mError while trying to invoke the rule: {e}\033[0m")
                         await message.channel.send(f"**{message.author.name}** tried to invoked the rule on **{victim.global_name}**!\nbut it didnt work :( next time get some permissions okay?")

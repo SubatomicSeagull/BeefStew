@@ -90,6 +90,7 @@ class UtilitiesCog(commands.Cog):
         
         if message != "" and message != None:
             await ctx.send(message)
+            await speak.speak_output(ctx, message)
 
 # cog setup
 async def setup(bot):
