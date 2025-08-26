@@ -24,7 +24,7 @@ class MusicPlayerCog(commands.Cog):
     @commands.command(name="leave", aliases=["fuckoff"],  description="fukoff")
     async def mp_leave_vc(self, ctx):
         print(f"> \033[32m{ctx.author.name} used /leave\033[0m")
-        await guild_voice_channel.leave_vc(ctx.voice_client)
+        await guild_voice_channel.leave_vc(ctx.voice_client, ctx.author)
 
     # play the given song at the front of the queue, or just play the queue if no query
     @commands.command(name="play", aliases=["p"], description="play the funky music white boy")

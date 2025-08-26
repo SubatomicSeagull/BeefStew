@@ -8,9 +8,6 @@ from spotipy.oauth2 import SpotifyClientCredentials
 import spotipy
 from trello import TrelloClient
 
-
-
-
 # start up the multithreading loop
 asyncloop = asyncio.new_event_loop()
 asyncio.set_event_loop(asyncloop)
@@ -52,7 +49,6 @@ async def load_cogs():
 
 @bot.event
 async def on_ready():   
-    bot.loop_ref = asyncio.get_running_loop() 
     await bot.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name="you..."))
     
     # load the cogs 

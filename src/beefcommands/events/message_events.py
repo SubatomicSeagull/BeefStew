@@ -1,7 +1,7 @@
 import discord
 from beefcommands.invocations.joker_score.change_joker_score import change_joke_score, hawk_tuah_penalty
 from beefcommands.invocations.nickname_rule import change_nickname
-from beefcommands.utilities.music_player.youtube import yt_utils
+from beefutilities import yt_utils
 from data.postgres import log_error
 from random import randint
 from time import sleep

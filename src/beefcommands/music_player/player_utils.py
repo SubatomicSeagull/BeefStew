@@ -83,15 +83,16 @@ async def play_track(voice_client, tx_channel, url, title):
     
     try:
         # retrive the thread executor
+        print("retrieving event loop")
         loop = asyncio.get_running_loop()
         
         # retrive the metadata for the youtube link and return the audio url
-        
+        print(f"retrieving metadata for {title}")
         metadata =  await loop.run_in_executor(bot.executor, lambda: yt_dlp.YoutubeDL(ydl_ops).extract_info(url, download=False))
         audio_url = metadata["url"]   
     
     except Exception as e:
-        await tx_channel.send(f"couldnt play {title} ({e})")
+        await tx_channel.send(f"Couldn't play {title} ({e})")
         return
     
     # define the source to play in discord voice client

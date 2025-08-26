@@ -1,5 +1,4 @@
 import yt_dlp
-import discord
 
 async def find_newest_yt_video(channel):
     ydl_opts = {

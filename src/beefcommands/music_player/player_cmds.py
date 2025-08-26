@@ -9,7 +9,9 @@ async def play(user, voice_client, tx_channel, *args):
     
     #join together arbitrary arguments into search query
     url = " ".join(args)
-    if url:
+    print(url)
+    if url and url != "  ":
+        print(f"**{user.name}** requested **{url}**")
         # add the item to the front of the queue
         await queue.handle_queue(user, tx_channel, url, insert=True)
         
@@ -17,7 +19,7 @@ async def play(user, voice_client, tx_channel, *args):
         await guild_voice_channel.join_vc(voice_client, user)
     
     # start playing the queue
-    if not (voice_client and voice_client.is_playing()):
+    if (voice_client and not voice_client.is_playing()):
         await player_utils.play_next(voice_client, tx_channel)
 
 async def pause(voice_client):

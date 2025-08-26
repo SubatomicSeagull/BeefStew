@@ -1,4 +1,5 @@
 import asyncio
+from beefcommands import music_player
 
 async def join_vc(voice_client, user):
     
@@ -12,9 +13,10 @@ async def join_vc(voice_client, user):
     else:
         return
     
-async def leave_vc(voice_client):
+async def leave_vc(voice_client,  user):
     # if a voice connection is established, disconnect
     if voice_client:
+        await music_player.clear(user, voice_client)
         await voice_client.disconnect()
 
     # give time for the ffmpeg process and voice handshake to shut down
