@@ -31,7 +31,7 @@ def init_tts_engine():
 def generate_speech(text):
     tts = init_tts_engine()
     
-    filename = f"output-{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.wav"
+    filename = f"{file_io.construct_data_path()}\\/output-{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.wav"
     
     tts.save_to_file(text, filename)
     tts.runAndWait()
