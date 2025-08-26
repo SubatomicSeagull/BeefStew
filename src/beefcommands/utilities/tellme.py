@@ -49,7 +49,6 @@ async def tellme(message: discord.Message, query):
             if content:
                 content += ". "
             content += sentence
-        content = (f"<:nerdstew:1387429699625681090> {content}.")
-    await message.reply(content=content)
+    await message.reply(content=f"<:nerdstew:1387429699625681090> {content}.")
     await speak.speak_output(message, content)
     return
