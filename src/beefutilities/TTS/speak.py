@@ -6,11 +6,16 @@ import os
 from beefutilities.TTS import tts_engine
 import asyncio
 
+global _TTS_lock 
+_TTS_lock: bool = False
 
-def init(bot):
-    """Initialize the module with a bot instance."""
-    global _bot
-    _bot = bot
+def get_lock_state():
+    return _TTS_lock
+    
+    
+def set_lock_state(state: bool):
+    global _TTS_lock 
+    _TTS_lock = state
 
 async def sanitise_output(ctx, message):
 
@@ -65,8 +70,12 @@ async def sanitise_output(ctx, message):
     return sanitised_text
 
 async def speak_output(ctx, message):
+    if get_lock_state():
+        print("TTS LOCKED!!!!")
+        return
     
-    print(str(ctx))
+    print("=========================== TTS LOCK ON")
+    set_lock_state(True)
     
     loop = asyncio.get_event_loop()
     
@@ -111,8 +120,11 @@ async def speak_output(ctx, message):
             print("Finished playing TTS message.") 
         if os.path.exists(tts_file):
             os.remove(tts_file)
-            print(f"Deleted temporary file: {tts_file}")
+            print(f"Deleted temporary file: {tts_file}")    
         
+        print("=========================== TTS LOCK OFF")
+        set_lock_state(False)
+
         if prev_content:
             def retrace_prev_callback(error):
                 print("callback from previous audio:")
