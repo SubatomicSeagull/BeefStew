@@ -1,7 +1,7 @@
 import discord
 from data import postgres
 import datetime
-from beefutilities.guilds.text_channel import read_guild_info_channel
+from beefutilities.guilds.guild_text_channel import read_guild_info_channel
 from beefutilities.IO import file_io
 import os
 
