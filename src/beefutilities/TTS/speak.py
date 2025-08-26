@@ -85,8 +85,13 @@ async def speak_output(ctx, message):
     
     # check if the bot is connected to a voice channel
     if not voice_client or not voice_client.is_connected():
-        print("Bot is not connected to a voice channel.")
-        return
+        if ctx.author.voice:
+            from beefutilities.guilds import guild_voice_channel
+            voice_client = await guild_voice_channel.join_vc(ctx.guild.voice_client, ctx.author)
+        else:
+            print("=========================== TTS LOCK Off")
+            set_lock_state(False)
+            return
     
     message_text = await sanitise_output(ctx, message)
     

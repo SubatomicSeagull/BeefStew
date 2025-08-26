@@ -115,10 +115,8 @@ async def qpop():
         if queue:
             queue.pop(0)
             
-async def qclear(user, tx_channel):
+async def qclear():
         get_queue().clear()
-        if tx_channel:
-            await tx_channel.send(f"**{user.name}** cleared the queue")
         
 async def qshuffle(user, tx_channel):
         queue = get_queue()

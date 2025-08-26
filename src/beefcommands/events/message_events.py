@@ -287,9 +287,7 @@ async def get_response(message: discord.Message):
             
             else:
                 await message.reply(content)
-                print(str(message))
-                ctx = await _bot.get_context(message)
-                await speak.speak_output(ctx, content)
+                await speak.speak_output(message, content)
                 return
 
 

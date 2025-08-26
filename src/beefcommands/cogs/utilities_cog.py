@@ -54,10 +54,8 @@ class UtilitiesCog(commands.Cog):
         await update_info(interaction, self.bot)    
     
     @commands.command(name="test", description="jamie delete this")
-    async def test(self, ctx, input: str):
-        from beefutilities.TTS.speak import sanitise_output
+    async def test(self, ctx, *, input: str):
         await speak.speak_output(ctx, input)
-        #await interaction.response.send_message (await register_user_bday(interaction.user, bday))
     
     # registered the users bday in the database
     @discord.app_commands.command(name="bday", description="format like dd/mm/yyyy")
