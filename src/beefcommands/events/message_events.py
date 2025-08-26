@@ -1,11 +1,11 @@
 import discord
 from beefcommands.invocations.joker_score.change_joker_score import change_joke_score, hawk_tuah_penalty
 from beefcommands.invocations.nickname_rule import change_nickname
-from beefcommands.utilities.music_player.youtube import yt_utils
+from beefutilities import yt_utils
 from data.postgres import log_error
 from random import randint
 from time import sleep
-from beefutilities.guilds.text_channel import read_guild_log_channel
+from beefutilities.guilds.guild_text_channel import read_guild_log_channel
 import beefcommands.invocations.channel_name_rule as channel_name_rule
 from beefcommands.utilities.showme import show
 from beefcommands.utilities.tellme import tellme

@@ -117,13 +117,11 @@ async def speak_output(ctx, message):
             def retrace_prev_callback(error):
                 print("callback from previous audio:")
 
-                from beefcommands.utilities.music_player import player
+                from beefcommands import music_player
                 
                 async def resume_music():
-                    print("retreiving context for /play command")
-                    # command_ctx = await _bot.get_context(ctx) # returns none type context because reasons idk if we can just pass the ctx properly this will work
                     print("Running /play")
-                    await player.play(ctx)
+                    await music_player.play(ctx.author, ctx.guild.voice_client, ctx.channel)
                     
                 print("running resume_music in main loop")
                 future = asyncio.run_coroutine_threadsafe(resume_music(), loop)
