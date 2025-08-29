@@ -84,7 +84,7 @@ async def speak_output(ctx, message):
         print("GLOBAL LOCKED!!!!")
         return
     
-    if isinstance(ctx, discord.Message):
+    if isinstance(ctx, discord.Message) or isinstance(ctx, commands.Context):
         user = ctx.author
     
     elif isinstance(ctx, discord.Interaction):
@@ -121,7 +121,7 @@ async def speak_output(ctx, message):
         return
     
     # dont return just beefstew
-    if message_text == "beefstew.": return
+    if message_text == "beefstew." or message_text == ".": return
     
     tts_file = tts_engine.generate_speech(message_text)
     
@@ -145,9 +145,12 @@ async def speak_output(ctx, message):
         else:
             print("Finished playing TTS message.") 
         if os.path.exists(tts_file):
-            os.remove(tts_file)
-            print(f"Deleted temporary file: {tts_file}")    
-        
+            try:
+                os.remove(tts_file)
+                print(f"Deleted temporary file: {tts_file}")    
+            except Exception as e:
+                pass
+            
         print("=========================== TTS LOCK OFF")
         set_lock_state(False)
 

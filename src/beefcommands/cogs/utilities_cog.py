@@ -98,14 +98,14 @@ class UtilitiesCog(commands.Cog):
     async def shutup(self, interaction: discord.Interaction):
         print(f"> \033[32m{interaction.user.name} used /shutup\033[0m")
         speak.set_lock_state_global(True)
-        interaction.response.send_message("TTS disabled", ephemeral=True)
+        await interaction.response.send_message("TTS disabled", ephemeral=True)
     
     # enable TTS
     @discord.app_commands.command(name="speak", description="turn on TTS")
     async def speak(self, interacton: discord.Interaction):
         print(f"> \033[32m{interacton.user.name} used /speak\033[0m")
         speak.set_lock_state_global(False)
-        interacton.response.send_message("TTS enabled", ephemeral=True)
+        await interacton.response.send_message("TTS enabled", ephemeral=True)
 
 # cog setup
 async def setup(bot):
