@@ -8,6 +8,7 @@ from beefutilities.update import update_info
 from beefcommands.visage.sniff import sniff_user
 from beefutilities.users import user
 from beefcommands.utilities.suggest_feature import create_suggestion
+from beefutilities.TTS import speak
 class UtilitiesCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -91,6 +92,20 @@ class UtilitiesCog(commands.Cog):
         if message != "" and message != None:
             await ctx.send(message)
             await speak.speak_output(ctx, message)
+    
+    # disable TTS
+    @discord.app_commands.command(name="shutup", description="turn off TTS")
+    async def shutup(self, interaction: discord.Interaction):
+        print(f"> \033[32m{interaction.user.name} used /shutup\033[0m")
+        speak.set_lock_state_global(True)
+        interaction.response.send_message("TTS disabled", ephemeral=True)
+    
+    # enable TTS
+    @discord.app_commands.command(name="speak", description="turn on TTS")
+    async def speak(self, interacton: discord.Interaction):
+        print(f"> \033[32m{interacton.user.name} used /speak\033[0m")
+        speak.set_lock_state_global(False)
+        interacton.response.send_message("TTS enabled", ephemeral=True)
 
 # cog setup
 async def setup(bot):

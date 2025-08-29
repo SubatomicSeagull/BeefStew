@@ -9,9 +9,18 @@ import asyncio
 global _TTS_lock 
 _TTS_lock: bool = False
 
+global g_Lock
+g_Lock: bool = False
+
+def get_lock_state_global():
+    return g_Lock
+    
+def set_lock_state_global(state: bool):
+    global g_Lock
+    g_Lock = state
+
 def get_lock_state():
     return _TTS_lock
-    
     
 def set_lock_state(state: bool):
     global _TTS_lock 
@@ -70,6 +79,10 @@ async def sanitise_output(ctx, message):
     return sanitised_text
 
 async def speak_output(ctx, message):
+    
+    if get_lock_state_global():
+        print("GLOBAL LOCKED!!!!")
+        return
     
     if isinstance(ctx, discord.Message):
         user = ctx.author
