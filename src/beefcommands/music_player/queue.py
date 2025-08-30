@@ -1,6 +1,6 @@
 import random
 import discord
-from beefcommands.utilities.music_player.link_parser import validate_input, link_parser
+from beefcommands.music_player import link_parser
 
 g_queue = []
 g_current_track = [(None, "Nothing")]
@@ -35,18 +35,18 @@ def set_loop_flag(value):
     global g_loop 
     g_loop = value
     
-async def handle_queue(ctx, url, insert):
+async def handle_queue(user, tx_channel, url, insert):
     # send the status message
-    status = await ctx.send("Queuing songs...")
+    status = await tx_channel.send("Queuing songs...")
     
     # validate the url
-    media_type = validate_input(url)
+    media_type = link_parser.validate_input(url)
     if media_type == "invalid":
         await status.edit(content="invalid link")
         return
     
     # retrive the youtube links from the given query
-    ytlinks = await link_parser(ctx, url, media_type)
+    ytlinks = await link_parser.parse(tx_channel, url, media_type)
     if not ytlinks:
         await status.edit(content="failed to get youtube link")
         return
@@ -67,15 +67,15 @@ async def handle_queue(ctx, url, insert):
                 queue.append(track)
             added += 1
     if added == 1:
-        await status.edit(content=f"**{ctx.author.name}** added **{track[1]}** to the queue")
+        await status.edit(content=f"**{user.name}** added **{track[1]}** to the queue")
     else:
-        await status.edit(content=f"**{ctx.author.name}** added {added} tracks to the queue")
+        await status.edit(content=f"**{user.name}** added {added} tracks to the queue")
 
-async def qlist(ctx):
+async def qlist(tx_channel):
     # retrive the queue array
         queue = get_queue()
         if not queue and not g_current_track:
-            await ctx.send("the queue is empty")
+            await tx_channel.send("the queue is empty")
             return
         
         content = ""
@@ -90,24 +90,24 @@ async def qlist(ctx):
                     content += f"... and {len(queue) - 10} more tracks."
                     break
         
-      # generate the list embed
+        # generate the list embed
         listembed = discord.Embed(title="StewQueue", description="\n", color=discord.Color.orange())
         
         # list the current track if there is one
         if get_current_track():
             listembed.add_field(name="", value=f"**Currently playing:** {get_current_track_title()}", inline=False) 
         listembed.add_field(name="", value=content)   
-        await ctx.send(embed = listembed)   
+        await tx_channel.send(embed = listembed)   
 
-async def qadd(ctx, *args):
+async def qadd(user, tx_channel, *args):
     # handle the arbitrary arguments and add to the back of the queue
         url = " ".join(args)
-        await handle_queue(ctx, url, insert=False)
+        await handle_queue(user, tx_channel, url, insert=False)
 
-async def qinsert(ctx, *args):
+async def qinsert(user, tx_channel, *args):
     # handle the arbitrary arguments and insert to the front of the queue (unused and superceded by /play i think)
         url = " ".join(args)
-        await handle_queue(ctx, url, insert=True)
+        await handle_queue(user, tx_channel, insert=True)
 
 async def qpop():
     # retrive the first item off of the queue
@@ -115,23 +115,22 @@ async def qpop():
         if queue:
             queue.pop(0)
             
-async def qclear(ctx):
+async def qclear():
         get_queue().clear()
-        await ctx.send(f"**{ctx.author.name}** cleared the queue")
         
-async def qshuffle(ctx):
+async def qshuffle(user, tx_channel):
         queue = get_queue()
         random.shuffle(queue)
-        await ctx.send(f"**{ctx.author.name}** shuffled the queue")
+        await tx_channel.send(f"**{user.name}** shuffled the queue")
 
-async def qloop(ctx):
+async def qloop(tx_channel):
     # toggle loop flag if its off, and off if its on
         if get_loop_flag() == False:
             set_loop_flag(True)
-            await ctx.send(f"toggled loop **ON**")
+            await tx_channel.send(f"toggled loop **ON**")
         else:
             set_loop_flag(False)
-            await ctx.send(f"toggled loop **OFF**")
+            await tx_channel.send(f"toggled loop **OFF**")
             
         
     

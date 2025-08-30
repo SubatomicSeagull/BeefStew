@@ -3,7 +3,7 @@ import asyncio
 import discord
 import os
 from data import postgres
-from beefutilities.guilds.text_channel import read_guild_info_channel
+from beefutilities.guilds.guild_text_channel import read_guild_info_channel
 from beefcommands.incantations.vicious_mockery import get_insult
 from beefutilities.IO.json_handling import load_element
 

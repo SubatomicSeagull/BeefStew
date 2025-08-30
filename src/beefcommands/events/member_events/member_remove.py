@@ -1,5 +1,5 @@
 import discord
-from beefutilities.guilds.text_channel import read_guild_log_channel
+from beefutilities.guilds.guild_text_channel import read_guild_log_channel
 from datetime import datetime
 
 

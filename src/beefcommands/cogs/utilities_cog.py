@@ -1,12 +1,14 @@
 import discord
 from discord.ext import commands
 from beefcommands.utilities.ccping import ccping
-from beefutilities.guilds.text_channel import set_info, set_logs, set_quotes
+from beefutilities.TTS import speak
+from beefutilities.guilds.guild_text_channel import set_info, set_logs, set_quotes
 from beefcommands.utilities.help import help
 from beefutilities.update import update_info
 from beefcommands.visage.sniff import sniff_user
 from beefutilities.users import user
 from beefcommands.utilities.suggest_feature import create_suggestion
+from beefutilities.TTS import speak
 class UtilitiesCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -52,10 +54,9 @@ class UtilitiesCog(commands.Cog):
         print(f"> \033[32m{interaction.user.name} used update\033[0m")
         await update_info(interaction, self.bot)    
     
-    @discord.app_commands.command(name="test", description="jamie delete this")
-    async def test(self, interaction: discord.Interaction, bday: str):
-        pass
-        #await interaction.response.send_message (await register_user_bday(interaction.user, bday))
+    @commands.command(name="test", description="jamie delete this")
+    async def test(self, ctx, *, input: str):
+        await speak.speak_output(ctx, input)
     
     # registered the users bday in the database
     @discord.app_commands.command(name="bday", description="format like dd/mm/yyyy")
@@ -90,6 +91,21 @@ class UtilitiesCog(commands.Cog):
         
         if message != "" and message != None:
             await ctx.send(message)
+            await speak.speak_output(ctx, message)
+    
+    # disable TTS
+    @discord.app_commands.command(name="shutup", description="turn off TTS")
+    async def shutup(self, interaction: discord.Interaction):
+        print(f"> \033[32m{interaction.user.name} used /shutup\033[0m")
+        speak.set_lock_state_global(True)
+        await interaction.response.send_message("TTS disabled", ephemeral=True)
+    
+    # enable TTS
+    @discord.app_commands.command(name="speak", description="turn on TTS")
+    async def speak(self, interacton: discord.Interaction):
+        print(f"> \033[32m{interacton.user.name} used /speak\033[0m")
+        speak.set_lock_state_global(False)
+        await interacton.response.send_message("TTS enabled", ephemeral=True)
 
 # cog setup
 async def setup(bot):

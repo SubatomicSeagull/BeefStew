@@ -1,15 +1,15 @@
 import asyncio
-import discord
-import yt_dlp
 import os
 import platform
-from beefcommands.utilities.music_player import queue
-from beefutilities.guilds import voice_channel
-from main import executor
+from beefcommands.music_player import queue
+import discord
+import yt_dlp
+from main import bot #<- badddd
 
-async def play_next(ctx):
+
+async def play_next(voice_client, tx_channel):
     # dont play anything if the bot isnt connected
-    if not ctx.voice_client:
+    if not voice_client:
         return
     
     # retrive the queue
@@ -19,7 +19,7 @@ async def play_next(ctx):
         # play the current_track link again and dont take from the queue
         current_track = queue.get_current_track()
         if current_track:
-            await play_track(ctx, current_track[0], current_track[1])
+            await play_track(voice_client, tx_channel, current_track[0], current_track[1])
             return
         
     # if the queue is not empty
@@ -29,13 +29,28 @@ async def play_next(ctx):
         queue.set_current_track(current_track)
         
         # play the song in currently_playing
-        await play_track(ctx, queue.get_current_track_link(), queue.get_current_track_title())
+        await play_track(voice_client, tx_channel, queue.get_current_track_link(), queue.get_current_track_title())
+    
     else:
-        # start the disconnect timer
-        disconnect_task = ctx.bot.loop.create_task(disconnect_timeout(ctx))
-        ctx.bot.get_cog('MusicPlayerCog').disconnect_task = disconnect_task
+        try:
+            # wait 5 minutes for another song to be queued
+            await asyncio.sleep(300)
+            if not queue.get_queue() and not voice_client.is_playing():
+                await voice_client.disconnect()
+    # interupt the timer when the queue is no longer empty
+        except asyncio.CancelledError:
+            pass
 
-async def handle_after_playing(ctx, error):
+async def handle_after_playing(voice_client, tx_channel, error):
+    if not voice_client:
+        return
+    
+    if not queue.get_queue() and not queue.get_current_track():
+        return
+    
+    if error:
+        return
+    
     # allow the voice handshake and ffmpeg process to settle
     await asyncio.sleep(1)
     
@@ -44,14 +59,11 @@ async def handle_after_playing(ctx, error):
         current_track = queue.get_current_track()
         if current_track:
             # play the some in currently playing
-            await play_track(ctx, queue.get_current_track_link(), queue.get_current_track_title())
+            await play_track(voice_client, tx_channel, queue.get_current_track_link(), queue.get_current_track_title())
     else:
-        await play_next(ctx)
+        await play_next(voice_client,tx_channel)
 
-async def play_track(ctx, url, title):
-    # if the bot isnt in a voice channel, join it
-    if not ctx.voice_client:
-        await voice_channel.establish_voice_connection(ctx)
+async def play_track(voice_client, tx_channel, url, title):
     
     # find the ffmpeg executable based on the OS
     if platform.system().lower() == "windows":
@@ -71,19 +83,19 @@ async def play_track(ctx, url, title):
     
     try:
         # retrive the thread executor
+        print("retrieving event loop")
         loop = asyncio.get_running_loop()
         
         # retrive the metadata for the youtube link and return the audio url
-        
-        metadata =  await loop.run_in_executor(executor, lambda: yt_dlp.YoutubeDL(ydl_ops).extract_info(url, download=False))
+        print(f"retrieving metadata for {title}")
+        metadata =  await loop.run_in_executor(bot.executor, lambda: yt_dlp.YoutubeDL(ydl_ops).extract_info(url, download=False))
         audio_url = metadata["url"]   
     
     except Exception as e:
-        await ctx.send(f"couldnt play {title} ({e})")
+        await tx_channel.send(f"Couldn't play {title} ({e})")
         return
     
     # define the source to play in discord voice client
-    
     before_options=[
         "-nostdin",
         "-hide_banner",
@@ -105,39 +117,22 @@ async def play_track(ctx, url, title):
     ]
     
     source = discord.FFmpegOpusAudio(source=audio_url, executable=exepath, options=options, before_options=before_options)
-    
+
     # define behaviour after playing a track
-    def after_playing(error):
-        if not ctx.voice_client:
-            return
-        
-        if not queue.get_queue() and not queue.get_current_track():
-            return
-        
-        if error:
-            return
-        
-        # when playback ends, call the handler
-        coro = handle_after_playing(ctx, error)
-        future = asyncio.run_coroutine_threadsafe(coro, ctx.bot.loop)
-        try:
+    def after_playing(error, loop):
+        # Use the current running event loop for thread safety
+        if loop and loop.is_running():
+            # Schedule the coroutine in the running loop
+            future = asyncio.run_coroutine_threadsafe(
+                handle_after_playing(voice_client, tx_channel, error), loop
+            )
             future.result()
-        except:
+        else:
+            print("No running event loop; cannot schedule after_playing task.")
+            # If no running loop, just ignore (should not happen in discord.py context)
             pass
-        
+
     # play the song in the voice channel
-    await ctx.send(f"Playing: **{title}**")
-    ctx.voice_client.play(source, after=after_playing)
+    await tx_channel.send(f"Playing: **{title}**")
+    voice_client.play(source, after=lambda e: after_playing(e, loop))
 
-
-async def disconnect_timeout(ctx):
-    try:
-        # wait 5 minutes for another song to be queued
-        await asyncio.sleep(300)
-        if not queue.get_queue() and not ctx.voice_client.is_playing():
-            await ctx.send("YAAAWNNN thers no more songs in the queue IM BORED!!! cya")
-            await ctx.voice_client.disconnect()
-    
-    # interupt the timer when the queue is no longer empty
-    except asyncio.CancelledError:
-        pass

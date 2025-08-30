@@ -1,4 +1,5 @@
 import discord
+from beefutilities.TTS import speak
 from data import postgres
 from random import randint
 import os
@@ -21,6 +22,7 @@ async def gamble_points(interaction: discord.Interaction):
     # cant play if ur broke
     if score - 1 < 0:
         await interaction.followup.send(f"{user.mention} lmaooo ur broke sry no gambling for u loser")
+        await speak.speak_output(interaction, "lmaooo ur broke sry no gambling for u loser")
         return
     
     # pay a coin for a spin
@@ -65,6 +67,7 @@ async def gamble_points(interaction: discord.Interaction):
     await interaction.channel.send(file=file)
     await interaction.channel.send(explanation)
     await interaction.followup.send(f"🎲🎰Lets go gambling!!!🎰🎲\n{user.mention} Inserts a joker coin into the gambling machine...")
+    await speak.speak_output(interaction, f"Lets go gambling! {user.mention} Inserts a joker coin into the gambling machine...")
     return
 
 def roll_outcome(outcomes):

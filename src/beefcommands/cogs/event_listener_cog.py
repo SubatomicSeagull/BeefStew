@@ -37,6 +37,11 @@ class EventListenerCog(commands.Cog):
         if not message.author.bot and not "/say" in message.content.lower(): print(f"> \033[32m{message.author.name} deleted a message in #{message.channel.name}\033[0m")
         await beefcommands.events.message_events.message_delete_event(self.bot, message)
 
+#    @commands.Cog.listener()
+#    async def on_command(self, ctx):
+#        print(f"> \033[34m{ctx.author.name} used /{ctx.command}\033[0m")
+
 async def setup(bot):
     print("- \033[91mbeefcommands.cogs.event_listener_cog\033[0m")
     await bot.add_cog(EventListenerCog(bot))
+

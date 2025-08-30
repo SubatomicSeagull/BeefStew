@@ -12,3 +12,4 @@ wikipedia-api
 pytz
 tzdata
 py-trello
+pyttsx3

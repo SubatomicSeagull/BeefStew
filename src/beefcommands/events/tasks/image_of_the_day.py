@@ -2,7 +2,7 @@ import discord
 import os
 import datetime
 from beefutilities.IO import file_io
-from beefutilities.guilds.text_channel import read_guild_info_channel
+from beefutilities.guilds.guild_text_channel import read_guild_info_channel
 
 async def image_of_the_day(bot):
     # define today MM-DD and day of the week %A-DD

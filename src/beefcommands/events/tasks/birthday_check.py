@@ -1,7 +1,7 @@
 import discord
 from data import postgres
 import datetime
-from beefutilities.guilds.text_channel import read_guild_info_channel
+from beefutilities.guilds.guild_text_channel import read_guild_info_channel
 from beefcommands.visage.bday import party_pfp
 from beefcommands.invocations.joker_score import read_joker_score, change_joker_score
 import os
