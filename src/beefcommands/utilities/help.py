@@ -65,8 +65,10 @@ class HelpEmbed(discord.ui.View):
         page_utilities.add_field(name="", value="`/update`: whats new?", inline=False)
         page_utilities.add_field(name="", value="`/test`: <- jamie delete this", inline=False)
         page_utilities.add_field(name="", value="`/say`: make beefstew talk like some kind of flesh puppet!", inline=False)
+        page_utilities.add_field(name="", value="`/shutup`: tape beefstew's mouth shut", inline=False)
+        page_utilities.add_field(name="", value="`/speak`: untape beefstew's mouth", inline=False)
         await interaction.response.edit_message(embed=page_utilities)
-            
+
     @discord.ui.button(label="Incantations", style=discord.ButtonStyle.primary)
     async def incantations(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.currentpage = 3
