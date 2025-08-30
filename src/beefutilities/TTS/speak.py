@@ -94,9 +94,6 @@ async def speak_output(ctx, message):
         print("TTS LOCKED!!!!")
         return
     
-    print("=========================== TTS LOCK ON")
-    set_lock_state(True)
-    
     loop = asyncio.get_event_loop()
     
     voice_client: discord.VoiceClient = ctx.guild.voice_client
@@ -108,10 +105,14 @@ async def speak_output(ctx, message):
         if user.voice:
             from beefutilities.guilds import guild_voice_channel
             voice_client = await guild_voice_channel.join_vc(ctx.guild.voice_client, user)
+            print(voice_client)
         else:
             print("=========================== TTS LOCK Off")
             set_lock_state(False)
             return
+    
+    print("=========================== TTS LOCK ON")
+    set_lock_state(True)
     
     message_text = await sanitise_output(ctx, message)
     
@@ -123,7 +124,7 @@ async def speak_output(ctx, message):
     # dont return just beefstew
     if message_text == "beefstew." or message_text == ".": return
     
-    tts_file = tts_engine.generate_speech(message_text)
+    tts_file = await tts_engine.generate_speech(message_text)
     
     if platform.system().lower() == "windows":
         exepath = os.getenv("FFMPEGEXE")
@@ -177,5 +178,3 @@ async def speak_output(ctx, message):
 
     voice_client.play(audio_source, after=lambda e: after_playing(e))
     return
-
-

@@ -24,7 +24,7 @@ class TaskSchedulerCog(commands.Cog):
     # task to clean out any old temp tts files that might have been left every day at midnight
     @tasks.loop(time=datetime.time(0, 0, 0, tzinfo=TIMEZONE))
     async def clean_temp_tts_files(self):
-        await cleanup_tts.cleanup()
+        await cleanup_tts.cleanup_tts_folder()
         
     # task is scheduled to check for birthdays every day at 10am
     @tasks.loop(time=datetime.time(10, 0, 0, tzinfo=TIMEZONE))

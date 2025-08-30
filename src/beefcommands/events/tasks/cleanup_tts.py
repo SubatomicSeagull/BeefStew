@@ -1,7 +1,7 @@
 import os
 from beefutilities.IO import file_io
 
-async def cleanup():
+async def cleanup_tts_folder():
     temp_tts_path = file_io.construct_data_path("temp_tts_data")
     if os.path.exists(temp_tts_path):
         for filename in os.listdir(temp_tts_path):

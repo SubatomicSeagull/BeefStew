@@ -54,11 +54,11 @@ async def GBJ(interaction: discord.Interaction, source):
     img.paste(src, (0,0))
 
     try:
-        boiled_img = await gay_baby_jail(src)
-        await interaction.followup.send(content="", file=discord.File(fp=boiled_img, filename=f"boiled.png"))
+        baby_jail_img = await gay_baby_jail(src)
+        await interaction.followup.send(content="", file=discord.File(fp=baby_jail_img, filename=f"boiled.png"))
         
         # clear the bytesio buffer
-        boiled_img.close()
+        baby_jail_img.close()
     except Exception as e:
         await postgres.log_error(e)
         await interaction.followup.send(f"{e}")
