@@ -212,7 +212,7 @@ async def message_send_event(bot, message):
         
     await get_response(message)
 
-async def message_edit_event(bot, before, after):
+async def message_edit_event(bot: discord.Client, before, after):
     # dont alert to bot edits
     if before.author.bot:
         return
@@ -225,14 +225,14 @@ async def message_edit_event(bot, before, after):
     # get the log channel
     channel = await bot.fetch_channel(await read_guild_log_channel(before.guild.id))
     
-    embed = discord.Embed(title=f"Message Edited in {channel.mention}", color=discord.Color.yellow())
+    embed = discord.Embed(title=f"Message Edited in {before.channel.mention}", color=discord.Color.yellow())
     embed.add_field(name="Original", value=f"```{before.content}```", inline=False)
     embed.add_field(name="Edited", value=f"```{after.content}```", inline=False)
     embed.set_author(name=before.author, icon_url=before.author.avatar.url)
     embed.add_field(name="", value=f"{before.author.guild.name} - {datetime.now().strftime('%d/%m/%Y - %H:%M')}")  
     await channel.send(embed=embed)
     
-async def message_delete_event(bot, message):
+async def message_delete_event(bot: discord.Client, message: discord.Message):
     # dont alert to bot edits
     if message.author.bot:
         return
@@ -253,7 +253,7 @@ async def message_delete_event(bot, message):
     print(attachments)
         
     #embed header
-    embed = discord.Embed(title=f"Message Deleted in {channel.mention}", color=discord.Color.orange())
+    embed = discord.Embed(title=f"Message Deleted in {message.channel.mention}", color=discord.Color.orange())
     embed.set_author(name=message.author, icon_url=message.author.avatar.url)
     #embed body
     if message.content:
@@ -261,7 +261,7 @@ async def message_delete_event(bot, message):
     if attachments:
         embed.add_field(name="Attachments:" , value=f"", inline=False)
         for url in attachments:
-            embed.add_field(name="File - ", value=f"{url}", inline=True)
+            embed.add_field(name="File - ", value=f"{url}", inline=False)
     #embed footer
     embed.add_field(name="", value=f"{message.author.guild.name} - {datetime.now().strftime('%d/%m/%Y - %H:%M')}")  
     await channel.send(embed=embed)

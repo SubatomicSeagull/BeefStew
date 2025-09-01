@@ -161,6 +161,9 @@
   ],
 
   "insults": [
+    "the council does your hair...",
+    "you look like a before picture...",
+    "i think you should not speak to me ever again...",
     "you look like you read MHA fanfics with a/b/o dynamics...",
     "you look like you enjoy BTS RPF...",
     "fly-specked cuntivore...",
@@ -169,6 +172,7 @@
     "barrel sharp, the wit on you...",
     "it vexes me to know of you...",
     "thou art saucy as gruel...",
+    "thou art a boil, a plague sore...",
     "pernicious putrefying pissant...",
     "hag shouldered scum vestige...",
     "behold a most noisy cuck!",
@@ -204,7 +208,9 @@
     "IP. 92.28.211.234 N: 43.7462 W: 12.4893 \nSS Number: 6979191519182016\nIPv6: fe80::5dcd::ef69::fb22::d9888%12 \nUPNP:Enabled DMZ: 10.112.42.15 \nMAC:5A:78:3E:7E:00 \nISP: Ucom Universal DNS:8.8.8.8\n ALT DNS: 1.1.1.8.1 \nDNS SUFFIX:Dlink WAN: 100.23.10.15 \nGATEWAY:192.168.0.1 \nSUBNET MASK: 255.255.0.255\nUDP OPEN PORTS: 8080,80 \nTCP OPEN PORTS: 443\nROUTER VENDOR:ERICCSON \nDEVICE VENDOR: WIN32-X \nCONNECTION TYPE: Ethernet ICMP \nHOPS:192168.0.1 192168.1.1 100.73.43.4host-132.12.32.167.ucom.comhost-66.120.12.111.ucom.com36.134.67.189 216.239.78.111 sof02s32-in-f14.1e100.net \nTOTAL HOPS: 8 \nACTIVESERVICES: [HTTP]192.168.3.1:80=>92.28.211.234:80\n[HTTP]192.168.3.1:443=>92.28.211.234:443\n[UDP] 192.168.0.1:788=>192.168.1:6557\n[TCP]192.168.1.1:67891=>92.28.211.234:345\n[TCP]192.168.52.43:7777=>192.168.1.1:7778\n[TCP]192.168.78.12:898=>192.168.89.9:667\nEXTERNAL",
     "i just dont really like you ://",
     "i went you hates you island and they told me all ur friends have season tickets",
-    "ur mum smells like milk"
+    "ur mum smells like milk",
+    "ur gran shoplifts shoezone",
+    "when ur dad left he took the dog and ur mum started seeing someone else hahahahhahahah"
   ],
 
   "kick_messages": [
@@ -259,7 +265,9 @@
     "te hee hee a two point for thee {joker.mention} +2",
     "{joker.mention} tnx chat +2",
     "what is this, joke city???? +2 {joker.mention}",
-    "Rare footage of {joker.mention} being funny 📸 4k (real)"
+    "Rare footage of {joker.mention} being funny 📸 4k (real)",
+    "he he heeeeee!",
+    "well well,, we got outselfs a joeker..."
   ],
 
   "joke_responses_negative": [
@@ -280,7 +288,8 @@
     "another {joker.mention} flop.",
     "this is me when {joker.mention}'s joke doesnt land -2",
     "mfw {joker.mention} gets another -2: <:beefstew:1285630081829437614>",
-    "you are the reason we cant have nice things..."
+    "you are the reason we cant have nice things...",
+    ".........hey who was that guy?"
   ],
   "greetings":[
     "hey",
