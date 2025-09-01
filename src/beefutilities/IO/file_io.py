@@ -32,7 +32,6 @@ async def get_attachment(message: discord.Message):
                 return await image_bytes(url)
     else:
         attachment = next((image for image in message.attachments if image.content_type.endswith(('png', 'jpg', 'jpeg', 'gif'))), None)
-        print(f"attachment: {attachment}")
         return await attachment.read()
 
 async def image_bytes(url):

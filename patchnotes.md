@@ -10,9 +10,8 @@
 ## Fixes:
 - beefstew now ignores links so no more accidently -2ing ppl when u send that dog gif
 - added a case for /ccping for when the server is offline entirely
-- leave messages should properly display a users name and avatar
+- leave messages should properly display a users name and pfp
 
 ## Misc:
-- changed some formatting to make it look nicer
+- fixed / tidied up some formatting issues
 - tidied up the /help embeds
-

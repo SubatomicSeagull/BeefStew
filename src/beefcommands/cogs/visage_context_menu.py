@@ -1,6 +1,7 @@
+import os
 import discord
 from discord.ext import commands
-from beefcommands.visage import down_the_drain_image, gay_baby_jail_image, react, boil_image, JFK_image
+from beefcommands.visage import react, boil_image, down_the_drain_image, add_speech_bubble_pfp, bday, bless_pfp, gay_baby_jail_image, JFK_image, mirror_img
 
 # resends the picutre but with a reaction
 @discord.app_commands.context_menu(name="React")
@@ -33,11 +34,22 @@ async def jfk(interaction: discord.Interaction, message: discord.Message):
     await JFK_image.watch_out(interaction, message)
     return
 
+@discord.app_commands.context_menu(name="Mirror")
+async def mirror(interaction: discord.Interaction, message: discord.Message):
+    print(f"> \033[32m{interaction.user.name} used /mirror on {message.author.name}'s image\033[0m")
+    await mirror_img.mirror(interaction, message)
+    return
+
+
 # cog startup
 async def setup(bot: discord.Client):
     print("- \033[96mbeefcommands.cogs.visage_cog.context_menu\033[0m")
-    bot.tree.add_command(reaction_image)
-    bot.tree.add_command(boil)
-    bot.tree.add_command(down_the_drain)
-    bot.tree.add_command(gay_baby_jail)
+    guild = await bot.fetch_guild(os.getenv("GUILDID"))
+    bot.tree.add_command(mirror, guild=guild)
+    bot.tree.add_command(reaction_image, guild=guild)
+    bot.tree.add_command(boil, guild=guild)
+    bot.tree.add_command(down_the_drain, guild=guild)
+    bot.tree.add_command(gay_baby_jail, guild=guild)
     bot.tree.add_command(jfk)
+    # only allowed 5 globals and 5 guild specific ones :((((
+    await bot.tree.sync(guild=guild)
