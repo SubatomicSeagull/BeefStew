@@ -41,27 +41,16 @@ async def jfk(img):
 async def watch_out(interaction: discord.Interaction, source):
     await interaction.response.defer()
     
-    #retrive the image bytes from source, either a user or an attachment
     try:
-        src = await fetch_from_source(source)
-        if src is None:
-            await interaction.followup.send(f"i dont think that worked sry :// for now its only pngs and jpgs lol", ephemeral=True)
-            return
-        src = ImageOps.fit(src, (350, 350))
-    except Exception as e:
-        await postgres.log_error(e)
-        await interaction.followup.send(f"i dont think that worked sry :// for now its only pngs and jpgs lol", ephemeral=True)
-        return
+        image = await fetch_from_source(source)
+        image = ImageOps.fit(image, (350, 350))
 
-    img = Image.new("RGBA", src.size, (255,255,255))
-    img.paste(src, (0,0))
-
-    try:
-        boiled_img = await jfk(src)
-        await interaction.followup.send(content="", file=discord.File(fp=boiled_img, filename=f"watch out.png"))
-        
-        # clear the bytesio buffer
-        boiled_img.close()
+        jfk_img = await jfk(image)
+        await interaction.followup.send(file=discord.File(fp=jfk_img, filename=f"GET DOWN!!!.png"))
+        jfk_img.close()
+    except discord.HTTPException as e:
+        await interaction.followup.send(f"file too big sorry :(")
+    except AttributeError as e:
+        await interaction.followup.send(f"that didnt work sry :// gotta be png or jpg")
     except Exception as e:
-        await postgres.log_error(e)
-        await interaction.followup.send(f"{e}")
+        await interaction.followup.send(f"uhhhhhhh something went wrong.... ({e})")

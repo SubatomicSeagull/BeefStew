@@ -36,9 +36,12 @@ async def slander(interaction: discord.Interaction, victim: discord.Member):
         slandered_pfp = await add_speech_bubble_pfp(victim)
         await interaction.followup.send(file=discord.File(fp=slandered_pfp, filename=f"{victim.name} slandered.png"))
         
-        # clear the bytesio buffer
         slandered_pfp.close()
+        
+    except discord.HTTPException as e:
+        await interaction.followup.send(f"file too big sorry :(")
+    except AttributeError as e:
+        await interaction.followup.send(f"that didnt work sry :// gotta be png or jpg")
     except Exception as e:
-        postgres.log_error(e)
-        await interaction.followup.send(content=f"{interaction.user.mention} tried to slander {victim.mention}, but it didnt work :// ({e})")
+        await interaction.followup.send(f"uhhhhhhh something went wrong.... ({e})")
     

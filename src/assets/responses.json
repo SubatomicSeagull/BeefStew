@@ -120,6 +120,10 @@
     "nothing ever happens":{
       "type":"media",
       "content":"nothing.png"
+    },
+    "bloke":{
+      "type":"media",
+      "content":"bloke.png"
     }
   },
   "nickname_change_responses": [

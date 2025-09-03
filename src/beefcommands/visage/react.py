@@ -7,19 +7,19 @@ from data import postgres
 from beefutilities.IO.file_io import get_attachment, fetch_from_source
 
 async def react(interaction: discord.Interaction, message: discord.Message):
+    await interaction.response.defer()
+    
     try:
-        src = await fetch_from_source(message)
-        if src is None:
-            await interaction.followup.send(f"i dont think that worked sry :// for now its only pngs and jpgs lol", ephemeral=True)
-            return
-        reaction = await add_reaction(src)
-        await interaction.response.send_message(content= "", file=discord.File(fp=reaction, filename=f"reaction.png"))
-        
-        # clear the bytesio buffer
-        reaction.close()
-        
+        image = await fetch_from_source(message)
+        reacted = await add_reaction(image)
+        await interaction.followup.send(file=discord.File(fp=reacted, filename=f"reacted.png"))
+        reacted.close()
+    except discord.HTTPException as e:
+        await interaction.followup.send(f"file too big sorry :(")
+    except AttributeError as e:
+        await interaction.followup.send(f"that didnt work sry :// gotta be png or jpg")
     except Exception as e:
-        await interaction.response.send_message(f"i dont think that worked sry :// for now its only pngs and jpgs lol {e}", ephemeral=True)
+        await interaction.followup.send(f"uhhhhhhh something went wrong.... ({e})")
 
 async def add_reaction(image):
     

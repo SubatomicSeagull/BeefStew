@@ -45,10 +45,11 @@ async def bless(interaction: discord.Interaction, victim: discord.Member):
     try:
         jesus_pfp = await bless_pfp(victim)
         await interaction.followup.send(content= f"{victim.mention} bless you my child...", file=discord.File(fp=jesus_pfp, filename=f"{victim.name} with jesus.png"))
-        
-        # clear the bytesio buffer
         jesus_pfp.close()
         
+    except discord.HTTPException as e:
+        await interaction.followup.send(f"file too big sorry :(")
+    except AttributeError as e:
+        await interaction.followup.send(f"that didnt work sry :// gotta be png or jpg")
     except Exception as e:
-        postgres.log_error(e)
-        await interaction.followup.send(f"{interaction.user.mention} tried to find jesus {victim.name} but it didnt work :// ({e})")
+        await interaction.followup.send(f"uhhhhhhh something went wrong.... ({e})")
