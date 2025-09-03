@@ -1,7 +1,7 @@
 import os
 import discord
 from discord.ext import commands
-from beefcommands.visage import react, boil_image, down_the_drain_image, add_speech_bubble_pfp, bday, bless_pfp, gay_baby_jail_image, JFK_image, mirror_img, water_filter
+from beefcommands.visage import explosion, react, boil_image, down_the_drain_image, add_speech_bubble_pfp, bday, bless_pfp, gay_baby_jail_image, JFK_image, mirror_img, water_filter
 
 # resends the picutre but with a reaction
 @discord.app_commands.context_menu(name="React")
@@ -46,6 +46,12 @@ async def drown(interaction: discord.Interaction, message: discord.Message):
     await water_filter.drown(interaction, message)
     return
 
+@discord.app_commands.context_menu(name="Explode")
+async def explode(interaction: discord.Interaction, message: discord.Message):
+    print(f"> \033[32m{interaction.user.name} used /explode on {message.author.name}'s image\033[0m")
+    await explosion.explode_img(interaction, message)
+    return
+
 
 # cog startup
 async def setup(bot: discord.Client):
@@ -59,6 +65,6 @@ async def setup(bot: discord.Client):
     bot.tree.add_command(drown)
     bot.tree.add_command(mirror)
     #bot.tree.add_command(rainbow)
-    #bot.tree.add_command(explode)
+    bot.tree.add_command(explode)
     #bot.tree.add_command(bacteria)
     await bot.tree.sync(guild=guild)

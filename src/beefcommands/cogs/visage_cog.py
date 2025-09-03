@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from beefcommands.visage import JFK_image, boil_image, down_the_drain_image, gay_baby_jail_image, react, add_speech_bubble_pfp, bless_pfp, water_filter, mirror_img
+from beefcommands.visage import JFK_image, boil_image, down_the_drain_image, explosion, gay_baby_jail_image, react, add_speech_bubble_pfp, bless_pfp, water_filter, mirror_img
 
 
 class VisageCog(commands.Cog):
@@ -49,11 +49,17 @@ class VisageCog(commands.Cog):
         print(f"> \033[32m{interaction.user.name} drowned {victim.name}\033[0m")
         await water_filter.drown(interaction, victim)
         
-        # sends a picture of the users pfp in the jfk car lol
+    # mirrors the users pfp
     @discord.app_commands.command(name="mirror", description="rorriM")
     async def mirror(self, interaction: discord.Interaction, victim: discord.Member):
         print(f"> \033[32m{interaction.user.name} mirrored {victim.name}\033[0m")
         await mirror_img.mirror(interaction, victim)
+    
+    # creates a gif of the users pfp exploding
+    @discord.app_commands.command(name="explode", description="exploding u with my mind rn")
+    async def explode(self, interaction: discord.Interaction, victim: discord.Member):
+        print(f"> \033[32m{interaction.user.name} exploded {victim.name}\033[0m")
+        await explosion.explode_img(interaction, victim)
 
 # cog startup
 async def setup(bot):
