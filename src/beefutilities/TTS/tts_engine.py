@@ -1,3 +1,4 @@
+import os
 import pyttsx3
 import discord
 import datetime
@@ -34,7 +35,7 @@ async def generate_speech(text):
     
     await cleanup_tts_folder()
     
-    filename = f"{file_io.construct_data_path()}\\/temp_tts_data\\/output-{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.wav"
+    filename = os.path.join(file_io.construct_data_path(), "temp_tts_data", f"output-{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.wav")
     
     tts.save_to_file(text, filename)
     tts.runAndWait()
