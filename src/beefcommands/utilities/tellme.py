@@ -10,13 +10,15 @@ async def wikifetchpage(query):
     page = wiki.page(query)
     if not page.exists():
         url = "https://en.wikipedia.org/w/api.php"
+        headers = {"User-Agent": "BeefStew"}
         params = {
             "action": "query",
             "list": "search",
             "srsearch": query,
             "format": "json"
         }
-        response = requests.get(url, params=params)
+        response = requests.get(url, headers=headers, params=params)
+        print(response)
         data = response.json()
         
         try:
@@ -46,9 +48,9 @@ async def tellme(message: discord.Message, query):
         for sentence in summary:
             if len(content ) + len(sentence) + 2 > 1965:
                 break
-            if content:
+            if not content.endswith(('.', '!', '?')):
                 content += ". "
             content += sentence
-    await message.reply(content=f"<:nerdstew:1387429699625681090> {content}.")
+    await message.reply(content=f"<:nerdstew:1387429699625681090> {content}")
     await speak.speak_output(message, content)
     return

@@ -6,14 +6,14 @@ from beefutilities.TTS import speak
 from data.postgres import log_error
 
 # nickname rule, handles logic for they call you slash command
-async def change_nickname(ctx, victim: discord.Member, new_name: str):
+async def change_nickname(ctx, victim: discord.Member, new_name: str, self_invoke=False):
     # checks to see if the interaction is through an interaction object or a message object, effectivly switches between using the slash command and having the command run inline
         if isinstance(ctx, discord.Interaction):
             interaction = ctx
             # not allowed to rename the bot
             if victim.id != os.getenv("CLIENTID"):
                 # not allowed to rename yourself
-                if victim.id == interaction.user.id:
+                if victim.id == interaction.user.id and self_invoke==False:
                     await interaction.response.send_message(f"**{interaction.user.name}** tried to invoke the rule on themselves... for some reason")
                 else:
                     try:
@@ -37,7 +37,7 @@ async def change_nickname(ctx, victim: discord.Member, new_name: str):
             # not allowed to rename the bot
             if victim.id !=os.getenv("CLIENTID"):
                 # not allowed to rename yourself
-                if victim.id == message.author.id:
+                if victim.id == message.author.id and self_invoke==False:
                     await message.channel.send(f"**{message.author.name}** tried to invoke the rule on themselves... for some reason")
                 else:
                     try:

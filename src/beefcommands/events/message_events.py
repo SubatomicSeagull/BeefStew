@@ -66,9 +66,20 @@ async def message_send_event(bot, message):
             if len(nickname_split) > 1:
                 newname = nickname_split[1].strip()
                 try:
-                    await change_nickname(message, user, newname)
+                    await change_nickname(message, user, newname, False)
                 except Exception as e:
                     await log_error(e)
+        
+    if any(phrase in message.content.lower() for phrase in ["they call me"]):
+        if " me " in message.content.lower():
+            nickname_split = message.content.split(" me ", 1)
+
+        if len(nickname_split) > 1:
+            newname = nickname_split[1].strip()
+            try:
+                await change_nickname(message, message.author, newname, True)
+            except Exception as e:
+                await log_error(e)
     
     if "deadly dice man" in message.content.lower():
         result = randint(1, 6)
