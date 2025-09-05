@@ -1,10 +1,8 @@
 import discord
 from PIL import Image
 from io import BytesIO
-import os
 from beefutilities.users.user import get_avatar_image
 from beefutilities.IO import file_io
-from data import postgres
 
 async def add_speech_bubble_pfp(victim: discord.Member):
     # retrieve the users pfp

@@ -1,4 +1,3 @@
-
 from io import BytesIO
 import discord
 from beefutilities.IO import file_io

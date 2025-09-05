@@ -1,6 +1,5 @@
 import os
 import pyttsx3
-import discord
 import datetime
 from beefutilities.IO import file_io
 from beefcommands.events.tasks.cleanup_tts import cleanup_tts_folder

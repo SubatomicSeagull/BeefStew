@@ -1,12 +1,10 @@
 import math
 from random import randint
 import discord
-from PIL import Image, ImageEnhance, ImageOps
+from PIL import Image, ImageOps
 from io import BytesIO
-import os
 from beefutilities.IO.file_io import fetch_from_source
 from beefutilities.IO import file_io
-from data import postgres
 
 
 class WaveDeformer:

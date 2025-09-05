@@ -3,10 +3,8 @@ from PIL import Image
 from PIL import ImageFont
 from PIL import ImageDraw
 from io import BytesIO
-import os
 from beefutilities.users.user import get_avatar_image
 from beefutilities.IO import file_io
-from data import postgres
 
 async def party_pfp(victim: discord.Member):
     # retrieve the user pfp and resize

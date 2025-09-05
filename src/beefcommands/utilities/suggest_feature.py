@@ -1,4 +1,3 @@
-import discord
 from beefutilities.trellointegration import trelloclient
 
 async def create_trello_card(name, desc, author):

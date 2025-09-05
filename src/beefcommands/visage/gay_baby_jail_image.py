@@ -1,9 +1,7 @@
 import discord
 from PIL import Image, ImageOps
 from io import BytesIO
-import os
 from beefutilities.IO import file_io
-from data import postgres
 from beefutilities.IO.file_io import fetch_from_source
 
 async def gay_baby_jail(img):

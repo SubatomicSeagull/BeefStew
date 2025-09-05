@@ -2,7 +2,6 @@ import discord
 from beefutilities.TTS import speak
 from data import postgres
 from random import randint
-import os
 from beefutilities.IO import file_io
 from beefcommands.invocations.joker_score.read_joker_score import retrieve_joke_score
 from beefcommands.invocations.joker_score.change_joker_score import set_highest_score, set_lowest_score

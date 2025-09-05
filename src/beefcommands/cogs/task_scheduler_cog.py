@@ -1,9 +1,5 @@
-import discord
-import asyncio
 from discord.ext import commands, tasks
 import datetime
-from data import postgres
-import random
 from zoneinfo import ZoneInfo
 from beefcommands.events.tasks import cleanup_tts, holiday_check, birthday_check, image_of_the_day, random_swing
 class TaskSchedulerCog(commands.Cog):

@@ -9,6 +9,7 @@ from beefcommands.visage.sniff import sniff_user
 from beefutilities.users import user
 from beefcommands.utilities.suggest_feature import create_suggestion
 from beefutilities.TTS import speak
+
 class UtilitiesCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot

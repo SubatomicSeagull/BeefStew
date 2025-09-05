@@ -1,4 +1,3 @@
-import asyncio
 from discord.ext import commands
 from beefutilities.guilds import guild_voice_channel
 from beefcommands import music_player

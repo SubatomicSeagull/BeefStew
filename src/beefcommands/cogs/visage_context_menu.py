@@ -1,7 +1,6 @@
 import os
 import discord
-from discord.ext import commands
-from beefcommands.visage import explosion, react, boil_image, down_the_drain_image, add_speech_bubble_pfp, bday, bless_pfp, gay_baby_jail_image, JFK_image, mirror_img, water_filter
+from beefcommands.visage import explosion, react, boil_image, down_the_drain_image, gay_baby_jail_image, JFK_image, mirror_img, water_filter
 
 # resends the picture but with a reaction
 @discord.app_commands.context_menu(name="React")

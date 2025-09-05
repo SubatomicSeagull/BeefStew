@@ -3,7 +3,7 @@ import discord
 import aiohttp
 import re
 from io import BytesIO
-from PIL import Image, ImageOps
+from PIL import Image
 from beefutilities.users.user import get_avatar_image
 
 

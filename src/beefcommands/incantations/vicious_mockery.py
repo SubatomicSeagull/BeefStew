@@ -2,9 +2,7 @@ import os
 from beefutilities.IO.json_handling import load_element
 import random
 import discord
-
 from beefutilities.TTS import speak
-
 
 async def get_insult():
     insults = load_element("responses.json", "insults")

@@ -1,10 +1,8 @@
 import discord
 from PIL import Image, ImageEnhance, ImageOps
 from io import BytesIO
-import os
 from beefutilities.IO.file_io import fetch_from_source
 from beefutilities.IO import file_io
-from data import postgres
 
 async def jfk(img):
 

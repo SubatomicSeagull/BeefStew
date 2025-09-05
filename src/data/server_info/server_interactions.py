@@ -1,6 +1,5 @@
 import paramiko
 import os
-from data import postgres
 from beefutilities.IO import file_io
 
 async def retrieve_containers_json():

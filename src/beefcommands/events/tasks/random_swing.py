@@ -1,6 +1,5 @@
 import random
 import asyncio
-import discord
 import os
 from data import postgres
 from beefutilities.guilds.guild_text_channel import read_guild_info_channel

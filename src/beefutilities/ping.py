@@ -1,13 +1,7 @@
 import socket
 import time
-import json
-import os
-from beefutilities.IO.generate_hosts import generate_hosts_file
-from beefutilities.IO import file_io
-import discord
-from datetime import datetime
 
-async def check(host,port,timeout):
+async def check(host, port, timeout):
     # instantiate the socket and set timeout params
     address = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
     address.settimeout(timeout)

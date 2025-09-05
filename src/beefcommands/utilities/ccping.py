@@ -6,7 +6,6 @@ from beefutilities.IO.generate_hosts import generate_hosts_file
 from datetime import datetime
 from beefutilities.IO import file_io
 
-
 async def ccping(bot, interaction: discord.Interaction):
     await interaction.response.defer()
     # dm restriction

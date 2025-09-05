@@ -1,11 +1,6 @@
 import discord
-import discord.ext
 
-from beefutilities.IO import file_io
-
-#todo
-# needs updating plz
-
+# TODO: make this prettier
 async def help(bot, interaction: discord.Interaction):
     await interaction.response.defer()
     # dm restriction

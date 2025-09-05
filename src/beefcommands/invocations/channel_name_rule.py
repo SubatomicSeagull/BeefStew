@@ -1,5 +1,4 @@
 import discord
-
 from beefutilities.TTS import speak
 
 async def invoke_channel_name_rule(ctx, new_name: str):

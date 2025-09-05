@@ -1,5 +1,4 @@
 
-# what kind of link is it?
 import asyncio
 import html
 import math
@@ -9,7 +8,7 @@ import requests
 import urllib
 from main import bot, sp_client #<- badddd
 
-
+# what kind of link is it?
 async def parse(tx_channel, url, type):
     return_links = []
     if type == 'youtube':

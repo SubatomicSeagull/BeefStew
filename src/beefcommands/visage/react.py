@@ -1,10 +1,8 @@
 import discord
 from PIL import Image
 from io import BytesIO
-import os
 from beefutilities.IO import file_io
-from data import postgres
-from beefutilities.IO.file_io import get_attachment, fetch_from_source
+from beefutilities.IO.file_io import fetch_from_source
 
 async def react(interaction: discord.Interaction, message: discord.Message):
     await interaction.response.defer()
