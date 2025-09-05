@@ -1,3 +1,4 @@
+import re
 import discord
 from beefcommands.invocations.joker_score.change_joker_score import change_joke_score, hawk_tuah_penalty
 from beefcommands.invocations.nickname_rule import change_nickname
@@ -100,23 +101,16 @@ async def message_send_event(bot, message):
         show_split = message.content.split("show me ", 1)
         await show(message, show_split[1])
 
-    if any(phrase in message.content.lower() for phrase in [
-        "beefstew tell me about", "<@1283805971524747304> tell me about",
-        "beefstew what is", "<@1283805971524747304> what is",
-        "beefstew whats", "<@1283805971524747304> whats",
-        "beefstew what's", "<@1283805971524747304> what's",
-        "beefstew what are", "<@1283805971524747304> what are",
-        "beefstew what're", "<@1283805971524747304> what're"
-    ]):
-        lower_content = message.content.lower()
-        for phrase in [
-            "tell me about", "what is", "whats", "what's", "what are", "what're"
-        ]:
-            if phrase in lower_content:
-                tell_split = lower_content.split(phrase, 1)
-                if len(tell_split) > 1:
-                    query = tell_split[1].strip()
-                    await tell_me(message, query)
+    pattern = re.compile(
+        r"(?:beefstew|<@1283805971524747304>)\s+(?:tell me about|what is|whats|what's|what are|what're)\s+(.+)",
+        re.IGNORECASE
+    )
+
+    match = pattern.search(message.content.strip())
+    if match:
+        query = match.group(1).strip()
+        if query:
+            await tell_me(message, query)
 
     if any(phrase in message.content.lower() for phrase in [
         "i love you beefstew",
