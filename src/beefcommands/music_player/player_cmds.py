@@ -17,7 +17,7 @@ async def play(user: discord.Member, voice_client, tx_channel, *args):
         voice_client = await guild_voice_channel.join_vc(voice_client, user)
 
         print(f"**{user.name}** requested **{url}**")
-        await queue.handle_queue(user, tx_channel, url, insert=True)
+        await queue.handle_queue(user, tx_channel, url, insert = True)
 
     if voice_client and not voice_client.is_playing():
         await player_utils.play_next(voice_client, tx_channel)

@@ -63,7 +63,7 @@ class UtilitiesCog(commands.Cog):
     @discord.app_commands.command(name="bday", description="format like dd/mm/yyyy")
     async def set_bday(self, interaction: discord.Interaction, bday: str):
         print(f"> \033[32m{interaction.user.name} set their birthday to {bday}\033[0m")
-        await interaction.response.send_message(await user.register_user_bday(interaction.user, bday), ephemeral=True)
+        await interaction.response.send_message(await user.register_user_bday(interaction.user, bday), ephemeral = True)
 
     # sets the random swing message flag to true and sends a picture
     @discord.app_commands.command(name="sniff", description="what do u smell like")
@@ -99,14 +99,14 @@ class UtilitiesCog(commands.Cog):
     async def shutup(self, interaction: discord.Interaction):
         print(f"> \033[32m{interaction.user.name} used /shutup\033[0m")
         speak.set_lock_state_global(True)
-        await interaction.response.send_message("TTS disabled", ephemeral=True)
+        await interaction.response.send_message("TTS disabled", ephemeral = True)
 
     # enable TTS
     @discord.app_commands.command(name="speak", description="turn on TTS")
     async def speak(self, interacton: discord.Interaction):
         print(f"> \033[32m{interacton.user.name} used /speak\033[0m")
         speak.set_lock_state_global(False)
-        await interacton.response.send_message("TTS enabled", ephemeral=True)
+        await interacton.response.send_message("TTS enabled", ephemeral = True)
 
 # cog setup
 async def setup(bot):

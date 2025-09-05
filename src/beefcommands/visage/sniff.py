@@ -39,7 +39,7 @@ async def sniff_user(interaction: discord.Interaction, victim: discord.Member):
     await interaction.response.defer()
     try:
         drain_pfp = await sniff_overlay(victim)
-        await interaction.followup.send(content= f"Beefstew will remember your scent...", file=discord.File(fp=drain_pfp, filename=f"{victim.name}_sniff.png"))
+        await interaction.followup.send(content= f"Beefstew will remember your scent...", file=discord.File(fp = drain_pfp, filename = f"{victim.name}_sniff.png"))
 
         # clear the bytesio buffer
         drain_pfp.close()

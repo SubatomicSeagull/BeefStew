@@ -25,8 +25,8 @@ async def get_user_lowest_score(user: discord.Member):
 
 # probably not going to use this
 async def get_multiplier(user: discord.Member):
-    winner = discord.utils.get(user.guild.roles, name="the funniest person ever")
-    loser = discord.utils.get(user.guild.roles, name="tonights biggest loser")
+    winner = discord.utils.get(user.guild.roles, name = "the funniest person ever")
+    loser = discord.utils.get(user.guild.roles, name = "tonights biggest loser")
     if winner in user.roles:
         return 1.5
     elif loser in user.roles:

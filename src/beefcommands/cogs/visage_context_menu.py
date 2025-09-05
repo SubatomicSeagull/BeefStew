@@ -24,7 +24,7 @@ async def down_the_drain(interaction: discord.Interaction, message: discord.Mess
 @discord.app_commands.context_menu(name="Gay Baby Jail")
 async def gay_baby_jail(interaction: discord.Interaction, message: discord.Message):
     print(f"> \033[32m{interaction.user.name} used /GBJ on {message.author.name}'s image\033[0m")
-    await gay_baby_jail_image.GBJ(interaction, message)
+    await gay_baby_jail_image.jail_the_baby(interaction, message)
     return
 
 @discord.app_commands.context_menu(name="JFK")

@@ -8,7 +8,7 @@ async def retrieve_image(query):
     params = {"key": os.getenv("GOOGLEAPIKEY"), "cx": os.getenv("SEARCHENGINEID"), "q": query, "searchType": "image", "num": 6}
 
     # make the request to the google custom search api
-    resp = requests.get("https://customsearch.googleapis.com/customsearch/v1", params=params)
+    resp = requests.get("https://customsearch.googleapis.com/customsearch/v1", params = params)
     resp.raise_for_status()
 
     #extract the image link from the response

@@ -21,43 +21,43 @@ async def update_patch_notes_info(interaction: discord.Interaction, bot):
     img_path = file_io.construct_assets_path("profile/update.png")
 
     # embed header
-    update_embed = discord.Embed(title="Beefstew has been updated!", description=f"# Version {version} is here!\n ## Here's whats changed:", color=discord.Color.lighter_grey())
-    update_embed.set_author(name=bot.user.name, icon_url=bot.user.avatar.url)
+    update_embed = discord.Embed(title="Beefstew has been updated!", description = f"# Version {version} is here!\n ## Here's whats changed:", color = discord.Color.lighter_grey())
+    update_embed.set_author(name = bot.user.name, icon_url = bot.user.avatar.url)
 
     # embed body
     # list all the new features
     if features:
-        update_embed.add_field(name="Features:", value="", inline=False)
+        update_embed.add_field(name = "Features:", value="", inline = False)
         for feature in features:
-            update_embed.add_field(name="", value=feature, inline=False)
+            update_embed.add_field(name = "", value = feature, inline = False)
     else:
-        update_embed.add_field(name="No new features this time", value="", inline=False)
+        update_embed.add_field(name = "No new features this time", value = "", inline = False)
 
     # list all the bug fixes
     if fixes:
-        update_embed.add_field(name="Fixes:", value="", inline=False)
+        update_embed.add_field(name = "Fixes:", value = "", inline = False)
         for fix in fixes:
-            update_embed.add_field(name="", value=fix, inline=False)
+            update_embed.add_field(name = "", value = fix, inline = False)
     else:
-        update_embed.add_field(name="General stability fixes and stuff", value="", inline=False)
-    update_embed.add_field(name="", value="- removed herobrine", inline=False)
+        update_embed.add_field(name = "General stability fixes and stuff", value = "", inline = False)
+    update_embed.add_field(name = "", value = "- removed herobrine", inline = False)
 
     # list all the misc changes
     if misc:
-        update_embed.add_field(name="Other Changes:", value="", inline=False)
+        update_embed.add_field(name = "Other Changes:", value = "", inline = False)
         for change in misc:
-            update_embed.add_field(name="", value=change, inline=False)
+            update_embed.add_field(name = "", value = change, inline = False)
     else:
-        update_embed.add_field(name="...and that's it!", value="", inline=False)
+        update_embed.add_field(name = "...and that's it!", value = "", inline = False)
 
     # list comments
     if comments != "":
-        update_embed.add_field(name="Comments:", value=comments, inline=False)
+        update_embed.add_field(name = "Comments:", value = comments, inline = False)
 
     # embed footer
-    file = discord.File(img_path,filename="update.png")
-    update_embed.set_image(url="attachment://update.png")
-    await interaction.followup.send(content="@here", file=file, embed=update_embed, allowed_mentions=discord.AllowedMentions(everyone=True))
+    file = discord.File(img_path, filename = "update.png")
+    update_embed.set_image(url = "attachment://update.png")
+    await interaction.followup.send(content = "@here", file = file, embed = update_embed, allowed_mentions = discord.AllowedMentions(everyone = True))
 
 async def parse_patch_update_file():
     # construct the file path to patchnotes.md

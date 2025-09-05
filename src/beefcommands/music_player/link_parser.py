@@ -119,7 +119,7 @@ async def spotify_link_parser(tx_channel, url):
         total = playlist['tracks']['total']
 
         # call the playlist warning
-        warning_response = await playlistwarning(tx_channel, playlist_name, playlist_art, total)
+        warning_response = await playlist_warning(tx_channel, playlist_name, playlist_art, total)
         if warning_response is None:
             return []
 
@@ -172,18 +172,18 @@ async def process_spotify_track(track):
 
 class PlaylistWarningEmbed(discord.ui.View):
     def __init__(self, tx_channel):
-        super().__init__(timeout=30)
+        super().__init__(timeout = 30)
         self.tx_channel = tx_channel
         self.response = None
         self.message = None
 
-    @discord.ui.button(label="all of em babey!!", style=discord.ButtonStyle.green)
+    @discord.ui.button(label = "all of em babey!!", style = discord.ButtonStyle.green)
     async def add_all_tracks(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.response = True
         await interaction.message.delete()
         self.stop()
 
-    @discord.ui.button(label="umm actaully nvm ://", style=discord.ButtonStyle.danger)
+    @discord.ui.button(label = "umm actaully nvm ://", style = discord.ButtonStyle.danger)
     async def dont_add_tracks(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.response = None
         await interaction.message.delete()
@@ -197,16 +197,16 @@ class PlaylistWarningEmbed(discord.ui.View):
                 pass
         self.stop()
 
-async def playlistwarning(tx_channel, playlist_name, playlist_art, count):
-    warning_embed = discord.Embed(title=playlist_name, description="hold on there buddy...", color=discord.Color.green())
+async def playlist_warning(tx_channel, playlist_name, playlist_art, count):
+    warning_embed = discord.Embed(title = playlist_name, description = "hold on there buddy...", color = discord.Color.green())
 
     # sets the thumbnail to be the playlist art
-    warning_embed.set_thumbnail(url=playlist_art)
-    warning_embed.add_field(name="", value=f"**{playlist_name}** has **{count}** songs, do you want to add them all?")
+    warning_embed.set_thumbnail(url = playlist_art)
+    warning_embed.add_field(name = "", value = f"**{playlist_name}** has **{count}** songs, do you want to add them all?")
 
     view = PlaylistWarningEmbed(tx_channel)
 
-    message = await tx_channel.send(embed=warning_embed, view=view)
+    message = await tx_channel.send(embed = warning_embed, view = view)
     view.message = message
 
     # wait for a user to click a button, else, timeout

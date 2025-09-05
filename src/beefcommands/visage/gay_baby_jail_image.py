@@ -33,7 +33,7 @@ async def gay_baby_jail(img):
     return image_binary
 
 # usage of the above
-async def GBJ(interaction: discord.Interaction, source):
+async def jail_the_baby(interaction: discord.Interaction, source):
     await interaction.response.defer()
 
     try:
@@ -41,7 +41,7 @@ async def GBJ(interaction: discord.Interaction, source):
         image = ImageOps.fit(image, (350, 350))
 
         gbj_img = await gay_baby_jail(image)
-        await interaction.followup.send(file=discord.File(fp=gbj_img, filename=f"GBJ.png"))
+        await interaction.followup.send(file = discord.File(fp = gbj_img, filename = f"GBJ.png"))
         gbj_img.close()
     except discord.HTTPException as e:
         await interaction.followup.send(f"file too big sorry :(")

@@ -13,7 +13,7 @@ async def bless_pfp(victim: discord.Member):
     user_pfp = avatar.resize(new_size, Image.Resampling.BILINEAR)
 
     # rotate it 30 degrees clockwise
-    user_pfp = user_pfp.rotate(30, resample=Image.BICUBIC, expand=True)
+    user_pfp = user_pfp.rotate(30, resample = Image.BICUBIC, expand = True)
 
     # construct a file path to the assets folder
     template = Image.open(file_io.construct_assets_path("pfp_manipulation/jesus.png"))
@@ -42,7 +42,7 @@ async def bless(interaction: discord.Interaction, victim: discord.Member):
     await interaction.response.defer()
     try:
         jesus_pfp = await bless_pfp(victim)
-        await interaction.followup.send(content= f"{victim.mention} bless you my child...", file=discord.File(fp=jesus_pfp, filename=f"{victim.name} with jesus.png"))
+        await interaction.followup.send(content= f"{victim.mention} bless you my child...", file = discord.File(fp = jesus_pfp, filename = f"{victim.name} with jesus.png"))
         jesus_pfp.close()
 
     except discord.HTTPException as e:

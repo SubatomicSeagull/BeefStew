@@ -6,20 +6,20 @@ from beefutilities.TTS import speak
 from data.postgres import log_error
 
 # nickname rule, handles logic for they call you slash command
-async def change_nickname(ctx, victim: discord.Member, new_name: str, self_invoke=False):
+async def change_nickname(ctx, victim: discord.Member, new_name: str, self_invoke = False):
     # checks to see if the interaction is through an interaction object or a message object, effectively switches between using the slash command and having the command run inline
         if isinstance(ctx, discord.Interaction):
             interaction = ctx
             # not allowed to rename the bot
             if victim.id != os.getenv("CLIENTID"):
                 # not allowed to rename yourself
-                if victim.id == interaction.user.id and self_invoke==False:
+                if victim.id == interaction.user.id and self_invoke == False:
                     await interaction.response.send_message(f"**{interaction.user.name}** tried to invoke the rule on themselves... for some reason")
                 else:
                     try:
                         print(f"> \033[32m{interaction.user.name} invoked the rule on {victim.name}\033[0m")
                         await victim.edit(nick=new_name)
-                        response = await nicknameprint(victim)
+                        response = await print_nickname(victim)
                         await interaction.response.send_message(f"**{interaction.user.name}** invoked the rule on **{victim.global_name}**!\n{response}")
                         await speak.speak_output(interaction, f"{interaction.user.name} invoked the rule on {victim.global_name}!{response}")
                     except discord.Forbidden as e:
@@ -37,13 +37,13 @@ async def change_nickname(ctx, victim: discord.Member, new_name: str, self_invok
             # not allowed to rename the bot
             if victim.id !=os.getenv("CLIENTID"):
                 # not allowed to rename yourself
-                if victim.id == message.author.id and self_invoke==False:
+                if victim.id == message.author.id and self_invoke == False:
                     await message.channel.send(f"**{message.author.name}** tried to invoke the rule on themselves... for some reason")
                 else:
                     try:
                         print(f"> \033[32m{message.author.name} invoked the rule on {victim.name}\033[0m")
                         await victim.edit(nick=new_name)
-                        response = await nicknameprint(victim)
+                        response = await print_nickname(victim)
                         await message.channel.send(f"**{message.author.name}** invoked the rule on **{victim.global_name}**!\n{response}")
                         await speak.speak_output(interaction, f"{interaction.user.name} invoked the rule on {victim.global_name}!{response}")
 
@@ -53,12 +53,12 @@ async def change_nickname(ctx, victim: discord.Member, new_name: str, self_invok
             else:
                 await message.channel.send(f"**{message.author.name}** tried to invoked the rule on **{victim.global_name}**!\nnice try fucker...")
 
-async def nicknameprint(victim: discord.Member):
+async def print_nickname(victim: discord.Member):
     # load responses.json
     responses = load_element("responses.json", "nickname_change_responses")
 
     chosen_response = random.choice(responses)
-    chosen_response = chosen_response.format(name=victim.global_name, tag=victim.mention)
+    chosen_response = chosen_response.format(name = victim.global_name, tag = victim.mention)
     return chosen_response
 
 async def invoke_nickname_rule(interaction: discord.Interaction, victim: discord.Member, new_name: str):

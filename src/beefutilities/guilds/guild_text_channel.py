@@ -60,7 +60,7 @@ async def set_logs(interaction: discord.Interaction):
 
     # cant set it if you dont have permissions
     if not interaction.user.guild_permissions.administrator:
-        await interaction.response.send_message("yeah yeah nice try", ephemeral=True)
+        await interaction.response.send_message("yeah yeah nice try", ephemeral = True)
         return
 
     # check to see if the server is registered in the db, add it if it isnt
@@ -68,7 +68,7 @@ async def set_logs(interaction: discord.Interaction):
         await add_guild(interaction.guild.id, interaction.guild.name)
 
     await update_guild_log_channel(interaction.guild.id, interaction.channel.id)
-    await interaction.response.send_message(f"{interaction.channel.mention} is the new logs channel.", ephemeral=True)
+    await interaction.response.send_message(f"{interaction.channel.mention} is the new logs channel.", ephemeral = True)
 
 async def set_info(interaction: discord.Interaction):
     if isinstance(interaction.channel, discord.DMChannel):
@@ -78,7 +78,7 @@ async def set_info(interaction: discord.Interaction):
 
     # cant change the info channel if you dnt have permissions
     if not interaction.user.guild_permissions.administrator:
-        await interaction.response.send_message("yeah yeah nice try", ephemeral=True)
+        await interaction.response.send_message("yeah yeah nice try", ephemeral = True)
         return
 
     # check to see if the server is registered in the db, add it if it isn
@@ -86,7 +86,7 @@ async def set_info(interaction: discord.Interaction):
         await add_guild(interaction.guild.id, interaction.guild.name)
 
     await update_guild_info_channel(interaction.guild.id, interaction.channel.id)
-    await interaction.response.send_message(f"{interaction.channel.mention} is the new info channel.", ephemeral=True)
+    await interaction.response.send_message(f"{interaction.channel.mention} is the new info channel.", ephemeral = True)
 
 async def set_quotes(interaction: discord.Interaction):
     if isinstance(interaction.channel, discord.DMChannel):
@@ -96,7 +96,7 @@ async def set_quotes(interaction: discord.Interaction):
 
     # cant change if you dont have perms
     if not interaction.user.guild_permissions.administrator:
-        await interaction.response.send_message("yeah yeah nice try", ephemeral=True)
+        await interaction.response.send_message("yeah yeah nice try", ephemeral = True)
         return
 
     # check to see if the server is registered in the db, add it if it isn
@@ -104,4 +104,4 @@ async def set_quotes(interaction: discord.Interaction):
         await add_guild(interaction.guild.id, interaction.guild.name)
 
     await update_guild_quote_channel(interaction.guild.id, interaction.channel.id)
-    await interaction.response.send_message(f"{interaction.channel.mention} is the new quotes channel.", ephemeral=True)
+    await interaction.response.send_message(f"{interaction.channel.mention} is the new quotes channel.", ephemeral = True)

@@ -20,7 +20,7 @@ class WaveDeformer:
                 *self.transform(x1, y0, a, f, p),
                 )
 
-    def getmesh(self, img):
+    def get_mesh(self, img):
         self.w, self.h = img.size
         gridspace = 20
 
@@ -70,7 +70,7 @@ async def drown(interaction: discord.Interaction, source):
     try:
         image = await fetch_from_source(source)
         drowned = await overlay_water(image)
-        await interaction.followup.send(file=discord.File(fp=drowned, filename=f"drowned.png"))
+        await interaction.followup.send(file=discord.File(fp = drowned, filename = f"drowned.png"))
         drowned.close()
     except discord.HTTPException as e:
         await interaction.followup.send(f"file too big sorry :(")

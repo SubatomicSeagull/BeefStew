@@ -40,7 +40,7 @@ async def boil(interaction: discord.Interaction, source):
         image = ImageOps.fit(image, (350, 350))
 
         boiled = await boil_img(image)
-        await interaction.followup.send(file=discord.File(fp=boiled, filename=f"boiled.png"))
+        await interaction.followup.send(file = discord.File(fp = boiled, filename = f"boiled.png"))
         boiled.close()
     except discord.HTTPException as e:
         await interaction.followup.send(f"file too big sorry :(")

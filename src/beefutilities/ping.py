@@ -3,11 +3,11 @@ import time
 
 async def check(host, port, timeout):
     # instantiate the socket and set timeout params
-    address = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+    address = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     address.settimeout(timeout)
     try:
         # try to connect to the host:post
-        address.connect((host,port))
+        address.connect((host, port))
     except:
         return False
     else:

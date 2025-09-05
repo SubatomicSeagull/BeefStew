@@ -7,8 +7,8 @@ from random import randint
 from time import sleep
 from beefutilities.guilds.guild_text_channel import read_guild_log_channel
 import beefcommands.invocations.channel_name_rule as channel_name_rule
-from beefcommands.utilities.showme import show
-from beefcommands.utilities.tellme import tellme
+from beefcommands.utilities.show_me import show
+from beefcommands.utilities.tell_me import tell_me
 from beefutilities.TTS import speak
 import json
 from datetime import datetime
@@ -116,7 +116,7 @@ async def message_send_event(bot, message):
                 tell_split = lower_content.split(phrase, 1)
                 if len(tell_split) > 1:
                     query = tell_split[1].strip()
-                    await tellme(message, query)
+                    await tell_me(message, query)
 
     if any(phrase in message.content.lower() for phrase in [
         "i love you beefstew",

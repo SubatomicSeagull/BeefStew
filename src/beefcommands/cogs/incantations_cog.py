@@ -17,7 +17,7 @@ class IncantationsCog(commands.Cog):
     @discord.app_commands.command(name="poke", description="poke someone")
     async def poke(self, interaction: discord.Interaction, victim: discord.Member, dm: bool, private: bool):
         print(f"> \033[32m{interaction.user.name} poked {victim.name}\033[0m")
-        await beefcommands.incantations.poke.pokeuser(interaction, victim, dm, private, self.bot)
+        await beefcommands.incantations.poke.poke_user(interaction, victim, dm, private, self.bot)
 
 # cog startup
 async def setup(bot):

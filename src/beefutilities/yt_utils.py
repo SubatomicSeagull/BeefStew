@@ -8,7 +8,7 @@ async def find_newest_yt_video(channel):
     }
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        info = ydl.extract_info(channel, download=False)
+        info = ydl.extract_info(channel, download = False)
 
     # 'entries' is a list of video entries; the first is the most recent
     if info.get("entries"):

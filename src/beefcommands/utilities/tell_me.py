@@ -4,8 +4,7 @@ import discord
 from beefutilities.IO import file_io
 from beefutilities.TTS import speak
 
-
-async def wikifetchpage(query):
+async def wikipedia_fetch_page(query):
     wiki = wikipediaapi.Wikipedia("BeefStew", "en")
     page = wiki.page(query)
     if not page.exists():
@@ -17,7 +16,7 @@ async def wikifetchpage(query):
             "srsearch": query,
             "format": "json"
         }
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.get(url, headers = headers, params = params)
         print(response)
         data = response.json()
 
@@ -31,16 +30,16 @@ async def wikifetchpage(query):
             return
     return page
 
-async def tellme(message: discord.Message, query):
+async def tell_me(message: discord.Message, query):
     if isinstance(message.channel, discord.DMChannel):
         await message.reply("we are literally in DMs rn bro u cant do that here...")
         return
-    page = await wikifetchpage(query)
+    page = await wikipedia_fetch_page(query)
 
     if not page.exists():
         content = f"i dont know anything about {query} :("
         image = file_io.construct_media_path("idk_monkey.png")
-        await message.reply(content=content, file=discord.File(fp=image, filename=f"beefstew doesnt know about {query}.png"))
+        await message.reply(content=content, file = discord.File(fp = image, filename = f"beefstew doesnt know about {query}.png"))
 
     else:
         summary = (page.summary).split('. ')

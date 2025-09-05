@@ -42,13 +42,13 @@ async def handle_queue(user, tx_channel, url, insert):
     # validate the url
     media_type = link_parser.validate_input(url)
     if media_type == "invalid":
-        await status.edit(content="invalid link")
+        await status.edit(content = "invalid link")
         return
 
     # retrieve the youtube links from the given query
     ytlinks = await link_parser.parse(tx_channel, url, media_type)
     if not ytlinks:
-        await status.edit(content="failed to get youtube link")
+        await status.edit(content = "failed to get youtube link")
         return
 
     queue = get_queue()
@@ -67,9 +67,9 @@ async def handle_queue(user, tx_channel, url, insert):
                 queue.append(track)
             added += 1
     if added == 1:
-        await status.edit(content=f"**{user.name}** added **{track[1]}** to the queue")
+        await status.edit(content = f"**{user.name}** added **{track[1]}** to the queue")
     else:
-        await status.edit(content=f"**{user.name}** added {added} tracks to the queue")
+        await status.edit(content = f"**{user.name}** added {added} tracks to the queue")
 
 async def qlist(tx_channel):
     # retrieve the queue array
@@ -91,23 +91,23 @@ async def qlist(tx_channel):
                     break
 
         # generate the list embed
-        listembed = discord.Embed(title="StewQueue", description="\n", color=discord.Color.orange())
+        listembed = discord.Embed(title = "StewQueue", description = "\n", color = discord.Color.orange())
 
         # list the current track if there is one
         if get_current_track():
-            listembed.add_field(name="", value=f"**Currently playing:** {get_current_track_title()}", inline=False)
-        listembed.add_field(name="", value=content)
+            listembed.add_field(name = "", value = f"**Currently playing:** {get_current_track_title()}", inline = False)
+        listembed.add_field(name = "", value = content)
         await tx_channel.send(embed = listembed)
 
 async def qadd(user, tx_channel, *args):
     # handle the arbitrary arguments and add to the back of the queue
         url = " ".join(args)
-        await handle_queue(user, tx_channel, url, insert=False)
+        await handle_queue(user, tx_channel, url, insert = False)
 
 async def qinsert(user, tx_channel, *args):
     # handle the arbitrary arguments and insert to the front of the queue (unused and superceded by /play i think)
         url = " ".join(args)
-        await handle_queue(user, tx_channel, insert=True)
+        await handle_queue(user, tx_channel, url, insert = True)
 
 async def qpop():
     # retrieve the first item off of the queue

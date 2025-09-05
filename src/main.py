@@ -19,10 +19,10 @@ except Exception as e:
     print("Dotenv load failed, either dotenv is not installed or there is no .env file.")
 
 # log in to the spotify api
-sp_client = spotipy.Spotify(client_credentials_manager = SpotifyClientCredentials(client_id=os.getenv("SPOTIFYCLIENTID"), client_secret=os.getenv("SPOTIFYCLIENTSECRET")))
+sp_client = spotipy.Spotify(client_credentials_manager = SpotifyClientCredentials(client_id=os.getenv("SPOTIFYCLIENTID"), client_secret = os.getenv("SPOTIFYCLIENTSECRET")))
 
 # log in to the trello api
-trello_client = TrelloClient(api_key=(os.getenv("TRELLOAPIKEY")), api_secret=(os.getenv("TRELLOAPISECRET")), token=(os.getenv("TRELLOTOKEN")))
+trello_client = TrelloClient(api_key = (os.getenv("TRELLOAPIKEY")), api_secret=(os.getenv("TRELLOAPISECRET")), token=(os.getenv("TRELLOTOKEN")))
 
 # create client and intents objects
 intents = discord.Intents.all()
@@ -30,7 +30,7 @@ intents.message_content = True
 bot = commands.Bot(command_prefix="/", intents=intents)
 
 # define the executor as an extension of the bot
-bot.executor = ThreadPoolExecutor(max_workers=4)
+bot.executor = ThreadPoolExecutor(max_workers = 4)
 
 kicked_members = set()
 banned_members = set()
@@ -48,12 +48,12 @@ async def load_cogs():
 
 @bot.event
 async def on_ready():
-    await bot.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name="you..."))
+    await bot.change_presence(status = discord.Status.online, activity = discord.Activity(type = discord.ActivityType.watching, name = "you..."))
 
     # load the cogs
     await load_cogs()
 
-    # re-register all the command
+    # re-register all the commands
     await bot.tree.sync()
 
     # go!

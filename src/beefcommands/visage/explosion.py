@@ -23,7 +23,7 @@ async def generate_explode_gif(image: Image.Image):
         new_frame = ImageOps.fit(frame.convert("RGBA"), image.size)
         composite = image.copy()
         composite.paste(new_frame, (0, 0), new_frame)
-        frames.append(composite.convert("P", palette=Image.ADAPTIVE, dither=Image.NONE))
+        frames.append(composite.convert("P", palette = Image.ADAPTIVE, dither = Image.NONE))
 
 
     image_binary = BytesIO()
@@ -46,7 +46,7 @@ async def explode_img(interaction: discord.Interaction, source):
     try:
         image = await fetch_from_source(source)
         exploded = await generate_explode_gif(image)
-        await interaction.followup.send(file=discord.File(fp=exploded, filename=f"exploded.gif"))
+        await interaction.followup.send(file = discord.File(fp = exploded, filename = f"exploded.gif"))
         exploded.close()
     except discord.HTTPException as e:
         await interaction.followup.send(f"file too big sorry :(")

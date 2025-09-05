@@ -8,8 +8,8 @@ async def retrieve_top_scores(interaction: discord.Interaction, bot):
     highest = await postgres.read(f"SELECT user_id, highest_score FROM joke_scores WHERE guild_id = '{interaction.guild.id}' ORDER BY highest_score DESC LIMIT 1;")
 
     # embed header
-    leaderboard = discord.Embed(title= "Joke Score Leaderboard", color=discord.Color.gold())
-    leaderboard.set_author(name="Beefstew", icon_url=bot.user.avatar.url)
+    leaderboard = discord.Embed(title = "Joke Score Leaderboard", color = discord.Color.gold())
+    leaderboard.set_author(name = "Beefstew", icon_url = bot.user.avatar.url)
 
     # read the rows returned from the sql query and add them to the embed body
     if not rows:
@@ -23,7 +23,7 @@ async def retrieve_top_scores(interaction: discord.Interaction, bot):
             else:
                 leaderboard_content += f"**{rank}.** <@{row[0]}>: `{row[1]}` points\n"
         leaderboard.description = leaderboard_content
-    await interaction.followup.send(embed=leaderboard)
+    await interaction.followup.send(embed = leaderboard)
 
 async def retrieve_low_scores(interaction: discord.Interaction, bot):
     await interaction.response.defer()
@@ -33,8 +33,8 @@ async def retrieve_low_scores(interaction: discord.Interaction, bot):
 
 
     # embed header
-    leaderboard = discord.Embed(title= "Joke Score Loserboard", color=discord.Color.fuchsia())
-    leaderboard.set_author(name="Beefstew", icon_url=bot.user.avatar.url)
+    leaderboard = discord.Embed(title = "Joke Score Loserboard", color = discord.Color.fuchsia())
+    leaderboard.set_author(name = "Beefstew", icon_url = bot.user.avatar.url)
 
     # read the rows returned from the sql query and add them to the embed body
     if not rows:
@@ -48,4 +48,4 @@ async def retrieve_low_scores(interaction: discord.Interaction, bot):
             else:
                 leaderboard_content += f"**{rank}.** <@{row[0]}>: `{row[1]}` points\n"
         leaderboard.description = leaderboard_content
-    await interaction.followup.send(embed=leaderboard)
+    await interaction.followup.send(embed = leaderboard)

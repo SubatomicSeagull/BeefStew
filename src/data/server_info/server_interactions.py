@@ -23,7 +23,7 @@ async def retrieve_containers_json():
 
     # authenticate into the server using the key
     try:
-        ssh_client.connect(hostname=host, port=port, username=user, pkey=sshkey, timeout=2)
+        ssh_client.connect(hostname = host, port = port, username = user, pkey = sshkey, timeout = 2)
     except TimeoutError as e:
         raise TimeoutError("Connection to server timed out.")
 

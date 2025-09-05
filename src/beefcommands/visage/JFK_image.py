@@ -5,7 +5,6 @@ from beefutilities.IO.file_io import fetch_from_source
 from beefutilities.IO import file_io
 
 async def jfk(img):
-
     new_size = (int(img.width * 0.2), int(img.height * 0.2))
     img = img.resize(new_size, Image.Resampling.BILINEAR)
 
@@ -44,7 +43,7 @@ async def watch_out(interaction: discord.Interaction, source):
         image = ImageOps.fit(image, (350, 350))
 
         jfk_img = await jfk(image)
-        await interaction.followup.send(file=discord.File(fp=jfk_img, filename=f"GET DOWN!!!.png"))
+        await interaction.followup.send(file = discord.File(fp = jfk_img, filename = f"GET DOWN!!!.png"))
         jfk_img.close()
     except discord.HTTPException as e:
         await interaction.followup.send(f"file too big sorry :(")

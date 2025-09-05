@@ -29,7 +29,7 @@ class VisageCog(commands.Cog):
     @discord.app_commands.command(name="jail", description="gay baby jail")
     async def jail(self, interaction: discord.Interaction, victim: discord.Member):
         print(f"> \033[32m{interaction.user.name} used /jail on {victim.name}\033[0m")
-        await gay_baby_jail_image.GBJ(interaction, victim)
+        await gay_baby_jail_image.jail_the_baby(interaction, victim)
 
     # sends a picture of the user being held by jesus
     @discord.app_commands.command(name="bless", description="bless you my child")

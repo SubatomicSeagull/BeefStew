@@ -88,7 +88,7 @@ async def play_track(voice_client, tx_channel, url, title):
 
         # retrieve the metadata for the youtube link and return the audio url
         print(f"retrieving metadata for {title}")
-        metadata =  await loop.run_in_executor(bot.executor, lambda: yt_dlp.YoutubeDL(ydl_ops).extract_info(url, download=False))
+        metadata =  await loop.run_in_executor(bot.executor, lambda: yt_dlp.YoutubeDL(ydl_ops).extract_info(url, download = False))
         audio_url = metadata["url"]
 
     except Exception as e:
@@ -116,7 +116,7 @@ async def play_track(voice_client, tx_channel, url, title):
         " -rw_timeout 10000000"
     ]
 
-    source = discord.FFmpegOpusAudio(source=audio_url, executable=exepath, options=options, before_options=before_options)
+    source = discord.FFmpegOpusAudio(source = audio_url, executable = exepath, options = options, before_options = before_options)
 
     # define behaviour after playing a track
     def after_playing(error, loop):
@@ -134,5 +134,5 @@ async def play_track(voice_client, tx_channel, url, title):
 
     # play the song in the voice channel
     await tx_channel.send(f"Playing: **{title}**")
-    voice_client.play(source, after=lambda e: after_playing(e, loop))
+    voice_client.play(source, after = lambda e: after_playing(e, loop))
 

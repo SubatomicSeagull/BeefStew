@@ -32,7 +32,7 @@ async def slander(interaction: discord.Interaction, victim: discord.Member):
     await interaction.response.defer()
     try:
         slandered_pfp = await add_speech_bubble_pfp(victim)
-        await interaction.followup.send(file=discord.File(fp=slandered_pfp, filename=f"{victim.name} slandered.png"))
+        await interaction.followup.send(file = discord.File(fp = slandered_pfp, filename = f"{victim.name} slandered.png"))
 
         slandered_pfp.close()
 

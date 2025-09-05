@@ -10,7 +10,7 @@ async def react(interaction: discord.Interaction, message: discord.Message):
     try:
         image = await fetch_from_source(message)
         reacted = await add_reaction(image)
-        await interaction.followup.send(file=discord.File(fp=reacted, filename=f"reacted.png"))
+        await interaction.followup.send(file = discord.File(fp = reacted, filename = f"reacted.png"))
         reacted.close()
     except discord.HTTPException as e:
         await interaction.followup.send(f"file too big sorry :(")
@@ -20,8 +20,7 @@ async def react(interaction: discord.Interaction, message: discord.Message):
         await interaction.followup.send(f"uhhhhhhh something went wrong.... ({e})")
 
 async def add_reaction(image):
-
-    # construct a file path to the assets folder and oipen reaction image
+    # construct a file path to the assets folder and open reaction image
     reaction = Image.open(file_io.construct_assets_path("pfp_manipulation/react.png"))
 
     # resize the reaction image to fit the base image

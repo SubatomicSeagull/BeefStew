@@ -20,4 +20,4 @@ async def push_trello_card(name, desc, author):
     suggested_title = (f"{author}: {name}")
 
     # pushes the card to the trello list under "User Suggestions"
-    list.add_card(name=suggested_title, desc=desc)
+    list.add_card(name = suggested_title, desc = desc)

@@ -38,7 +38,7 @@ async def drain(interaction: discord.Interaction, source):
         image = ImageOps.fit(image, (255, 255))
 
         drain = await drain_overlay(image)
-        await interaction.followup.send(file=discord.File(fp=drain, filename=f"down the drain.png"))
+        await interaction.followup.send(file = discord.File(fp = drain, filename = f"down the drain.png"))
         drain.close()
     except discord.HTTPException as e:
         await interaction.followup.send(f"file too big sorry :(")

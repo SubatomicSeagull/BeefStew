@@ -50,7 +50,7 @@ async def get_joke_response_positive(member: discord.Member):
     responses = load_element("responses.json", "joke_responses_positive")
 
     chosen_response = random.choice(responses)
-    chosen_response = chosen_response.format(joker=jokertag)
+    chosen_response = chosen_response.format(joker = jokertag)
     return chosen_response
 
 async def get_joke_response_negative( member: discord.Member):
@@ -58,7 +58,7 @@ async def get_joke_response_negative( member: discord.Member):
     responses = load_element("responses.json", "joke_responses_negative")
 
     chosen_response = random.choice(responses)
-    chosen_response = chosen_response.format(joker=jokertag)
+    chosen_response = chosen_response.format(joker = jokertag)
     return chosen_response
 
 async def plus2(interaction: discord.Interaction, member: discord.Member):

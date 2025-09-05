@@ -10,7 +10,7 @@ async def containers_json_reformat():
     hosts_path = file_io.construct_data_path("server_info/hosts.json")
 
     # open containers.json
-    with open(containers_path, "r", encoding="utf-8-sig") as file:
+    with open(containers_path, "r", encoding = "utf-8-sig") as file:
         data = json.load(file)
 
     # define he reformat list and construct the name:port enumeration
@@ -40,7 +40,6 @@ async def containers_json_simplify(data):
     return simplified
 
 async def containers_json_remove_RCON_port(data):
-
     cleaned_data = {}
 
     # remove the rcon port after port/rcon

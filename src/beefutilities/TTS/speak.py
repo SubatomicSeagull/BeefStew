@@ -138,7 +138,7 @@ async def speak_output(ctx, message):
 
         voice_client.pause()
 
-    audio_source = discord.FFmpegPCMAudio(tts_file, executable=exepath)
+    audio_source = discord.FFmpegPCMAudio(tts_file, executable = exepath)
 
     def after_playing(error):
         if error:
@@ -173,7 +173,7 @@ async def speak_output(ctx, message):
                     print("Exception in resume_music:", e)
 
 
-            voice_client.play(prev_content, after=retrace_prev_callback)
+            voice_client.play(prev_content, after = retrace_prev_callback)
             print("Resumed previous audio.")
 
     voice_client.play(audio_source, after=lambda e: after_playing(e))
