@@ -9,7 +9,7 @@ from beefutilities.IO.file_io import fetch_from_source
 async def boil_img(img):
     # construct a file path to the assets folder
     template = Image.open(file_io.construct_assets_path("pfp_manipulation/boiling_pan_1.png"))
-    
+
     # create the tint overlay
     tint = Image.new("RGBA",img.size, (255, 0, 0))
     img = Image.blend(img, tint, 0.3)
@@ -26,7 +26,7 @@ async def boil_img(img):
     final_image = Image.new("RGBA", template.size, (255, 255, 255))
     final_image.paste(img, (x,y))
     final_image.paste(template, (0,0), template)
-    
+
     # write to the image binary and return
     image_binary = BytesIO()
     final_image.save(image_binary, 'PNG')
@@ -36,7 +36,7 @@ async def boil_img(img):
 # usage of the above
 async def boil(interaction: discord.Interaction, source):
     await interaction.response.defer()
-    
+
     try:
         image = await fetch_from_source(source)
         image = ImageOps.fit(image, (350, 350))

@@ -10,9 +10,9 @@ async def generate_explode_gif(image: Image.Image):
     overlay_path = file_io.construct_assets_path("pfp_manipulation", "explode.gif")
     overlay = Image.open(overlay_path)
     frames = []
-    
+
     max_size = 600
-    
+
     if image.width > max_size or image.height > max_size:
         print(f"resizing image from {image.width}x{image.height}")
         image.thumbnail((max_size, max_size), Image.LANCZOS)
@@ -25,8 +25,8 @@ async def generate_explode_gif(image: Image.Image):
         composite = image.copy()
         composite.paste(new_frame, (0, 0), new_frame)
         frames.append(composite.convert("P", palette=Image.ADAPTIVE, dither=Image.NONE))
-    
-    
+
+
     image_binary = BytesIO()
     frames[0].save(
         image_binary,
@@ -43,7 +43,7 @@ async def generate_explode_gif(image: Image.Image):
 
 async def explode_img(interaction: discord.Interaction, source):
     await interaction.response.defer()
-    
+
     try:
         image = await fetch_from_source(source)
         exploded = await generate_explode_gif(image)

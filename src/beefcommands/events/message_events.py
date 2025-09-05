@@ -19,15 +19,15 @@ async def message_send_event(bot, message):
     # dont respond if its a bot message
     if message.author.bot or not message.content:
         return
-    
+
     # dont respond to links
     if message.content.lower().startswith("http"):
         return
-    
+
     # dont respond to /say command messages
     if "/say" in message.content.lower():
         return
-        
+
         # check for mentions or replies
     if message.mentions or message.reference:
         user = None
@@ -69,7 +69,7 @@ async def message_send_event(bot, message):
                     await change_nickname(message, user, newname, False)
                 except Exception as e:
                     await log_error(e)
-        
+
     if any(phrase in message.content.lower() for phrase in ["they call me"]):
         if " me " in message.content.lower():
             nickname_split = message.content.split(" me ", 1)
@@ -80,13 +80,13 @@ async def message_send_event(bot, message):
                 await change_nickname(message, message.author, newname, True)
             except Exception as e:
                 await log_error(e)
-    
+
     if "deadly dice man" in message.content.lower():
         result = randint(1, 6)
         result_filename = f"DDM-{result}.gif"
-        
+
         file_path = file_io.construct_media_path(result_filename)
-        
+
         await message.reply(
             f"🎲 The deadly dice man rolled his deadly dice 🎲\n"
             f"It was a **{result}**!!!\nYou my friend... have made... an unlucky gamble...",
@@ -94,13 +94,13 @@ async def message_send_event(bot, message):
         )
         await speak.speak_output(message, f"The deadly dice man rolled his deadly dice... it was a {result}!!! You my friend... have made... an unlucky gamble...")
         return
-    
+
     if any(phrase in message.content.lower() for phrase in [
-        "beefstew show me", "<@1283805971524747304> show me"    
+        "beefstew show me", "<@1283805971524747304> show me"
     ]):
         show_split = message.content.split("show me ", 1)
         await show(message, show_split[1])
-        
+
     if any(phrase in message.content.lower() for phrase in [
         "beefstew tell me about", "<@1283805971524747304> tell me about",
         "beefstew what is", "<@1283805971524747304> what is",
@@ -120,46 +120,46 @@ async def message_send_event(bot, message):
                     await tellme(message, query)
 
     if any(phrase in message.content.lower() for phrase in [
-        "i love you beefstew", 
-        "i love beefstew", 
-        "beefstew i love you", 
-        "<@1283805971524747304> i love you", 
-        "i love you <@1283805971524747304>", 
-        "i love u beefstew", 
-        "beefstew i love u", 
-        "i love u <@1283805971524747304>", 
+        "i love you beefstew",
+        "i love beefstew",
+        "beefstew i love you",
+        "<@1283805971524747304> i love you",
+        "i love you <@1283805971524747304>",
+        "i love u beefstew",
+        "beefstew i love u",
+        "i love u <@1283805971524747304>",
         "<@1283805971524747304> i love u",
-        
-        "ily beefstew", 
-        "beefstew ily", 
-        "<@1283805971524747304> ily", 
-        "ily <@1283805971524747304>", 
-        "ily beefstew", 
-        "beefstew ily", 
-        "ily <@1283805971524747304>", 
+
+        "ily beefstew",
+        "beefstew ily",
+        "<@1283805971524747304> ily",
+        "ily <@1283805971524747304>",
+        "ily beefstew",
+        "beefstew ily",
+        "ily <@1283805971524747304>",
         "<@1283805971524747304> ily",
         ]):
-        
+
         reply = randint(1, 4)
         match reply:
             case 1:
                 await message.reply(content="ily2", file=discord.File(file_io.construct_assets_path("stews/lovestew.png")))
                 await speak.speak_output(message, "ILY 2")
-                
+
             case 2:
                 await message.reply(file=discord.File(file_io.construct_assets_path("stews/smilestew.png")))
             case 3:
                 await message.reply(content="yay!", file=discord.File(file_io.construct_assets_path("stews/blushstew.png")))
                 await speak.speak_output(message, "Yay!")
         return
-    
+
     if any(phrase in message.content.lower() for phrase in ["design", "desin", "desing"]):
         reply = randint(1, 6)
         await message.reply(content="This is my design:", file = discord.File(file_io.construct_media_path(f"design{reply}.png")))
         await speak.speak_output(message, "This... is my design.")
         return
-    
-    
+
+
     if any(phrase in message.content.lower() for phrase in [
         "i hate you beefstew", "i hate beefstew", "beefstew i hate you",
         "<@1283805971524747304> i hate you", "i hate you <@1283805971524747304>",
@@ -195,7 +195,7 @@ async def message_send_event(bot, message):
         await message.channel.send(content=f"guys new kay video... **[{title}](https://www.youtube.com/watch?v={url})**", file=file)
         await speak.speak_output(message, f"Guys new kay video... {title}")
         return
-    
+
     if "crazy" in message.content.lower():
         await message.channel.send("Crazy...?")
         sleep(1)
@@ -206,55 +206,55 @@ async def message_send_event(bot, message):
         await message.channel.send("And the rubber rats made me go crazy!!!!!!!!!!!!!!!!!")
         await speak.speak_output(message, "Crazy...? I was crazy once... They locked me in a room with rubber rats and the rubber rats made me go crazy!")
         return
-        
+
     if "tuah" in message.content.lower():
         jar_total = await hawk_tuah_penalty(message.author)
         file = discord.File(file_io.construct_media_path("hawktuahjar.gif"))
         await message.reply(content=f"{message.author.mention} pays the Hawk Tuah Penalty!!! Another 2 points to the jar...\n**Jar Points: {jar_total}**", file=file)
         await speak.speak_output(message, f"{message.author.mention} pays the Hawk Tuah Penalty!!! Another 2 points to the jar...")
         return
-    
+
     if any(phrase in message.content.lower() for phrase in ["why are we in ", "we are in "]):
         channel_name_split = message.content.split(" in ", 1)
         if len(channel_name_split) > 1:
             newname = channel_name_split[1].strip()
             await channel_name_rule.invoke_channel_name_rule(message, newname)
             return
-        
+
     await get_response(message)
 
 async def message_edit_event(bot: discord.Client, before, after):
     # dont alert to bot edits
     if before.author.bot:
         return
-    
+
     # dont alert if its the same
     if before.content == after.content:
         return
 
-    
+
     # get the log channel
     channel = await bot.fetch_channel(await read_guild_log_channel(before.guild.id))
-    
+
     embed = discord.Embed(title=f"Message Edited in {before.channel.mention}", color=discord.Color.yellow())
     embed.add_field(name="Original", value=f"```{before.content}```", inline=False)
     embed.add_field(name="Edited", value=f"```{after.content}```", inline=False)
     embed.set_author(name=before.author, icon_url=before.author.avatar.url)
-    embed.add_field(name="", value=f"{before.author.guild.name} - {datetime.now().strftime('%d/%m/%Y - %H:%M')}")  
+    embed.add_field(name="", value=f"{before.author.guild.name} - {datetime.now().strftime('%d/%m/%Y - %H:%M')}")
     await channel.send(embed=embed)
-    
+
 async def message_delete_event(bot: discord.Client, message: discord.Message):
     # dont alert to bot edits
     if message.author.bot:
         return
-    
+
     # dont send an embed if its through the /say command
     if "/say" in message.content.lower():
         return
-    
+
     # get the log channel
     channel = await bot.fetch_channel(await read_guild_log_channel(message.guild.id))
-    
+
     # if there are any attchments, add the urls to a list
     if message.attachments:
         attachments = []
@@ -262,7 +262,7 @@ async def message_delete_event(bot: discord.Client, message: discord.Message):
             attachments.append(url)
     else: attachments = None
     print(attachments)
-        
+
     #embed header
     embed = discord.Embed(title=f"Message Deleted in {message.channel.mention}", color=discord.Color.orange())
     embed.set_author(name=message.author, icon_url=message.author.avatar.url)
@@ -274,30 +274,30 @@ async def message_delete_event(bot: discord.Client, message: discord.Message):
         for url in attachments:
             embed.add_field(name="File - ", value=f"{url}", inline=False)
     #embed footer
-    embed.add_field(name="", value=f"{message.author.guild.name} - {datetime.now().strftime('%d/%m/%Y - %H:%M')}")  
+    embed.add_field(name="", value=f"{message.author.guild.name} - {datetime.now().strftime('%d/%m/%Y - %H:%M')}")
     await channel.send(embed=embed)
-    
-    
+
+
 async def get_response(message: discord.Message):
     # pathfind to the responses.json
     file_path = file_io.construct_assets_path('responses.json')
     with open(file_path, "r") as file:
         responses = json.load(file)
-        
+
     # check for trigger words
     for trigger_phrase, response in responses["trigger_phrases"].items():
         if trigger_phrase in message.content.lower():
-            
+
             # get the type and content
             response_type = response.get("type")
             content = response.get("content")
-            
+
             # pathfind to the media folder
             if isinstance(response, dict) and response_type == "media":
                 media_path = file_io.construct_media_path(content)
                 await message.reply(file=discord.File(media_path))
                 return
-            
+
             else:
                 await message.reply(content)
                 await speak.speak_output(message, content)

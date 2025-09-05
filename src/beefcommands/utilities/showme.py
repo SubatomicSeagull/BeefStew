@@ -11,7 +11,7 @@ async def retrieve_image(query):
     resp = requests.get("https://customsearch.googleapis.com/customsearch/v1", params=params)
     resp.raise_for_status()
 
-    #extract thje image link from the response
+    #extract the image link from the response
     data = resp.json()
     items = data.get("items", [])
     links = [item["link"] for item in items]
@@ -32,7 +32,7 @@ async def show(message: discord.Message, query):
     except Exception as e:
         await message.reply(f"I had a look and i cant find it im sorry :( {e}")
         return
-    
+
     # send the image link as a response to the interaction
     await message.reply(image_link)
     return

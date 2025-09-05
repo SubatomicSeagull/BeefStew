@@ -15,11 +15,11 @@ async def check(host,port,timeout):
         # try to connect to the host:post
         address.connect((host,port))
     except:
-       return False
+        return False
     else:
-       # close the connection
-       address.close()
-       return True
+        # close the connection
+        address.close()
+        return True
 
 #pings a given host on a given port, and averages the response time and returns a message
 async def ping_host(host, port, timeout, retries):
@@ -33,14 +33,14 @@ async def ping_host(host, port, timeout, retries):
         if await check(host, port, timeout):
             response_time = ((time.time() - t0) * 1000)
             sum = sum + response_time
-        
+
         #if the host did not respond, set everything to 0 and break the loop
         else:
             sum = 0
             retries = 0
             average = 0
             break
-        
+
     if sum != 0:
         average = sum / retries
         return average

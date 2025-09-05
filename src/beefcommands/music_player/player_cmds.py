@@ -7,7 +7,7 @@ async def play(user: discord.Member, voice_client, tx_channel, *args):
     # don't run if the user isn't in a voice channel
     if not user.voice:
         return
-    
+
     voice_client = user.voice.channel.guild.voice_client
 
     # join together arbitrary arguments into search query
@@ -18,7 +18,7 @@ async def play(user: discord.Member, voice_client, tx_channel, *args):
 
         print(f"**{user.name}** requested **{url}**")
         await queue.handle_queue(user, tx_channel, url, insert=True)
-    
+
     if voice_client and not voice_client.is_playing():
         await player_utils.play_next(voice_client, tx_channel)
 
@@ -26,7 +26,7 @@ async def pause(voice_client):
     if not voice_client or not voice_client.is_playing():
         return
     voice_client.pause()
-    
+
 async def resume(voice_client):
     if not voice_client or not voice_client.is_paused():
         return

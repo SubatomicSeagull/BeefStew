@@ -3,7 +3,7 @@ from beefutilities.trellointegration import trelloclient
 
 async def create_trello_card(name, desc, author):
     await trelloclient.push_trello_card(name, desc, author)
-    
+
 async def create_suggestion(interaction, name, desc):
     try:
         await create_trello_card(name, desc, interaction.user.name)

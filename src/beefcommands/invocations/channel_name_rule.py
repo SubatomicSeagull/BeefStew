@@ -3,10 +3,10 @@ import discord
 from beefutilities.TTS import speak
 
 async def invoke_channel_name_rule(ctx, new_name: str):
-    # if the incomming context is a slash command interaction:
+    # if the incoming context is a slash command interaction:
     if isinstance(ctx, discord.Interaction):
         interaction = ctx
-    
+
         # check if the user is in a voice channel
         if not interaction.user.voice:
             return
@@ -18,7 +18,7 @@ async def invoke_channel_name_rule(ctx, new_name: str):
                 await interaction.response.send_message(f"yea why *are* we in {new_name}")
                 await speak.speak_output(interaction, f"yea. why are we in {new_name}")
                 return
-            
+
             except Exception as e:
                 print(f"Error: {e}")
                 await interaction.response.send_message(f"ykno... idk if we *are* in {new_name}...{e}")
@@ -26,7 +26,7 @@ async def invoke_channel_name_rule(ctx, new_name: str):
         else:
             # if its the same, do nothing
             return
-    # else, the conext is a message object
+    # else, the context is a message object
     else:
         message = ctx
         # check if the user is in a voice channel
@@ -39,7 +39,7 @@ async def invoke_channel_name_rule(ctx, new_name: str):
                 await message.author.voice.channel.edit(name=new_name)
                 await message.channel.send(f"yea why *are* we in {new_name}")
                 return
-            
+
             except Exception as e:
                 print(f"Error: {e}")
                 await message.channel.send(f"ykno... idk if we *are* in {new_name}...{e}")

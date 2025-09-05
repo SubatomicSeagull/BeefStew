@@ -20,7 +20,7 @@ async def wikifetchpage(query):
         response = requests.get(url, headers=headers, params=params)
         print(response)
         data = response.json()
-        
+
         try:
             if data["query"]["search"]:
                 closest_match = data["query"]["search"][0]["title"]
@@ -36,7 +36,7 @@ async def tellme(message: discord.Message, query):
         await message.reply("we are literally in DMs rn bro u cant do that here...")
         return
     page = await wikifetchpage(query)
-    
+
     if not page.exists():
         content = f"i dont know anything about {query} :("
         image = file_io.construct_media_path("idk_monkey.png")

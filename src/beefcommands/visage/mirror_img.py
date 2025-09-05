@@ -7,11 +7,11 @@ from beefutilities.IO import file_io
 from data import postgres
 
 async def mirror_img(img):
-    
+
     # mirror the image centrally on the x-axis
     mirrored_part = ImageOps.mirror(img.crop((0, 0, img.width // 2, img.height)))
     img.paste(mirrored_part, (img.width // 2, 0))
-    
+
     image_binary = BytesIO()
     img.save(image_binary, 'PNG')
     image_binary.seek(0)
@@ -21,7 +21,7 @@ async def mirror_img(img):
 # usage of the above
 async def mirror(interaction: discord.Interaction, source):
     await interaction.response.defer()
-    
+
     try:
         image = await fetch_from_source(source)
         mirrored = await mirror_img(image)

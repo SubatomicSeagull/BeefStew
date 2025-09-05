@@ -7,12 +7,12 @@ from data import postgres
 from beefutilities.IO.file_io import fetch_from_source
 
 async def gay_baby_jail(img):
-    # construct a file path to the assets folder 
+    # construct a file path to the assets folder
     template = Image.open(file_io.construct_assets_path("pfp_manipulation/GBJ.png"))
-    
+
     new_size = (int(img.width * 0.4), int(img.height * 0.4))
     img = img.resize(new_size, Image.Resampling.BILINEAR)
-    
+
     # resize the template
     base_width, base_height = img.size
     overlay_width, overlay_height = template.size
@@ -27,7 +27,7 @@ async def gay_baby_jail(img):
     final_image.paste(boxbg, (x-10,y-20))
     final_image.paste(img, (x,y))
     final_image.paste(template, (0,0), template)
-    
+
     # write the image binary buffer and return
     image_binary = BytesIO()
     final_image.save(image_binary, 'PNG')
@@ -37,7 +37,7 @@ async def gay_baby_jail(img):
 # usage of the above
 async def GBJ(interaction: discord.Interaction, source):
     await interaction.response.defer()
-    
+
     try:
         image = await fetch_from_source(source)
         image = ImageOps.fit(image, (350, 350))

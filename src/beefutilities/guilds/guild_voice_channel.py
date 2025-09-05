@@ -13,7 +13,7 @@ async def join_vc(voice_client, user):
         return voice_client
 
     return voice_client
-    
+
 async def leave_vc(voice_client):
     print("lock off")
     set_lock_state(False)

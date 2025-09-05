@@ -24,24 +24,24 @@ async def get_user_lowest_score(user: discord.Member):
     return int(score)
 
 # probably not going to use this
-async def get_multilplier(user: discord.Member):
+async def get_multiplier(user: discord.Member):
     winner = discord.utils.get(user.guild.roles, name="the funniest person ever")
-    loser = discord.utils.get(user.guild.roles, name="tonights biggest loser")   
+    loser = discord.utils.get(user.guild.roles, name="tonights biggest loser")
     if winner in user.roles:
         return 1.5
     elif loser in user.roles:
         return 0
     else:
         return 1
-    
+
 async def score(interaction: discord.Interaction, user: discord.Member):
     await interaction.response.defer()
-    
+
     # dm restriction
     if isinstance(interaction.channel, discord.DMChannel):
         await interaction.followup.send("we are literally in DMs rn bro u cant do that here...")
         return
-    
+
     # check to see if the user is registered in the db, if not, register them
     if not await is_registered(user):
         await register_user(user)

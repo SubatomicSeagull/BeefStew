@@ -7,11 +7,11 @@ from beefutilities.IO import file_io
 from data import postgres
 
 async def sniff_overlay(victim: discord.Member):
-    #retrive the users pfp and resize
+    #retrieve the users pfp and resize
     avatar = await get_avatar_image(victim)
     new_size = (int(avatar.width * 2), int(avatar.height * 2))
     user_pfp = avatar.resize(new_size, Image.Resampling.BILINEAR)
-    
+
     # construct a file path to the assets folder
     template = Image.open(file_io.construct_assets_path("pfp_manipulation/beefsniff.png"))
 
@@ -41,7 +41,7 @@ async def sniff_user(interaction: discord.Interaction, victim: discord.Member):
     try:
         drain_pfp = await sniff_overlay(victim)
         await interaction.followup.send(content= f"Beefstew will remember your scent...", file=discord.File(fp=drain_pfp, filename=f"{victim.name}_sniff.png"))
-        
+
         # clear the bytesio buffer
         drain_pfp.close()
     except Exception as e:

@@ -7,9 +7,9 @@ import random
 from zoneinfo import ZoneInfo
 from beefcommands.events.tasks import cleanup_tts, holiday_check, birthday_check, image_of_the_day, random_swing
 class TaskSchedulerCog(commands.Cog):
-    
+
     TIMEZONE = ZoneInfo("Europe/London")
-    
+
     def __init__(self, bot):
         self.bot = bot
         print(f"> Timezone set to {self.TIMEZONE}")
@@ -20,22 +20,22 @@ class TaskSchedulerCog(commands.Cog):
         self.random_swing_check.start()
         self.clean_temp_tts_files.start()
         print(f"\033[32mall tasks scheduled successfully!\033[0m")
-    
+
     # task to clean out any old temp tts files that might have been left every day at midnight
     @tasks.loop(time=datetime.time(0, 0, 0, tzinfo=TIMEZONE))
     async def clean_temp_tts_files(self):
         await cleanup_tts.cleanup_tts_folder()
-        
+
     # task is scheduled to check for birthdays every day at 10am
     @tasks.loop(time=datetime.time(10, 0, 0, tzinfo=TIMEZONE))
     async def scheduled_birthday_check(self):
         await birthday_check.check_for_birthdays(self.bot)
-    
+
     # task is scheduled to check for holidays every day at 8am
     @tasks.loop(time=datetime.time(8, 0, 0, tzinfo=TIMEZONE))
     async def scheduled_holiday_check(self):
         await holiday_check.check_for_holiday(self.bot)
-    
+
     # task is scheduled to check for IOTD every day at 9am
     @tasks.loop(time=datetime.time(9, 0, 0, tzinfo=TIMEZONE))
     async def image_of_the_day_check(self):

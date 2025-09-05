@@ -18,5 +18,5 @@ async def find_newest_yt_video(channel):
         title = latest_video.get("title")
         return name, url, title
     else:
-        print("No videos found.")  
+        print("No videos found.")
         return None, None

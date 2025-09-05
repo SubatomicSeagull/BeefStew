@@ -34,7 +34,7 @@ class HelpEmbed(discord.ui.View):
     def __init__(self):
         super().__init__()
         self.currentpage = 0
-        
+
     @discord.ui.button(label="Moderation", style=discord.ButtonStyle.primary)
     async def moderation(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.currentpage = 1
@@ -46,9 +46,9 @@ class HelpEmbed(discord.ui.View):
         page_moderation.add_field(name="", value="`/unmute`: HHHHHHHHHHS", inline=False)
         page_moderation.add_field(name="", value="`/kick`: OOT MAH HOOSE", inline=False)
         page_moderation.add_field(name="", value="`/ban`: KILL KILL KILL!!!", inline=False)
-        
+
         await interaction.response.edit_message(embed=page_moderation)
-            
+
     @discord.ui.button(label="Utilities", style=discord.ButtonStyle.primary)
     async def utilities(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.currentpage = 2
@@ -78,8 +78,8 @@ class HelpEmbed(discord.ui.View):
         page_incantation.add_field(name="", value="`/mock`: cast vicious mockery on someone", inline=False)
         page_incantation.add_field(name="", value="`/poke`: cast spectral hand and poke someone", inline=False)
         await interaction.response.edit_message(embed=page_incantation)
-            
-    @discord.ui.button(label="Invocations", style=discord.ButtonStyle.primary)    
+
+    @discord.ui.button(label="Invocations", style=discord.ButtonStyle.primary)
     async def invocations(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.currentpage = 4
         page_invokation = discord.Embed(title="Help - Invocations", description="let ye who is without sin cast the first stone", color=discord.Color.lighter_grey())
@@ -90,11 +90,11 @@ class HelpEmbed(discord.ui.View):
         page_invokation.add_field(name="", value="`[@victim] -2`: bad joke <:beefhusk:1287094093989679124>", inline=False)
         page_invokation.add_field(name="", value="`/leaderboard`: top 10 jokers", inline=False)
         page_invokation.add_field(name="", value="`/loserboard`: bottom 10 jokers", inline=False)
-        page_invokation.add_field(name="", value="`/gamble`: spend a joke point to gamble it all...", inline=False)     
+        page_invokation.add_field(name="", value="`/gamble`: spend a joke point to gamble it all...", inline=False)
         page_invokation.add_field(name="", value="`/score`: how funny r u?", inline=False)
         await interaction.response.edit_message(embed=page_invokation)
-        
-    @discord.ui.button(label="Visage", style=discord.ButtonStyle.primary)    
+
+    @discord.ui.button(label="Visage", style=discord.ButtonStyle.primary)
     async def visgae(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.currentpage = 5
         page_visage = discord.Embed(title="Help - Visage", description="alter the flesh, alter the mind...", color=discord.Color.lighter_grey())
@@ -108,8 +108,8 @@ class HelpEmbed(discord.ui.View):
         page_visage.add_field(name="", value="`/jfk`: MISTER PRESIDENT WATCH OUT", inline=False)
         page_visage.add_field(name="", value="Tip: visage commands can be used on almost any image through the context menu!", inline=False)
         await interaction.response.edit_message(embed=page_visage)
-        
-    @discord.ui.button(label="Music Player", style=discord.ButtonStyle.primary)    
+
+    @discord.ui.button(label="Music Player", style=discord.ButtonStyle.primary)
     async def music(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.currentpage = 6
         page_mpplayer = discord.Embed(title="Help - Music Player", description="DJ DJ DDDD DJ DJ        DJ", color=discord.Color.lighter_grey())
@@ -127,5 +127,5 @@ class HelpEmbed(discord.ui.View):
         page_mpplayer.add_field(name="", value="`/loop`: loops the current track", inline=False)
         page_mpplayer.add_field(name="", value="`/join`: joins the voice channel", inline=False)
         page_mpplayer.add_field(name="", value="`/leave`: leaves the voice channel", inline=False)
-        
+
         await interaction.response.edit_message(embed=page_mpplayer)

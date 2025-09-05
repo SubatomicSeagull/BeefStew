@@ -47,15 +47,15 @@ async def load_cogs():
     await bot.load_extension("beefcommands.cogs.task_scheduler_cog")
 
 @bot.event
-async def on_ready():   
+async def on_ready():
     await bot.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name="you..."))
-    
-    # load the cogs 
+
+    # load the cogs
     await load_cogs()
 
     # re-register all the command
     await bot.tree.sync()
-    
+
     # go!
     print(f"> \033[1;91m{bot.user} is now online, may god help us all...\033[0m")
 
