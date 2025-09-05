@@ -1,3 +1,4 @@
+import enum
 import discord
 from discord.ext import commands
 from beefcommands.utilities.ccping import ccping
@@ -106,6 +107,19 @@ class UtilitiesCog(commands.Cog):
         print(f"> \033[32m{interacton.user.name} used /speak\033[0m")
         speak.set_lock_state_global(False)
         await interacton.response.send_message("TTS enabled", ephemeral=True)
+    
+    class VoiceList(enum.Enum):
+        # add enumeration from TTS engine to automatically retreive voices with their names
+        TikTok = 0
+        Rocket = 1
+        Whisper = 2
+        Old = 3
+        
+    @discord.app_commands.command(name="voice", description="set the TTS voice")
+    @discord.app_commands.describe(voice="what should i sound like???")
+    async def voice(self, interaction: discord.Interaction, voice: VoiceList):
+        print(f"chosen voice: name={voice.name}, value={voice.value}")
+        pass
 
 # cog setup
 async def setup(bot):

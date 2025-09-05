@@ -67,6 +67,7 @@ class HelpEmbed(discord.ui.View):
         page_utilities.add_field(name="", value="`/say`: make beefstew talk like some kind of flesh puppet!", inline=False)
         page_utilities.add_field(name="", value="`/shutup`: tape beefstew's mouth shut", inline=False)
         page_utilities.add_field(name="", value="`/speak`: untape beefstew's mouth", inline=False)
+        page_utilities.add_field(name="", value="`/voice`: change beefstew's voice", inline=False)
         await interaction.response.edit_message(embed=page_utilities)
 
     @discord.ui.button(label="Incantations", style=discord.ButtonStyle.primary)
@@ -106,7 +107,9 @@ class HelpEmbed(discord.ui.View):
         page_visage.add_field(name="", value="`/bless`: bless you my child...", inline=False)
         page_visage.add_field(name="", value="`/jail`: go directly to jail!", inline=False)
         page_visage.add_field(name="", value="`/jfk`: MISTER PRESIDENT WATCH OUT", inline=False)
-        page_visage.add_field(name="", value="Tip: visage commands can be used on almost any image through the context menu!", inline=False)
+        page_visage.add_field(name="", value="`/drown`: imagine an old man drowning lol", inline=False)
+        page_visage.add_field(name="", value="`/explode`: blow someone up!!!!!!!!", inline=False)        
+        page_visage.add_field(name="", value="❗*Tip:* visage commands can be used on almost any image through the context menu!", inline=False)
         await interaction.response.edit_message(embed=page_visage)
         
     @discord.ui.button(label="Music Player", style=discord.ButtonStyle.primary)    
