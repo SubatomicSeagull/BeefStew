@@ -4,7 +4,7 @@ from beefcommands.utilities.ccping import ccping
 from beefutilities.TTS import speak
 from beefutilities.guilds.guild_text_channel import set_info, set_logs, set_quotes
 from beefcommands.utilities.help import help
-from beefutilities.update import update_info
+from beefutilities.update_patch_notes import update_patch_notes_info
 from beefcommands.visage.sniff import sniff_user
 from beefutilities.users import user
 from beefcommands.utilities.suggest_feature import create_suggestion
@@ -52,7 +52,7 @@ class UtilitiesCog(commands.Cog):
     @discord.app_commands.command(name="update", description="whats new?")
     async def update(self, interaction: discord.Interaction):
         print(f"> \033[32m{interaction.user.name} used update\033[0m")
-        await update_info(interaction, self.bot)
+        await update_patch_notes_info(interaction, self.bot)
 
     @commands.command(name="test", description="jamie delete this")
     async def test(self, ctx, *, input: str):

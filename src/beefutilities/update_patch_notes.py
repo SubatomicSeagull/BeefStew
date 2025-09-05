@@ -1,14 +1,13 @@
 import discord
-import os
 import re
 from beefutilities.IO import file_io
 
-async def update_info(interaction: discord.Interaction, bot):
+async def update_patch_notes_info(interaction: discord.Interaction, bot):
     await interaction.response.defer()
 
     # retrieve the info from the patch notes
     try:
-        info = await parse_update_file()
+        info = await parse_patch_update_file()
     except Exception as e:
         await interaction.followup.send("Couldn't find the patch notes :(")
         return
@@ -60,7 +59,7 @@ async def update_info(interaction: discord.Interaction, bot):
     update_embed.set_image(url="attachment://update.png")
     await interaction.followup.send(content="@here", file=file, embed=update_embed, allowed_mentions=discord.AllowedMentions(everyone=True))
 
-async def parse_update_file():
+async def parse_patch_update_file():
     # construct the file path to patchnotes.md
     markdown_path = file_io.construct_root_path("patchnotes.md")
 
