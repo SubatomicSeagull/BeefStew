@@ -1,9 +1,33 @@
+from io import BytesIO
 import os
 import pyttsx3
 import discord
 import datetime
 from beefutilities.IO import file_io
 from beefcommands.events.tasks.cleanup_tts import cleanup_tts_folder
+
+
+import wave
+from piper import PiperVoice
+
+async def generate_speech(text):
+    filename = file_io.construct_data_path("temp_tts_data", f"output-{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.wav")
+    voice = PiperVoice.load("C:\\Users\\jamie\\Downloads\\en_GB-alan-low.onnx")
+    audio_binary = BytesIO()
+
+    wav = wave.open(filename, "wb")
+    
+    wav = voice.synthesize_wav(text, wav_file)
+    
+    
+    
+    with wave.open(filename, "wb") as wav_file:
+        voice.synthesize_wav(text, wav_file)
+    
+
+    return audio_binary
+    
+    return filepath
 
 async def init_tts_engine():
     # initialise TTS engine
@@ -30,7 +54,7 @@ async def init_tts_engine():
     return engine
 
 
-async def generate_speech(text):
+async def Xgenerate_speech(text):
     tts = await init_tts_engine()
     
     await cleanup_tts_folder()
@@ -43,6 +67,8 @@ async def generate_speech(text):
     filepath = file_io.construct_root_path(filename)
     
     return filepath
+
+
 
 # list all installed voices
 #for i, v in enumerate(voices):

@@ -13,3 +13,4 @@ pytz
 tzdata
 py-trello
 pyttsx3
+piper-tts
