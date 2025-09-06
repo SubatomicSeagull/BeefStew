@@ -20,7 +20,7 @@ class WaveDeformer:
                 *self.transform(x1, y0, a, f, p),
                 )
 
-    def get_mesh(self, img):
+    def getmesh(self, img):
         self.w, self.h = img.size
         gridspace = 20
 

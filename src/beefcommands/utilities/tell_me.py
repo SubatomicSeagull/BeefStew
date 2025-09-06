@@ -47,8 +47,6 @@ async def tell_me(message: discord.Message, query):
         for sentence in summary:
             if len(content ) + len(sentence) + 2 > 1965:
                 break
-            if not content.endswith(('.', '!', '?')):
-                content += ". "
             content += sentence
     await message.reply(content=f"<:nerdstew:1387429699625681090> {content}")
     await speak.speak_output(message, content)
