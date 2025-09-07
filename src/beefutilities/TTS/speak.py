@@ -138,32 +138,36 @@ async def speak_output(ctx, message):
         
         voice_client.pause()
         
-    audio_source = discord.FFmpegPCMAudio(tts_file, executable=exepath)
+    audio_source = discord.FFmpegPCMAudio(tts_file, pipe=True, executable=exepath)
 
     def after_playing(error):
-        if error:
-            print(f"Error during playback: {error}")
-        else:
-            print("Finished playing TTS message.") 
-        if os.path.exists(tts_file):
-            try:
-                os.remove(tts_file)
-                print(f"Deleted temporary file: {tts_file}")    
-            except Exception as e:
-                pass
-            
+        
+        try:
+            print("closing tts bytes stream")
+            tts_file.close()
+        except Exception as e:
+            print("didnt work..." + e)
+            pass
+        
         print("=========================== TTS LOCK OFF")
         set_lock_state(False)
 
         if prev_content:
             def retrace_prev_callback(error):
                 print("callback from previous audio:")
-
+            
                 from beefcommands import music_player
                 
                 async def resume_music():
                     print("Running /play")
-                    await music_player.play(ctx.author, ctx.guild.voice_client, ctx.channel)
+                    
+                    # hacky fix coz sometimes the context gets overwritten
+                    try: 
+                        author = ctx.author
+                    except AttributeError:
+                        author = ctx.user
+                    
+                    await music_player.play(author, ctx.guild.voice_client, ctx.channel)
                     
                 print("running resume_music in main loop")
                 future = asyncio.run_coroutine_threadsafe(resume_music(), loop)

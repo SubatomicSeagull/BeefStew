@@ -1,8 +1,7 @@
 import discord
-from beefutilities.TTS import speak
+from beefutilities import TTS
 from data import postgres
 from random import randint
-import os
 from beefutilities.IO import file_io
 from beefcommands.invocations.joker_score.read_joker_score import retrieve_joke_score
 from beefcommands.invocations.joker_score.change_joker_score import set_highest_score, set_lowest_score
@@ -22,7 +21,7 @@ async def gamble_points(interaction: discord.Interaction):
     # cant play if ur broke
     if score - 1 < 0:
         await interaction.followup.send(f"{user.mention} lmaooo ur broke sry no gambling for u loser")
-        await speak.speak_output(interaction, "lmaooo ur broke sry no gambling for u loser")
+        await TTS.speak_output(interaction, "lmaooo ur broke sry no gambling for u loser")
         return
     
     # pay a coin for a spin
@@ -67,7 +66,7 @@ async def gamble_points(interaction: discord.Interaction):
     await interaction.channel.send(file=file)
     await interaction.channel.send(explanation)
     await interaction.followup.send(f"🎲🎰Lets go gambling!!!🎰🎲\n{user.mention} Inserts a joker coin into the gambling machine...")
-    await speak.speak_output(interaction, f"Lets go gambling! {user.mention} Inserts a joker coin into the gambling machine...")
+    await TTS.speak_output(interaction, f"Lets go gambling! {user.mention} Inserts a joker coin into the gambling machine...")
     return
 
 def roll_outcome(outcomes):
