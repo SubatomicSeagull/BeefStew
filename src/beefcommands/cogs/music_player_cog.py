@@ -1,4 +1,3 @@
-import asyncio
 from discord.ext import commands
 from beefutilities.guilds import guild_voice_channel
 from beefcommands import music_player
@@ -7,19 +6,19 @@ class MusicPlayerCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.disconnect_task = None
-    
+
     # cancel disconnect timer
     def cancel_disconnect_time(self):
         if self.disconnect_task and not self.disconnect_task.done():
             self.disconnect_task.cancel()
-            self.disconnect_task = None    
-    
+            self.disconnect_task = None
+
     # join the channel and play the queue if its populated
     @commands.command(name="join", description="get in here!!")
     async def mp_join_vc(self, ctx: commands.Context):
         print(f"> \033[32m{ctx.author.name} used /join\033[0m")
         await guild_voice_channel.join_vc(ctx.voice_client, ctx.author)
-    
+
     # leave the channel and clear the queue
     @commands.command(name="leave", aliases=["fuckoff"],  description="fukoff")
     async def mp_leave_vc(self, ctx):
@@ -46,19 +45,19 @@ class MusicPlayerCog(commands.Cog):
     async def mp_resume(self, ctx):
         print(f"> \033[32m{ctx.author.name} used /resume\033[0m")
         await music_player.resume(ctx.voice_client)
-    
+
     # skip to next song in the queue
     @commands.command(name="skip", aliases=["next"], description="next pleaes")
     async def mp_skip(self, ctx):
         print(f"> \033[32m{ctx.author.name} used /skip\033[0m")
         await music_player.skip(ctx.voice_client)
-    
+
     # add query to the back of the queue
     @commands.command(name="queue", aliases=["q"], description="add something to the back of the queue")
     async def mp_queue(self, ctx, *args):
         print(f"> \033[32m{ctx.author.name} used /queue\033[0m")
         await music_player.add(ctx.author, ctx.channel, *args)
-    
+
     # print the queue
     @commands.command(name="queuelist", aliases=["qlist", "list", "queue_list", "listqueue", "list_queue"], description="lists the queue")
     async def mp_queue_list(self, ctx):
@@ -70,13 +69,13 @@ class MusicPlayerCog(commands.Cog):
     async def mp_queue_clear(self, ctx):
         print(f"> \033[32m{ctx.author.name} used /queueclear\033[0m")
         await music_player.clear(ctx.author, ctx.channel)
-        
+
     # shuffle the queue
     @commands.command(name="shuffle", description="shuffle the queue")
     async def mp_queue_shuffle(self, ctx):
         print(f"> \033[32m{ctx.author.name} used /shuffle\033[0m")
         await music_player.shuffle(ctx.author, ctx.channel)
-    
+
     # toggle loop
     @commands.command(name="loop", aliases=["repeat"], description="loop the current song")
     async def mp_loop_queue(self, ctx):

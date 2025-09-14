@@ -2,32 +2,31 @@ import discord
 from beefutilities.TTS import speak
 from data import postgres
 from random import randint
-import os
 from beefutilities.IO import file_io
 from beefcommands.invocations.joker_score.read_joker_score import retrieve_joke_score
 from beefcommands.invocations.joker_score.change_joker_score import set_highest_score, set_lowest_score
 
 async def gamble_points(interaction: discord.Interaction):
     await interaction.response.defer()
-    
+
     # dm restriction
     if isinstance(interaction.channel, discord.DMChannel):
         await interaction.followup.send("we are literally in DMs rn bro u cant do that here...")
         return
-    
+
     # read the current score
     user = interaction.user
     score = await retrieve_joke_score(user)
-    
+
     # cant play if ur broke
     if score - 1 < 0:
         await interaction.followup.send(f"{user.mention} lmaooo ur broke sry no gambling for u loser")
         await speak.speak_output(interaction, "lmaooo ur broke sry no gambling for u loser")
         return
-    
+
     # pay a coin for a spin
     await postgres.write(f"UPDATE public.joke_scores SET current_score = current_score -1 WHERE user_id = '{user.id}' AND guild_id = '{user.guild.id}';")
-    
+
     # possible outcomes
     outcomes = {
         range(1,3):(f"UPDATE public.joke_scores SET current_score = 0 WHERE user_id = '{user.id}' AND guild_id = '{user.guild.id}';","Return to zero...\n(Score set to 0)", "return_to_0.gif"),
@@ -48,20 +47,20 @@ async def gamble_points(interaction: discord.Interaction):
         range(97,100):(f"UPDATE public.joke_scores SET current_score = current_score + 1 * 10 WHERE user_id = '{user.id}' AND guild_id = '{user.guild.id}';","OMGGGGG!!!\n(Points x10!!!)", "score_x3.gif"),
         range(100,101):(f"UPDATE public.joke_scores SET current_score = current_score + 1001  WHERE user_id = '{user.id}' AND guild_id = '{user.guild.id}';","WOAHHH!!!!!!\n(ONE THOUSAND POINTS!!!)", "score_x10.gif")
     }
-    
+
     # get the outcome
     roll, (query, explanation, media) = roll_outcome(outcomes)
-    
-    # comit the change in the db
+
+    # commit the change in the db
     await postgres.write(query)
-    
+
     # update highest and lowest scores
     await set_highest_score(user, await retrieve_joke_score(user))
     await set_lowest_score(user, await retrieve_joke_score(user))
-    
+
     # find the path to the media folder
     file_path = file_io.construct_media_path(f"slots/{media}")
-    
+
     # send the corresponding gif
     file=discord.File(file_path)
     await interaction.channel.send(file=file)

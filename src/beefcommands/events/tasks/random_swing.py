@@ -1,6 +1,5 @@
 import random
 import asyncio
-import discord
 import os
 from data import postgres
 from beefutilities.guilds.guild_text_channel import read_guild_info_channel
@@ -31,7 +30,7 @@ async def random_swing_check(bot):
             print(f"Flagged users: {flagged_users}")
             # Pick a random user
             user_id = random.choice(flagged_users)[0]
-            
+
             await send_swing(bot, user_id, swing_type, channel_type)
         return
 
@@ -47,7 +46,7 @@ async def send_swing(bot, user_id, swing_type, channel_type):
         channel = await guild.fetch_channel(await read_guild_info_channel(guild.id))
     else:
         channel = await bot.fetch_channel(user.dm_channel.id) if user.dm_channel else await user.create_dm()
-    
+
     # send the swing
     if swing_type == "insult":
         await channel.send(content=(swing + await send_insult_swing()))
@@ -72,4 +71,4 @@ async def send_neutral_swing():
     return random_response
 
 async def send_image_swing():
-    pass 
+    pass

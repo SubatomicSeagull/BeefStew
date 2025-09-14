@@ -32,19 +32,19 @@ class InvocationsCog(commands.Cog):
     @discord.app_commands.command(name="leaderboard", description="whos the funniest huh??")
     async def leaderboard(self, interaction: discord.Interaction):
         print(f"> \033[32m{interaction.user.name} used /leaderboard\033[0m")
-        await leaderboard.retrive_top_scores(interaction, self.bot)
+        await leaderboard.retrieve_top_scores(interaction, self.bot)
 
     @discord.app_commands.command(name="loserboard", description="whos not the funniest huh??")
     async def loserboard(self, interaction: discord.Interaction):
         print(f"> \033[32m{interaction.user.name} used /loserboard\033[0m")
-        await leaderboard.retrive_low_scores(interaction, self.bot)  
+        await leaderboard.retrieve_low_scores(interaction, self.bot)
 
-    # gamble points  
-    @discord.app_commands.command(name="gamble", description="Lets go gambling!")  
+    # gamble points
+    @discord.app_commands.command(name="gamble", description="Lets go gambling!")
     async def gamble(self, interaction: discord.Interaction):
         print(f"> \033[32m{interaction.user.name} used /gamble\033[0m")
         await gamble.gamble_points(interaction)
-        
+
     # why are we in? rule
     @discord.app_commands.command(name="why_are_we_in", description="invokes the other rule...")
     async def why_are_we_in(self, interaction: discord.Interaction, new_name: str):

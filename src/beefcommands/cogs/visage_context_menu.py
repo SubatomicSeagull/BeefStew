@@ -1,9 +1,8 @@
 import os
 import discord
-from discord.ext import commands
-from beefcommands.visage import explosion, react, boil_image, down_the_drain_image, add_speech_bubble_pfp, bday, bless_pfp, gay_baby_jail_image, JFK_image, mirror_img, water_filter
+from beefcommands.visage import explosion, react, boil_image, down_the_drain_image, gay_baby_jail_image, JFK_image, mirror_img, water_filter
 
-# resends the picutre but with a reaction
+# resends the picture but with a reaction
 @discord.app_commands.context_menu(name="React")
 async def reaction_image(interaction: discord.Interaction, message: discord.Message):
     print(f"> \033[32m{interaction.user.name} used /react on {message.author.name}'s image\033[0m")
@@ -25,7 +24,7 @@ async def down_the_drain(interaction: discord.Interaction, message: discord.Mess
 @discord.app_commands.context_menu(name="Gay Baby Jail")
 async def gay_baby_jail(interaction: discord.Interaction, message: discord.Message):
     print(f"> \033[32m{interaction.user.name} used /GBJ on {message.author.name}'s image\033[0m")
-    await gay_baby_jail_image.GBJ(interaction, message)
+    await gay_baby_jail_image.jail_the_baby(interaction, message)
     return
 
 @discord.app_commands.context_menu(name="JFK")

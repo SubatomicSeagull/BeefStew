@@ -6,59 +6,59 @@ import os
 from beefutilities.guilds.guild_text_channel import read_guild_log_channel
 from data import postgres
 
-async def ban_member(interaction: discord.Interaction, bot, member: discord.Member, reason: str, banned_members: set): 
+async def ban_member(interaction: discord.Interaction, bot, member: discord.Member, reason: str, banned_members: set):
     # cant ban yourself
     if interaction.user.id == member.id:
-        await interaction.response.send_message("You can't ban youself idiot, the leave button is right there", ephemeral=True)
+        await interaction.response.send_message("You can't ban yourself idiot, the leave button is right there", ephemeral = True)
         return
-    
+
     # cant ban the bot
     if member.id == os.getenv("CLIENTID"):
-        await interaction.response.send_message("you cant get rid of me that easily...", ephemeral=True)
+        await interaction.response.send_message("you cant get rid of me that easily...", ephemeral = True)
         return
-    
+
     # cant ban if you dont have permissions
     if not interaction.user.guild_permissions.ban_members:
-        await interaction.response.send_message("you really think im gonna let u do that?", ephemeral=True)
+        await interaction.response.send_message("you really think im gonna let u do that?", ephemeral = True)
         return
-    
+
     try:
         # add to the banned members holding list
         banned_members.add(member.id)
-        
-        # retrive the log channel
+
+        # retrieve the log channel
         channelid = await read_guild_log_channel(interaction.guild.id)
         channel = await bot.fetch_channel(channelid)
-        
+
         await channel.send(embed=await ban_message_embed(interaction.user, member, reason, bot.user.avatar.url, interaction.guild.name))
-        await interaction.response.send_message(f"You banned {member.name}.", ephemeral=True)
-        
-        await member.ban(reason=reason)
-    
+        await interaction.response.send_message(f"You banned {member.name}.", ephemeral = True)
+
+        await member.ban(reason = reason)
+
     except Exception as e:
         await postgres.log_error(e)
-        await interaction.response.send_message(f"Couldn't ban user {member.name} because {e}", ephemeral=True)
+        await interaction.response.send_message(f"Couldn't ban user {member.name} because {e}", ephemeral = True)
 
 async def ban_message_embed(mod: discord.Member, member: discord.Member, reason: str, icon_url, guild_name):
         # embed header
-        banembed = discord.Embed(title=f"BANNED!", color=discord.Color.red())
-        banembed.set_thumbnail(url=member.avatar.url)
+        banembed = discord.Embed(title = f"BANNED!", color = discord.Color.red())
+        banembed.set_thumbnail(url = member.avatar.url)
         # embed body
-        banembed.add_field(name="", value=get_ban_message(member, reason), inline=False)
-        banembed.add_field(name="", value="", inline=False)
-        banembed.add_field(name="", value="", inline=False)
-        banembed.add_field(name="", value="", inline=False)
-        banembed.add_field(name="", value=f"**Banned by**: <@{mod.id}>", inline=False)
-        banembed.add_field(name="", value=f"**Reason**: {reason}", inline=False)    
-        banembed.add_field(name="", value="", inline=False)
-        banembed.add_field(name="", value="", inline=False) 
-        banembed.set_author(name="Beefstew", icon_url=icon_url)
+        banembed.add_field(name = "", value = get_ban_message(member, reason), inline = False)
+        banembed.add_field(name = "", value = "", inline = False)
+        banembed.add_field(name = "", value = "", inline = False)
+        banembed.add_field(name = "", value = "", inline = False)
+        banembed.add_field(name = "", value = f"**Banned by**: <@{mod.id}>", inline = False)
+        banembed.add_field(name = "", value = f"**Reason**: {reason}", inline = False)
+        banembed.add_field(name = "", value = "", inline = False)
+        banembed.add_field(name = "", value = "", inline = False)
+        banembed.set_author(name = "Beefstew", icon_url = icon_url)
         # embed footer
-        banembed.add_field(name="", value=f"{guild_name} - {datetime.now().strftime('%d/%m/%Y %H:%M')}")      
+        banembed.add_field(name = "", value = f"{guild_name} - {datetime.now().strftime('%d/%m/%Y %H:%M')}")
         return banembed
-    
-def get_ban_message(member: discord.Member, reason: str): 
+
+def get_ban_message(member: discord.Member, reason: str):
     membername = type('Member', (object,), {"id": member.name})()
-    responses = load_element("responses.json", "ban_messages")    
-    chosen_response = random.choice(responses).format(member=membername, reason=reason)
+    responses = load_element("responses.json", "ban_messages")
+    chosen_response = random.choice(responses).format(member = membername, reason = reason)
     return chosen_response

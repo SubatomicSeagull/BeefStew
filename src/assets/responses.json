@@ -1,131 +1,131 @@
 {
-  "trigger_phrases":{
-    "oye":{
-      "type":"text",
-      "content":"oye."
+  "trigger_phrases": {
+    "oye": {
+      "type": "text",
+      "content": "oye."
     },
-    "snarf":{
-      "type":"text",
-      "content":"snarf >:("
+    "snarf": {
+      "type": "text",
+      "content": "snarf >:("
     },
-    "banger":{
-      "type":"text",
-      "content":"https://x.com/blacklung82/status/1602348576331505664"
+    "banger": {
+      "type": "text",
+      "content": "https://x.com/blacklung82/status/1602348576331505664"
     },
-        "yoy":{
-      "type":"text",
-      "content":"yoy malloy"
+    "yoy": {
+      "type": "text",
+      "content": "yoy malloy"
     },
-  
-    "preposition":{
-      "type":"text",
-      "content":"https://www.youtube.com/watch?v=E0Ag0VKJ51Y"
+    "preposition": {
+      "type": "text",
+      "content": "https://www.youtube.com/watch?v=E0Ag0VKJ51Y"
     },
-    "beast":{
-      "type":"media",
-      "content":"mrbeast.gif"
+    "beast": {
+      "type": "media",
+      "content": "mrbeast.gif"
     },
-    "cowboy pie":{
-      "type":"media",
-      "content":"kayscooking.gif" 
+    "cowboy pie": {
+      "type": "media",
+      "content": "kayscooking.gif"
     },
-    "psychopath":{
-      "type":"media",
-      "content":"psychopaths.png" 
+    "psychopath": {
+      "type": "media",
+      "content": "psychopaths.png"
     },
-    "cycle path":{
-      "type":"media",
-      "content":"leepunch.gif"
+    "cycle path": {
+      "type": "media",
+      "content": "leepunch.gif"
     },
-    "kays cooking":{
-      "type":"media",
-      "content":"kayspoon.gif" 
+    "kays cooking": {
+      "type": "media",
+      "content": "kayspoon.gif"
     },
-    "new kay":{
-      "type":"media",
-      "content":"newkay.gif" 
+    "new kay": {
+      "type": "media",
+      "content": "newkay.gif"
     },
-    "goat":{
-      "type":"media",
-      "content":"goat.gif" 
+    "goat": {
+      "type": "media",
+      "content": "goat.gif"
     },
-    "whatsapp":{
-      "type":"emoji",
-      "content":"<:whatsapp:1285617179408076902>" 
+    "whatsapp": {
+      "type": "emoji",
+      "content": "<:whatsapp:1285617179408076902>"
     },
-    "beefstew":{
-      "type":"emoji",
-      "content":"<:beefstew:1285630081829437614>" 
+    "beefstew": {
+      "type": "emoji",
+      "content": "<:beefstew:1285630081829437614>"
     },
-    "beef stew":{
-      "type":"emoji",
-      "content":"<:beefstew:1285630081829437614>" 
+    "beef stew": {
+      "type": "emoji",
+      "content": "<:beefstew:1285630081829437614>"
     },
-    "romulus":{
-      "type":"emoji",
-      "content":"<:romulus:1285630098224971786>" 
+    "romulus": {
+      "type": "emoji",
+      "content": "<:romulus:1285630098224971786>"
     },
-    "brazil":{
-      "type":"emoji",
-      "content":"<:brazil:1286688098297839696>" 
+    "brazil": {
+      "type": "emoji",
+      "content": "<:brazil:1286688098297839696>"
     },
-    "elphaba":{
-      "type":"emoji",
-      "content":"<:beefhusk:1287094093989679124>" 
+    "elphaba": {
+      "type": "emoji",
+      "content": "<:beefhusk:1287094093989679124>"
     },
-    "leon":{
-      "type":"text",
-      "content":"leon?\nhttps://www.youtube.com/watch?v=buSThnCQKPU" 
+    "leon": {
+      "type": "text",
+      "content": "leon?\nhttps://www.youtube.com/watch?v=buSThnCQKPU"
     },
-    "meow":{
-      "type":"text",
-      "content":"meow~" 
+    "meow": {
+      "type": "text",
+      "content": "meow~"
     },
-    "yeag":{
-      "type":"text",
-      "content":"yeag"
+    "yeag": {
+      "type": "text",
+      "content": "yeag"
     },
-    "fortnite":{
-      "type":"media",
-      "content":"fortnite-card.gif"
+    "fortnite": {
+      "type": "media",
+      "content": "fortnite-card.gif"
     },
-    "fortnight":{
-      "type":"media",
-      "content":"fortnite-card.gif"
+    "fortnight": {
+      "type": "media",
+      "content": "fortnite-card.gif"
     },
-    "turk":{
-      "type":"media",
-      "content":"turkey.gif"
+    "turk": {
+      "type": "media",
+      "content": "turkey.gif"
     },
-    "curley":{
-      "type":"media",
-      "content":"SPOILER_curleh.png"
+    "curley": {
+      "type": "media",
+      "content": "SPOILER_curleh.png"
     },
-    "curly":{
-      "type":"media",
-      "content":"SPOILER_curleh.png"
+    "curly": {
+      "type": "media",
+      "content": "SPOILER_curleh.png"
     },
-    "curleh":{
-      "type":"media",
-      "content":"SPOILER_curleh.png"
+    "curleh": {
+      "type": "media",
+      "content": "SPOILER_curleh.png"
     },
-    "goblin":{
-      "type":"media",
-      "content":"goblin.gif"
+    "goblin": {
+      "type": "media",
+      "content": "goblin.gif"
     },
-    "rumple":{
-      "type":"media",
-      "content":"rumple.png"
+    "rumple": {
+      "type": "media",
+      "content": "rumple.png"
     },
-    "nothing ever happens":{
-      "type":"media",
-      "content":"nothing.png"
+    "nothing ever happens": {
+      "type": "media",
+      "content": "nothing.png"
     },
-    "bloke":{
-      "type":"media",
-      "content":"bloke.png"
+    "bloke": {
+      "type": "media",
+      "content": "bloke.png"
     }
   },
+
   "nickname_change_responses": [
     "looks like {name} is going by {tag} now.. good for them!",
     "hey {name}, heard they're calling you {tag}... your choice i suppose",
@@ -173,7 +173,7 @@
     "you look like you enjoy BTS RPF...",
     "fly-specked cuntivore...",
     "you look like you cut your hair with a knife and fork...",
-    "you seem to be suffering from delusions of adequacy...", 
+    "you seem to be suffering from delusions of adequacy...",
     "barrel sharp, the wit on you...",
     "it vexes me to know of you...",
     "thou art saucy as gruel...",
@@ -228,7 +228,7 @@
     "**<@{member.id}>** fuck off",
     "**<@{member.id}>** was kicked, but remember, a kick is only temporary, but a ban.. thats for life babey!",
     "its sooo like **<@{member.id}>** to be kicked for **{reason}**"
-    ],
+  ],
 
   "ban_messages": [
     "**<@{member.id}>** was banned. see ya, asshole",
@@ -296,7 +296,8 @@
     "you are the reason we cant have nice things...",
     ".........hey who was that guy?"
   ],
-  "greetings":[
+
+  "greetings": [
     "hey",
     "hi",
     "yo",
