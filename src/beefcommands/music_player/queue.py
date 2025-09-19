@@ -46,9 +46,14 @@ async def handle_queue(user, tx_channel, url, insert):
         return
 
     # retrieve the youtube links from the given query
-    ytlinks = await link_parser.parse(tx_channel, url, media_type)
-    if not ytlinks:
-        await status.edit(content = "failed to get youtube link")
+    try:
+        ytlinks = await link_parser.parse(tx_channel, url, media_type)
+        if not ytlinks:
+            await status.edit(content = "failed to get youtube link")
+            return
+    except Exception as e:
+        print(e)
+        await status.edit(content = f"i cant play this i'm sry... :(")
         return
 
     queue = get_queue()
