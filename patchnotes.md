@@ -1,6 +1,6 @@
 # BEEFSTEW has been updated!
 
-## Beefstew version 1.5.4 patchnotes:
+## Beefstew version 1.6 patchnotes:
 
 ## Features:
 - use /feature to suggest new features or report problems, you do the work now!
