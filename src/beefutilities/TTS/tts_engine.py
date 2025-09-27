@@ -24,5 +24,5 @@ def get_voice():
 # on init load the default voice
 def load_voice():
     global _voice
-    _voice = PiperVoice.load(file_io.construct_data_path("tts_voices", "en_GB-alan-low.onnx"))
+    _voice = PiperVoice.load(file_io.construct_data_path("tts_voices", "rocket.onnx"))
 
