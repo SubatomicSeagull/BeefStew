@@ -9,7 +9,10 @@ from beefutilities.update import update_info
 from beefcommands.visage.sniff import sniff_user
 from beefutilities.users import user
 from beefcommands.utilities.suggest_feature import create_suggestion
-from beefutilities.TTS import speak
+from beefutilities.TTS import speak, tts_engine
+
+VoiceList = tts_engine.generate_voice_enum()
+print(f"Initialized VoiceList: {VoiceList}\n with voices: {[voice.value for voice in VoiceList]}")
 class UtilitiesCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -52,7 +55,7 @@ class UtilitiesCog(commands.Cog):
     #prints the patchnotes in a nice litte embed
     @discord.app_commands.command(name="update", description="whats new?")
     async def update(self, interaction: discord.Interaction):
-        print(f"> \033[32m{interaction.user.name} used update\033[0m")
+        print(f"> \033[32m{interaction.user.name} used /update\033[0m")
         await update_info(interaction, self.bot)    
     
     @commands.command(name="test", description="jamie delete this")
@@ -103,23 +106,17 @@ class UtilitiesCog(commands.Cog):
     
     # enable TTS
     @discord.app_commands.command(name="speak", description="turn on TTS")
-    async def speak(self, interacton: discord.Interaction):
-        print(f"> \033[32m{interacton.user.name} used /speak\033[0m")
+    async def speak(self, interaction: discord.Interaction):
+        print(f"> \033[32m{interaction.user.name} used /speak\033[0m")
         speak.set_lock_state_global(False)
-        await interacton.response.send_message("TTS enabled", ephemeral=True)
-    
-    class VoiceList(enum.Enum):
-        # add enumeration from TTS engine to automatically retreive voices with their names
-        TikTok = 0
-        Rocket = 1
-        Whisper = 2
-        Old = 3
+        await interaction.response.send_message("TTS enabled", ephemeral=True)
         
     @discord.app_commands.command(name="voice", description="set the TTS voice")
     @discord.app_commands.describe(voice="what should i sound like???")
     async def voice(self, interaction: discord.Interaction, voice: VoiceList):
-        print(f"chosen voice: name={voice.name}, value={voice.value}")
-        pass
+        print(f"> \033[32m{interaction.user.name} set BeefStew's voice to {voice.name}\033[0m")
+        tts_engine.set_voice(voice.value)
+        await interaction.response.send_message(f"Voice set to **{voice.name}**", ephemeral=True)
 
 # cog setup
 async def setup(bot):
