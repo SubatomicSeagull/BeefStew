@@ -11,6 +11,7 @@ _voice = None
 async def generate_speech(text):
     audio_binary = BytesIO()
     
+    # write the speech to a bytes stream instead of a wave file
     with wave.open(audio_binary, "wb") as wav_file:
         _voice.synthesize_wav(text, wav_file)
     
@@ -25,15 +26,19 @@ def get_voice():
     return _voice
 
 def generate_voice_enum():
+    
+    # iterate through the tts voices dir and read the names
     voices_dir = file_io.construct_data_path("tts_voices")
     enum_dict = {}
     for file in os.listdir(voices_dir):
         if file.endswith(".onnx"):
-            human_name = _read_onnx_name_sync(file)
+            # make a better name for it
+            human_name = _read_onnx_name(file)
             enum_dict[human_name] = file
     return enum.Enum("VoiceList", enum_dict)
 
-def _read_onnx_name_sync(file):
+def _read_onnx_name(file):
+    # replaces all dashes and underscores with spaces and capitalises each name
     name, _ = os.path.splitext(file)
     name = name.replace("_", " ").replace("-", " ")
     return " ".join(word.capitalize() for word in name.split())

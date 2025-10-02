@@ -169,5 +169,3 @@ src\beefcommands\utilities\music_player\yt_cookies.txt
 cookies.txt
 .vscode/launch.json
 launch.json
-tts_voices/
-src\data\tts_voices\*

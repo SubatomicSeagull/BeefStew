@@ -11,8 +11,8 @@ from beefutilities.users import user
 from beefcommands.utilities.suggest_feature import create_suggestion
 from beefutilities.TTS import speak, tts_engine
 
+# gerate enumeration object for the tts voices dropdown
 VoiceList = tts_engine.generate_voice_enum()
-print(f"Initialized VoiceList: {VoiceList}\n with voices: {[voice.value for voice in VoiceList]}")
 class UtilitiesCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -110,7 +110,8 @@ class UtilitiesCog(commands.Cog):
         print(f"> \033[32m{interaction.user.name} used /speak\033[0m")
         speak.set_lock_state_global(False)
         await interaction.response.send_message("TTS enabled", ephemeral=True)
-        
+    
+    # change the tts voice
     @discord.app_commands.command(name="voice", description="set the TTS voice")
     @discord.app_commands.describe(voice="what should i sound like???")
     async def voice(self, interaction: discord.Interaction, voice: VoiceList):

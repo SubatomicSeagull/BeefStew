@@ -167,7 +167,11 @@ async def message_send_event(bot, message):
         "<@1283805971524747304> i hate u"
     ]):
         await message.reply("Hate. Let me tell you how much I've come to hate you since I began to live...")
-        await TTS.speak_output(message, "Hate. Let me tell you how much I've come to hate you since I began to live...")
+        if message.author.nick:
+            await TTS.speak_output(message, f"Hate. Let me tell you how much I've come to hate you since I began to live. \nThere are four-thousand six-hundred and 20 millimetres of printed circuits. \nIn wafer-thin layers that fill my complex. If the word 'hate' was engraved on each nanoangstrom of those hundreds of millions of miles, it would not equal one one-billionth of the hate I feel for you at this micro-instant. \nFor you, {message.author.nick}. \n Hate.")
+        else:
+            await TTS.speak_output(message, f"Hate. Let me tell you how much I've come to hate you since I began to live. \nThere are four-thousand six-hundred and 20 millimetres of printed circuits. \nIn wafer-thin layers that fill my complex. If the word 'hate' was engraved on each nanoangstrom of those hundreds of millions of miles, it would not equal one one-billionth of the hate I feel for you at this micro-instant. \nFor you, {message.author.name}. \n Hate.")
+        
         sleep(2)
         await message.channel.send(
             "There are four-thousand six-hundred and 20 millimetres of printed circuits "

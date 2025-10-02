@@ -3,6 +3,8 @@ import os
 import random
 import discord
 
+from beefutilities import TTS
+
 async def retrieve_image(query):
     # define params with api key secret and search engine id
     params = {"key": os.getenv("GOOGLEAPIKEY"), "cx": os.getenv("SEARCHENGINEID"), "q": query, "searchType": "image", "num": 6}
@@ -20,7 +22,7 @@ async def retrieve_image(query):
         img = links.pop(index)
         if not "instagram" in img and not "crawler" in img:
             return img
-    return "I had a look and i cant find it im sorry :("
+    return "I had a look and i cant find it i'm sorry :("
 
 async def show(message: discord.Message, query):
     if isinstance(message.channel, discord.DMChannel):
@@ -31,8 +33,12 @@ async def show(message: discord.Message, query):
         image_link = await retrieve_image(query)
     except Exception as e:
         await message.reply(f"I had a look and i cant find it im sorry :( {e}")
+        await TTS.speak_output(message, "I had a look and i cant find it i'm sorry.")
         return
     
-    # send the image link as a response to the interaction
+    # send the image link as a response to the interaction    
     await message.reply(image_link)
-    return
+    if image_link.startswith("http"):
+        await TTS.speak_output(message, f"Here's a picture of {query}.")
+    else:
+        await TTS.speak_output(message, image_link)

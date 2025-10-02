@@ -22,6 +22,7 @@ def construct_root_path(*args):
 def construct_data_path(*args):
     return os.path.join((os.path.dirname(__file__)), "..", "..", "data", *args)
 
+# loop through attachments and find only image files, TODO add support for other images like .heic, webp, tiff, convert these to png before processing
 async def get_attachment(message: discord.Message):
     if not message.attachments: 
         url_pattern = re.compile("https?://\S+")
@@ -38,7 +39,8 @@ async def image_bytes(url):
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
             return await response.read()
-        
+
+# fetch an image from a link, either a discotrd user avatar url or a link in a message
 async def fetch_from_source(source):
     if isinstance(source, discord.Member):
         src = await get_avatar_image(source)
