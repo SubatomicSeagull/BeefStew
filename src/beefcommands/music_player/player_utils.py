@@ -120,16 +120,15 @@ async def play_track(voice_client, tx_channel, url, title):
 
     # define behaviour after playing a track
     def after_playing(error, loop):
-        # Use the current running event loop for thread safety
+        # use the current bot loop for thread safety
         if loop and loop.is_running():
-            # Schedule the coroutine in the running loop
+            # schedule the coroutine in the running loop
             future = asyncio.run_coroutine_threadsafe(
                 handle_after_playing(voice_client, tx_channel, error), loop
             )
             future.result()
         else:
             print("No running event loop; cannot schedule after_playing task.")
-            # If no running loop, just ignore (should not happen in discord.py context)
             pass
 
     # play the song in the voice channel

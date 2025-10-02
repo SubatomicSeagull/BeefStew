@@ -1,4 +1,4 @@
-from main import trello_client
+from main import trello_client # need to stop importing from main so much
 import os
 from dotenv import load_dotenv
 

@@ -1,5 +1,5 @@
 import discord
-from beefutilities.TTS import speak
+from beefutilities import TTS
 
 async def invoke_channel_name_rule(ctx, new_name: str):
     # if the incoming context is a slash command interaction:
@@ -15,7 +15,7 @@ async def invoke_channel_name_rule(ctx, new_name: str):
             try:
                 await interaction.user.voice.channel.edit(name = new_name)
                 await interaction.response.send_message(f"yea why *are* we in {new_name}")
-                await speak.speak_output(interaction, f"yea. why are we in {new_name}")
+                await TTS.speak_output(interaction, f"yea. why are we in {new_name}")
                 return
 
             except Exception as e:
@@ -37,6 +37,7 @@ async def invoke_channel_name_rule(ctx, new_name: str):
             try:
                 await message.author.voice.channel.edit(name = new_name)
                 await message.channel.send(f"yea why *are* we in {new_name}")
+                await TTS.speak_output(message, f"yeah.\n why are we in {new_name}")
                 return
 
             except Exception as e:

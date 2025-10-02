@@ -12,20 +12,25 @@ _TTS_lock: bool = False
 global g_Lock
 g_Lock: bool = False
 
+# set the global lock state
 def get_lock_state_global():
     return g_Lock
 
+# lock or unlock the tts globally
 def set_lock_state_global(state: bool):
     global g_Lock
     g_Lock = state
 
+# get the local lock state
 def get_lock_state():
     return _TTS_lock
-
+    
+# lock or unlock the tts locally
 def set_lock_state(state: bool):
     global _TTS_lock
     _TTS_lock = state
 
+# remove unpronouncable characters from a message and make sure it ends with a .
 async def sanitise_output(ctx, message):
 
     input_text = message
@@ -40,7 +45,6 @@ async def sanitise_output(ctx, message):
         return
 
     print(f"Input text: {input_text}")
-
     sanitised_text = input_text
 
     # replace user id mentions with plaintext namesz
@@ -79,20 +83,22 @@ async def sanitise_output(ctx, message):
     return sanitised_text
 
 async def speak_output(ctx, message):
-
+    
+    # initial params, check for local or global lock and the incoming context type
     if get_lock_state_global():
         print("GLOBAL LOCKED!!!!")
         return
-
+    
+    if get_lock_state():
+        print("TTS LOCKED!!!!")
+        return
+    
     if isinstance(ctx, discord.Message) or isinstance(ctx, commands.Context):
         user = ctx.author
 
     elif isinstance(ctx, discord.Interaction):
         user = ctx.user
-
-    if get_lock_state():
-        print("TTS LOCKED!!!!")
-        return
+        
 
     loop = asyncio.get_event_loop()
 
@@ -110,7 +116,8 @@ async def speak_output(ctx, message):
             print("=========================== TTS LOCK Off")
             set_lock_state(False)
             return
-
+    
+    # lock the tts while its procesing and speakingh
     print("=========================== TTS LOCK ON")
     set_lock_state(True)
 
@@ -122,8 +129,10 @@ async def speak_output(ctx, message):
         return
 
     # dont return just beefstew
-    if message_text == "beefstew." or message_text == ".": return
-
+    if message_text == "beefstew." or message_text == ".": 
+        set_lock_state(False)
+        return
+    
     tts_file = await tts_engine.generate_speech(message_text)
 
     if platform.system().lower() == "windows":
@@ -134,37 +143,40 @@ async def speak_output(ctx, message):
 
     if voice_client.is_playing():
         prev_content = voice_client.source
-        # insert line to retrieve previous callback
-
         voice_client.pause()
-
-    audio_source = discord.FFmpegPCMAudio(tts_file, executable = exepath)
+        
+    audio_source = discord.FFmpegPCMAudio(tts_file, pipe=True, executable=exepath)
 
     def after_playing(error):
-        if error:
-            print(f"Error during playback: {error}")
-        else:
-            print("Finished playing TTS message.")
-        if os.path.exists(tts_file):
-            try:
-                os.remove(tts_file)
-                print(f"Deleted temporary file: {tts_file}")
-            except Exception as e:
-                pass
-
+        # try to close the bytes stream, sometimes doesnt work if it cant find the file or stream 
+        try:
+            print("closing tts bytes stream")
+            tts_file.close()
+        except Exception as e:
+            print("didnt work..." + e)
+            pass
+        
         print("=========================== TTS LOCK OFF")
         set_lock_state(False)
 
+        # if there was previous music, run /play to hook back into the queue loop and play the next audio after the resumed track has completed
         if prev_content:
             def retrace_prev_callback(error):
                 print("callback from previous audio:")
-
+            
                 from beefcommands import music_player
 
                 async def resume_music():
                     print("Running /play")
-                    await music_player.play(ctx.author, ctx.guild.voice_client, ctx.channel)
-
+                    
+                    # hacky fix coz sometimes the context gets overwritten
+                    try: 
+                        author = ctx.author
+                    except AttributeError:
+                        author = ctx.user
+                    
+                    await music_player.play(author, ctx.guild.voice_client, ctx.channel)
+                    
                 print("running resume_music in main loop")
                 future = asyncio.run_coroutine_threadsafe(resume_music(), loop)
                 try:

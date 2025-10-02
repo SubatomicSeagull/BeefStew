@@ -3,49 +3,49 @@ import discord
 from beefcommands.visage import explosion, react, boil_image, down_the_drain_image, gay_baby_jail_image, JFK_image, mirror_img, water_filter
 
 # resends the picture but with a reaction
-@discord.app_commands.context_menu(name="React")
+@discord.app_commands.context_menu(name="🔴React")
 async def reaction_image(interaction: discord.Interaction, message: discord.Message):
     print(f"> \033[32m{interaction.user.name} used /react on {message.author.name}'s image\033[0m")
     await react.react(interaction, message)
     return
 
-@discord.app_commands.context_menu(name="Boil")
+@discord.app_commands.context_menu(name="🥵Boil")
 async def boil(interaction: discord.Interaction, message: discord.Message):
     print(f"> \033[32m{interaction.user.name} used /boil on {message.author.name}'s image\033[0m")
     await boil_image.boil(interaction, message)
     return
 
-@discord.app_commands.context_menu(name="Down the Drain")
+@discord.app_commands.context_menu(name="🚽Down the Drain")
 async def down_the_drain(interaction: discord.Interaction, message: discord.Message):
     print(f"> \033[32m{interaction.user.name} used /down_the_drain on {message.author.name}'s image\033[0m")
     await down_the_drain_image.drain(interaction, message)
     return
 
-@discord.app_commands.context_menu(name="Gay Baby Jail")
+@discord.app_commands.context_menu(name="👮Gay Baby Jail")
 async def gay_baby_jail(interaction: discord.Interaction, message: discord.Message):
     print(f"> \033[32m{interaction.user.name} used /GBJ on {message.author.name}'s image\033[0m")
     await gay_baby_jail_image.jail_the_baby(interaction, message)
     return
 
-@discord.app_commands.context_menu(name="JFK")
+@discord.app_commands.context_menu(name="🔫JFK")
 async def jfk(interaction: discord.Interaction, message: discord.Message):
     print(f"> \033[32m{interaction.user.name} used /JFK on {message.author.name}'s image\033[0m")
     await JFK_image.watch_out(interaction, message)
     return
 
-@discord.app_commands.context_menu(name="Mirror")
+@discord.app_commands.context_menu(name="🪞Mirror")
 async def mirror(interaction: discord.Interaction, message: discord.Message):
     print(f"> \033[32m{interaction.user.name} used /mirror on {message.author.name}'s image\033[0m")
     await mirror_img.mirror(interaction, message)
     return
 
-@discord.app_commands.context_menu(name="Drown")
+@discord.app_commands.context_menu(name="🥶Drown")
 async def drown(interaction: discord.Interaction, message: discord.Message):
     print(f"> \033[32m{interaction.user.name} used /drown on {message.author.name}'s image\033[0m")
     await water_filter.drown(interaction, message)
     return
 
-@discord.app_commands.context_menu(name="Explode")
+@discord.app_commands.context_menu(name="💥Explode")
 async def explode(interaction: discord.Interaction, message: discord.Message):
     print(f"> \033[32m{interaction.user.name} used /explode on {message.author.name}'s image\033[0m")
     await explosion.explode_img(interaction, message)

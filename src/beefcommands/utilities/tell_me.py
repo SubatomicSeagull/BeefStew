@@ -2,7 +2,7 @@ import wikipediaapi
 import requests
 import discord
 from beefutilities.IO import file_io
-from beefutilities.TTS import speak
+from beefutilities import TTS
 
 async def wikipedia_fetch_page(query):
     wiki = wikipediaapi.Wikipedia("BeefStew", "en")
@@ -49,5 +49,5 @@ async def tell_me(message: discord.Message, query):
                 break
             content += sentence
     await message.reply(content=f"<:nerdstew:1387429699625681090> {content}")
-    await speak.speak_output(message, content)
+    await TTS.speak_output(message, content)
     return

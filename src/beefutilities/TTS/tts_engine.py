@@ -1,52 +1,44 @@
-import os
-import pyttsx3
-import datetime
+from io import BytesIO
 from beefutilities.IO import file_io
-from beefcommands.events.tasks.cleanup_tts import cleanup_tts_folder
+import wave
+import enum
+from piper import PiperVoice
+import os
 
-async def init_tts_engine():
-    # initialise TTS engine
-    engine = pyttsx3.init()
-    # retrieve installed voices
-    voices = engine.getProperty('voices')
-
-
-    # set the default voice
-    engine.setProperty("voice", voices[0].id)
-
-
-    # checks of the ivy voice is installed
-    for voice in voices:
-        print(voice.name.lower())
-        if "ivona 2 ivy" in voice.name.lower():
-            engine.setProperty('voice', voice.id)
-            break
-
-    # set the default rate and volume
-    engine.setProperty('rate', 150)
-    engine.setProperty('volume', 1)
-
-    return engine
-
+global _voice
+_voice = None
 
 async def generate_speech(text):
-    tts = await init_tts_engine()
+    audio_binary = BytesIO()
+    
+    # write the speech to a bytes stream instead of a wave file
+    with wave.open(audio_binary, "wb") as wav_file:
+        _voice.synthesize_wav(text, wav_file)
+    
+    audio_binary.seek(0)
+    return audio_binary
 
-    await cleanup_tts_folder()
+def set_voice(voicefile):
+    global _voice
+    _voice = PiperVoice.load(file_io.construct_data_path("tts_voices", f"{voicefile}"))
 
-    filename = os.path.join(file_io.construct_data_path(), "temp_tts_data", f"output-{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.wav")
+def get_voice():
+    return _voice
 
-    tts.save_to_file(text, filename)
-    tts.runAndWait()
+def generate_voice_enum():
+    
+    # iterate through the tts voices dir and read the names
+    voices_dir = file_io.construct_data_path("tts_voices")
+    enum_dict = {}
+    for file in os.listdir(voices_dir):
+        if file.endswith(".onnx"):
+            # make a better name for it
+            human_name = _read_onnx_name(file)
+            enum_dict[human_name] = file
+    return enum.Enum("VoiceList", enum_dict)
 
-    filepath = file_io.construct_root_path(filename)
-
-    return filepath
-
-# list all installed voices
-#for i, v in enumerate(voices):
-#    print(f"{i}: {v.id} - {v.name} ({v.languages})")
-
-
-
-
+def _read_onnx_name(file):
+    # replaces all dashes and underscores with spaces and capitalises each name
+    name, _ = os.path.splitext(file)
+    name = name.replace("_", " ").replace("-", " ")
+    return " ".join(word.capitalize() for word in name.split())
