@@ -45,7 +45,7 @@ async def retrieve_low_scores(interaction: discord.Interaction, bot):
     await interaction.response.defer()
     # read all scores from the db, we'll limit in Python
     rows = await postgres.read(f"SELECT user_id, current_score, user_name, user_display_name FROM joke_scores WHERE guild_id = '{interaction.guild.id}' ORDER BY current_score ASC;")
-    lowest = await postgres.read(f"SELECT user_id, highest_score, user_name, user_display_name FROM joke_scores WHERE user_id != '99' AND guild_id = '{interaction.guild.id}' ORDER BY highest_score ASC LIMIT 1;")
+    lowest = await postgres.read(f"SELECT user_id, highest_score, user_name, user_display_name FROM joke_scores WHERE user_id != '99' AND guild_id = '{interaction.guild.id}' ORDER BY lowest_score ASC LIMIT 1;")
 
     # embed header
     leaderboard = discord.Embed(title = "Joke Score Loserboard", color = discord.Color.fuchsia())
