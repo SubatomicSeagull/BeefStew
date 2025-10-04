@@ -5,8 +5,8 @@ from data import postgres
 async def retrieve_top_scores(interaction: discord.Interaction, bot):
     await interaction.response.defer()
     # read all scores from the db, we'll limit in Python
-    rows = await postgres.read(f"SELECT user_id, current_score FROM joke_scores WHERE guild_id = '{interaction.guild.id}' ORDER BY current_score DESC;")
-    highest = await postgres.read(f"SELECT user_id, highest_score FROM joke_scores WHERE guild_id = '{interaction.guild.id}' ORDER BY highest_score DESC LIMIT 1;")
+    rows = await postgres.read(f"SELECT user_id, current_score, user_name, user_display_name FROM joke_scores WHERE guild_id = '{interaction.guild.id}' ORDER BY current_score DESC;")
+    highest = await postgres.read(f"SELECT user_id, highest_score, user_name, user_display_name FROM joke_scores WHERE user_id != '99' AND guild_id = '{interaction.guild.id}' ORDER BY highest_score DESC LIMIT 1;")
     tuahjar = await postgres.read(f"SELECT current_score FROM joke_scores WHERE guild_id = '{interaction.guild.id}' AND user_id = '99';")
 
     leaderboard = discord.Embed(title = "Joke Score Leaderboard", color = discord.Color.gold())
@@ -15,7 +15,7 @@ async def retrieve_top_scores(interaction: discord.Interaction, bot):
     if not rows:
         leaderboard.description = "wha? no scores??"
     else:
-        speech_content = "Joke score leaderboard!\n"
+        speech_content = "Joke score leaderboard. \n"
         leaderboard_content = ""
         leaderboard_content += f"**Top Joker of All Time:** <@{highest[0][0]}>: `{highest[0][1]}` points\n\n"
         rank = 1
@@ -25,10 +25,17 @@ async def retrieve_top_scores(interaction: discord.Interaction, bot):
             if rank > 10:
                 break
             leaderboard_content += f"**{rank}.** <@{row[0]}>: `{row[1]}` points\n"
-            speech_content += f"Number {rank} is {row[0]} with {row[1]} points,\n"
+            if row[3] == None or row[3] == "None":
+                speech_content += f"Number {rank} is {row[2]} with {row[1]} points. \n"
+            else:
+                speech_content += f"Number {rank} is {row[3]} with {row[1]} points. \n"
             rank += 1
         leaderboard_content += f"\n\n**Hawk Tuah Jar:** `{tuahjar[0][0]}` points"
-        speech_content += f"and the top joker of all time is {highest[0][0]} with {highest[0][1]}` points"
+        if highest[0][3] == None or highest[0][3] == "None":
+            speech_content += f"and the top joker of all time is {highest[0][2]} with {highest[0][1]}` points."
+        else:
+            speech_content += f"and the top joker of all time is {highest[0][3]} with {highest[0][1]}` points."
+            
         leaderboard.description = leaderboard_content
     await interaction.followup.send(embed=leaderboard)
     await TTS.speak_output(interaction, speech_content)
