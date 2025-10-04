@@ -56,7 +56,7 @@ class UtilitiesCog(commands.Cog):
     @discord.app_commands.command(name="update", description="whats new?")
     async def update(self, interaction: discord.Interaction):
         print(f"> \033[32m{interaction.user.name} used /update\033[0m")
-        await update_info(interaction, self.bot)    
+        await update_patch_notes_info(interaction, self.bot)    
     
     @commands.command(name="test", description="jamie delete this")
     async def test(self, ctx, *, input: str):
