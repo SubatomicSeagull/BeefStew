@@ -77,3 +77,4 @@ async def retrieve_low_scores(interaction: discord.Interaction, bot):
             
         leaderboard.description = leaderboard_content
     await interaction.followup.send(embed = leaderboard)
+    await TTS.speak_output(interaction, speech_content)
