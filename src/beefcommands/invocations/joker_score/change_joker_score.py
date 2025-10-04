@@ -3,13 +3,16 @@ from data import postgres
 from beefutilities.IO.json_handling import load_element
 import random
 from beefcommands.invocations.joker_score.read_joker_score import get_multiplier, retrieve_joke_score, get_user_highest_score, get_user_lowest_score
-from beefcommands.invocations.joker_score.joker_registration import is_registered, register_user
+from beefcommands.invocations.joker_score.joker_registration import is_registered_users, is_registered_score, register_user, register_score
 
 
 async def change_joke_score(self: discord.Member, user: discord.Member, value):
     # register the user in the db if theyre not already
-    if not await is_registered(user):
+    if not await is_registered_users(user):
         await register_user(user)
+        
+    if not await is_registered_score(user):
+        await register_score(user)
 
     # cant +2 yourself
     if self.id == user.id and value > 0:
@@ -81,8 +84,11 @@ async def minus2(interaction: discord.Interaction, member: discord.Member):
 
 async def hawk_tuah_penalty(victim: discord.Member):
     # register the user in the db if theyre not already
-    if not await is_registered(victim):
+    if not await is_registered_users(victim):
         await register_user(victim)
+        
+    if not await is_registered_score(victim):
+        await register_score(victim)
 
     # take 2 points from the victim and update lowest score
     await postgres.write(f"UPDATE public.joke_scores SET current_score = current_score - 2 WHERE user_id = '{victim.id}' AND guild_id = '{victim.guild.id}';")
