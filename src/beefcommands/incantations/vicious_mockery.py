@@ -23,7 +23,10 @@ async def insult(interaction: discord.Interaction, victim: discord.Member):
                 await interaction.followup.send(f"{interaction.user.mention} tried to cast Vicious Mockery on themselves for some reason...\nit still works tho, {interaction.user.mention} {insult}")
             else:
                 await interaction.followup.send(f"{victim.mention} {insult}")
-                await TTS.speak_output(interaction, f"{victim.name}... {insult}")
+                if victim.nick:
+                    await TTS.speak_output(interaction, f"{victim.nick}... {insult}")
+                else:
+                    await TTS.speak_output(interaction, f"{victim.name}... {insult}")
         except Exception as e:
             await interaction.followup.send(f"{interaction.user.mention} tried to cast Vicious Mockery on {victim.mention}... but it failed ({e})")
 
