@@ -52,22 +52,34 @@ async def sanitise_output(ctx, message):
         user_id = int(match.group(1))
         member = ctx.guild.get_member(user_id)
         if member:
-            sanitised_text = sanitised_text.replace(match.group(0), {member.display_name})
-
+            try:
+                sanitised_text = sanitised_text.replace(match.group(0), str({member.display_name}))
+            except Exception as e:
+                print("Error replacing user mention: " + str(e))
+                pass
+            
     # replace role mentions
     for match in re.finditer(r"<@&(\d+)>", sanitised_text):
         role_id = int(match.group(1))
         role = ctx.guild.get_role(role_id)
         if role:
-            sanitised_text = sanitised_text.replace(match.group(0), {role.name})
-
+            try:
+                sanitised_text = sanitised_text.replace(match.group(0), str({role.name}))
+            except Exception as e:
+                print("Error replacing role mention: " + str(e))
+                pass
+            
     # replace channel mentions
     for match in re.finditer(r"<#(\d+)>", sanitised_text):
         channel_id = int(match.group(1))
         channel = ctx.guild.get_channel(channel_id)
         if channel:
-            sanitised_text = sanitised_text.replace(match.group(0), f"#{channel.name}")
-
+            try:
+                sanitised_text = sanitised_text.replace(match.group(0), f"#{channel.name}")
+            except Exception as e:
+                print("Error replacing channel mention: " + str(e))
+                pass
+            
     # replace custom emojis with their names
     sanitised_text = re.sub(r"<a?:([a-zA-Z0-9_]+):\d+>", r"\1", sanitised_text)
 
