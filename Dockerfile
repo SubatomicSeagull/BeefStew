@@ -5,6 +5,7 @@ RUN apt-get upgrade -y
 RUN apt-get install git -y
 RUN apt-get install libpq-dev gcc -y
 RUN apt install -y ffmpeg libopus-dev
+RUN apt-get install espeak-ng -y
 
 
 WORKDIR /BeefStew
