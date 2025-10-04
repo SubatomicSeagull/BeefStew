@@ -55,7 +55,7 @@ class HelpEmbed(discord.ui.View):
         page_utilities.add_field(name = "", value = "`/help`: this is the one you're using right now!", inline = False)
         page_utilities.add_field(name = "", value = "`/bday`: tell beefstew your birthday (format like dd/mm/yyyy)", inline = False)
         page_utilities.add_field(name = "", value = "`/sniff`: let beefstew sniff you", inline = False)
-        page_utilities.add_field(name = "", value = "`/sniff`: make beefstew forget your scent", inline = False)
+        page_utilities.add_field(name = "", value = "`/unsniff`: make beefstew forget your scent", inline = False)
         page_utilities.add_field(name = "", value = "`/feature`: suggest new features!", inline = False)
         page_utilities.add_field(name = "", value = "`/update`: whats new?", inline = False)
         page_utilities.add_field(name = "", value = "`/test`: <- jamie delete this", inline = False)
