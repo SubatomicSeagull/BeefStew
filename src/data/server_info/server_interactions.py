@@ -1,6 +1,8 @@
 import paramiko
 import os
 from beefutilities.IO import file_io
+from smb.SMBHandler import SMBHandler
+import urllib
 
 async def retrieve_containers_json():
     # retrieve the server credentials
@@ -35,6 +37,19 @@ async def retrieve_containers_json():
     #close the ssh connection
     sftp.close()
     ssh_client.close()
+
+
+# NEEDS TESTING!!!!!!!!
+async def retrieve_containers_json_smb():
+    
+    server = os.getenv("SMBSERVER")
+    username = os.getenv("SMBUSER")
+    passwd = os.getenv("SMBPASS")
+    remote_path = f"\\\\{server}\\{username}\\containers.json"
+    opener = urllib.request.build_opener(SMBHandler)
+    file_handler = opener.open(remote_path)
+    data = file_handler.read()
+    file_handler.close()
 
 async def retrieve_server_info_json():
     raise NotImplementedError
