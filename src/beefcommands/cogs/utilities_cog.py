@@ -94,7 +94,8 @@ class UtilitiesCog(commands.Cog):
         await ctx.message.delete()
 
         if message != "" and message != None:
-            await ctx.send(message)
+            # truncate the message to under the 2k char limit
+            await ctx.send(message[:1999])
             await speak.speak_output(ctx, message)
 
     # disable TTS

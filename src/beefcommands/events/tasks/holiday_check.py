@@ -12,7 +12,7 @@ async def check_for_holiday(bot):
     holidays = {
         (1, 1): "New Year's Day",
         (25, 12): "Christmas",
-        (30, 10): "Halloween"
+        (31, 10): "Halloween"
     }
 
     # fetch the guild object from the guild id
