@@ -35,10 +35,10 @@ async def ping_embed(icon_url, guild_name):
             host_response_time = 0
             host_response_time = await ping_host(os.getenv("SERVERIP"), host["ports"], 0.15, 1)
             if host_response_time != 0:
-                pingembed.add_field(name = f"✅ **{host["name"]}** is Online!", value = "", inline = False)
+                pingembed.add_field(name = f"✅ **{host['name']}** is Online!", value = "", inline = False)
                 total_response_time = total_response_time + host_response_time
             else:
-                pingembed.add_field(name = f"❌ **{host["name"]}** is Offline...", value = "", inline = False)
+                pingembed.add_field(name = f"❌ **{host['name']}** is Offline...", value = "", inline = False)
 
 
         pingembed.add_field(name = "", value = f"with an average response time of {round((total_response_time / host_count),2)}ms.", inline = False)
