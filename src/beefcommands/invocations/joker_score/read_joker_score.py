@@ -65,5 +65,4 @@ async def score(interaction: discord.Interaction, user: discord.Member):
         score = await retrieve_joke_score(user)
         await interaction.followup.send(f"{user.mention}'s joker score: **{score}**!")
     except Exception as e:
-        postgres.log_error(e)
         await interaction.followup.send(f"couldnt find {user.name}'s score :( ({e}))")

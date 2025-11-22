@@ -20,7 +20,7 @@ async def leave_vc(voice_client):
     # if a voice connection is established, disconnect
     if voice_client:
         await music_player.clear()
-        await music_player.queue.set_channel(None)
+        music_player.queue.set_channel(None)
         await voice_client.disconnect()
 
     # give time for the ffmpeg process and voice handshake to shut down

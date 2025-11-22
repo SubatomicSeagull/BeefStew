@@ -44,5 +44,4 @@ async def sniff_user(interaction: discord.Interaction, victim: discord.Member):
         # clear the bytesio buffer
         drain_pfp.close()
     except Exception as e:
-        postgres.log_error(e)
         await interaction.followup.send(f"{interaction.user.mention} tried to sniff {victim.name} but it didnt work :// ({e})")

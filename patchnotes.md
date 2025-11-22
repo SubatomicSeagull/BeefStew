@@ -11,3 +11,4 @@
 
 ## Misc:
 - fixed / tidied up some formatting issues
+- changed the default tts voice to rocket raccoon
