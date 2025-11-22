@@ -35,7 +35,6 @@ async def kick_member(interaction: discord.Interaction, bot, member: discord.Mem
 
         await member.kick(reason=reason)
     except Exception as e:
-        await postgres.log_error(e)
         await interaction.response.send_message(f"Couldn't kick user {member.name} because {e}", ephemeral = True)
 
 async def kick_message_embed(mod: discord.Member, member: discord.Member, reason: str, icon_url, guild_name):

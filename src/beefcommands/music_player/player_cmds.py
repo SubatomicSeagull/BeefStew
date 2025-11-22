@@ -8,6 +8,12 @@ async def play(user: discord.Member, voice_client, tx_channel, *args):
     if not user.voice:
         return
 
+    # tether that music player instance to that particular channel
+    if not queue.get_channel():
+        queue.set_channel(tx_channel)
+    else:
+        print(f"music updates channel is already set to {queue.get_channel()}")
+    
     voice_client = user.voice.channel.guild.voice_client
 
     # join together arbitrary arguments into search query
@@ -17,10 +23,10 @@ async def play(user: discord.Member, voice_client, tx_channel, *args):
         voice_client = await guild_voice_channel.join_vc(voice_client, user)
 
         print(f"**{user.name}** requested **{url}**")
-        await queue.handle_queue(user, tx_channel, url, insert = True)
+        await queue.handle_queue(user, queue.get_channel(), url, insert = True)
 
     if voice_client and not voice_client.is_playing():
-        await player_utils.play_next(voice_client, tx_channel)
+        await player_utils.play_next(voice_client, queue.get_channel())
 
 async def pause(voice_client):
     if not voice_client or not voice_client.is_playing():

@@ -5,6 +5,7 @@ from beefcommands.music_player import link_parser
 g_queue = []
 g_current_track = [(None, "Nothing")]
 g_loop = False
+g_channel = None
 
 def get_queue():
         return g_queue
@@ -34,8 +35,24 @@ def get_loop_flag():
 def set_loop_flag(value):
     global g_loop
     g_loop = value
+    
+def get_channel():
+    return g_channel
 
+def set_channel(channel):
+    global g_channel
+    if channel:
+        print(f"music updates channel set to {channel.name} with id {channel.id}")
+    else: print("music updates channel cleared")
+    g_channel = channel
+    
 async def handle_queue(user, tx_channel, url, insert):
+    
+    if not get_channel():
+        set_channel(tx_channel)
+    else:
+        print(f"music updates channel is already set to {get_channel()}")
+    
     # send the status message
     status = await tx_channel.send("Queuing songs...")
 
