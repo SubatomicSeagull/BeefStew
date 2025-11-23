@@ -7,6 +7,12 @@ class ShopView(discord.ui.View):
         self.message = None
         self.interaction = interaction
     
+    async def interaction_check(self, interaction: discord.Interaction):
+        if interaction.user.id != self.interaction.user.id:
+            await interaction.response.send_message("Hey! get in line buddy >:( if you wanna buy something use `/shop` yourself!", ephemeral=True)
+            return False
+        return True
+    
     async def on_timeout(self):
         await self.message.delete()
         await display_shop_closed(self.interaction, "you took too long!!!!")
@@ -57,7 +63,9 @@ async def shop_embed_open(interaction: discord.Interaction):
     if view.chosen_item is None:
         return
     
-    await msg.edit(content=f"bought item {view.chosen_item}...", embed=None, view=None)
+    await msg.delete()
+    
+    print(f"bought item {view.chosen_item}")
     
     await display_shop_closed(interaction, "thank you for your patronage!")
     
