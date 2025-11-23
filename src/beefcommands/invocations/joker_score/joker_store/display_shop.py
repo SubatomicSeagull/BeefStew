@@ -2,12 +2,13 @@ import discord
 
 class ShopView(discord.ui.View):
     def __init__(self, interaction: discord.Interaction):
-        super().__init__(timeout = 30)
+        super().__init__(timeout = 60)
         self.chosen_item = None
         self.message = None
         self.interaction = interaction
     
     async def on_timeout(self):
+        await self.message.delete()
         await display_shop_closed(self.interaction, "you took too long!!!!")
             
     @discord.ui.button(label = "item1", style = discord.ButtonStyle.green)
@@ -54,7 +55,6 @@ async def shop_embed_open(interaction: discord.Interaction):
     await view.wait()
     
     if view.chosen_item is None:
-        await display_shop_closed(interaction, "umm.. im scared /.-.")
         return
     
     await msg.edit(content=f"bought item {view.chosen_item}...", embed=None, view=None)
@@ -67,4 +67,4 @@ async def display_shop_closed(interaction: discord.Interaction, message: str):
 async def shop_embed_closed(interaction: discord.Interaction, message: str):
     shopembed = discord.Embed(title="beefstore", description="no", color=discord.Color.dark_orange())
     shopembed.set_image(url="https://tenor.com/view/bye-sad-waving-face-gif-5637274149426828892")
-    await interaction.followup.send(content=message, embed=shopembed)
+    await interaction.channel.send(content=message, embed=shopembed)
