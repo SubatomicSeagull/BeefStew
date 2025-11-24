@@ -17,31 +17,31 @@ class ShopView(discord.ui.View):
         await self.message.delete()
         await display_shop_closed(self.interaction, "you took too long!!!!")
             
-    @discord.ui.button(label = "item1", style = discord.ButtonStyle.green)
+    @discord.ui.button(label = "-2 Shield", style = discord.ButtonStyle.green)
     async def item1(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.chosen_item = 1
         await interaction.response.defer()
         self.stop()
 
-    @discord.ui.button(label = "item2", style = discord.ButtonStyle.primary)
+    @discord.ui.button(label = "Uno Reverse", style = discord.ButtonStyle.primary)
     async def item2(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.chosen_item = 2
         await interaction.response.defer()
         self.stop()
     
-    @discord.ui.button(label = "item3", style = discord.ButtonStyle.grey)
+    @discord.ui.button(label = "Multiplier", style = discord.ButtonStyle.grey)
     async def item3(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.chosen_item = 3
         await interaction.response.defer()
         self.stop()
         
-    @discord.ui.button(label = "item4", style = discord.ButtonStyle.red)
+    @discord.ui.button(label = "Charity", style = discord.ButtonStyle.red)
     async def item4(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.chosen_item = 4
         await interaction.response.defer()
         self.stop()
     
-    @discord.ui.button(label = "item5", style = discord.ButtonStyle.danger)
+    @discord.ui.button(label = "Revolution", style = discord.ButtonStyle.danger)
     async def item5(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.chosen_item = 5
         await interaction.response.defer()
