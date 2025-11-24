@@ -17,7 +17,7 @@ async def containers_json_reformat():
         
         # add smb file share entry
         container_list.append({
-            "name": "Files",
+            "name": "<:smb:1442510224345796619>  Files",
             "ports": 445
         })
         
@@ -25,20 +25,18 @@ async def containers_json_reformat():
             name = container.get("Names")
             ports = container.get("Ports")
             if ports and name != "portainer":
-                if name == "nginx-proxy":
+                if name[:3] != "int":
                     container_list.append({
-                        "name": "WWW Gateway",
-                        "ports" : get_first_port(ports)
-                    })
-                else:
-                    container_list.append({
-                        "name": beautify_name(name),
+                        "name": (get_container_type(name) + "  " + beautify_name(name)),
                         "ports": get_first_port(ports)
                     })
     return container_list
             
     
 def beautify_name(name):
+    #remove the type marker
+    name = name[4:]
+    
     # replace underscores and hyphens with spaces
     name = name.replace("_", " ").replace("-", " ")
     
@@ -46,6 +44,38 @@ def beautify_name(name):
     name = " ".join(word.capitalize() for word in name.split())
     
     return name
+
+
+def get_container_type(name):
+
+    # separate the type marker
+    type = name[:3]
+    match type:
+        case "mcs":
+            return "<:mc:1442510206490906688>"
+        case "gme":
+            return "<:game:1442510198022606979>"
+        case "web":
+            "<:website:1442510846000496753>"
+        case "int":
+            return None
+        case "smb":
+            return "<:smb:1442510224345796619>"
+        case "srv":
+            return "<:service:1442510214707417258>"
+        case "dnd":
+            return "<:foundry:1442510184059764776>"
+    return "<:service:1442510214707417258>"
+
+
+# mcs	- Minecraft server 	- dirt block logo
+# gme	- generic game server	- controller icon
+# web	- website 		- globe icon
+# int	- internal service	- none, will not display
+# smb	- file share		- files icon
+# srv	- generic service	- cog icon
+# vid	- PVR service		- tv icon
+# dnd	- dnd server		- d20 icon
 
 def get_first_port(ports_str):
     if not ports_str:
