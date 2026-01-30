@@ -46,6 +46,9 @@ async def christmas_event(guild: discord.Guild):
         highest_score = user[3]
         if highest_score < score:
             await postgres.write(f"UPDATE public.joke_scores SET highest_score = {score} WHERE user_id = '{user_id}' AND guild_id = '{guild_id}';")
+            
+            # TODO use the fucking function that you wrote for the changing joker score and highest score smh
+
 
     # get the info channel for the guild and send the message
     channel = await guild.fetch_channel(await read_guild_info_channel(guild.id))
