@@ -3,6 +3,7 @@ from discord.ext import commands
 from beefcommands.invocations.joker_score import change_joker_score, read_joker_score, gamble, leaderboard
 from beefcommands.invocations.nickname_rule import invoke_nickname_rule
 from beefcommands.invocations.channel_name_rule import invoke_channel_name_rule
+from beefcommands.invocations.joker_score.joker_store import display_shop
 
 class InvocationsCog(commands.Cog):
     def __init__(self, bot):
@@ -50,6 +51,11 @@ class InvocationsCog(commands.Cog):
     async def why_are_we_in(self, interaction: discord.Interaction, new_name: str):
         print(f"> \033[32m{interaction.user.name} used the channel name rule and set it to \"{new_name}\"\033[0m")
         await invoke_channel_name_rule(interaction, new_name)
+
+    @discord.app_commands.command(name="shop", description="welcome to my shop")
+    async def shop(self, interaction):
+        # make it so the shop has openeing hours
+        await display_shop.display_shop_open(interaction)
 
 # cog startup
 async def setup(bot):
