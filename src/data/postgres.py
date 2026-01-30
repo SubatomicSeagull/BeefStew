@@ -64,7 +64,7 @@ async def log_error(error_message: str):
 async def get_db_connection():
     try:
         db_config = {
-            "dbname": "bs_users_and_guilds",
+            "dbname": os.getenv("DBNAME"),
             "user": os.getenv("DBUSER"),
             "password": os.getenv("DBPASS"),
             "host": os.getenv("DBHOST"),

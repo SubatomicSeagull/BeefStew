@@ -64,7 +64,7 @@ def get_container_type(name):
         case "srv":
             return "<:service:1442510214707417258>"
         case "dnd":
-            return "<:foundry:1442510184059764776>"
+            return "<:foundry:1442510184059764776>" 
     return "<:service:1442510214707417258>"
 
 
