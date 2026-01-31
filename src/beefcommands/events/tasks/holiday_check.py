@@ -4,8 +4,9 @@ import datetime
 from beefutilities.guilds.guild_text_channel import read_guild_info_channel
 from beefutilities.IO import file_io
 import os
+from beefcommands.invocations.joker_score.change_joker_score import change_joke_score
 
-async def check_for_holiday(bot):
+async def check_for_holiday(bot: discord.Client):
     print(f"> \033[95mscheduled holiday check ran at {datetime.datetime.now()}\033[0m")
 
     today = datetime.datetime.now().date()
@@ -26,29 +27,21 @@ async def check_for_holiday(bot):
                 await new_years_event(guild)
                 return
             elif holiday_name == "Christmas":
-                await christmas_event(guild)
+                await christmas_event(bot, guild)
                 return
             elif holiday_name == "Halloween":
                 await halloween_event(guild)
                 return
 
 
-async def christmas_event(guild: discord.Guild):
-    # give each registered user 10 points for christmas
-    await postgres.write(f"UPDATE public.joke_scores SET current_score = current_score + 10 WHERE guild_id = {guild.id} AND user_id != 99;")
-
-    # get all the users in the guild and update their highest score if they have a higher score than before
-    users = await postgres.read(f"SELECT * FROM public.joke_scores WHERE guild_id = {guild.id};")
+async def christmas_event(bot: discord.Client, guild: discord.Guild):
+    users = await postgres.read(f"SELECT user_id FROM public.joke_scores WHERE guild_id = {guild.id};")
     for user in users:
-        user_id = user[0]
-        guild_id = user[1]
-        score = user[2]
-        highest_score = user[3]
-        if highest_score < score:
-            await postgres.write(f"UPDATE public.joke_scores SET highest_score = {score} WHERE user_id = '{user_id}' AND guild_id = '{guild_id}';")
-            
-            # TODO use the fucking function that you wrote for the changing joker score and highest score smh
-
+        try:
+            user_obj = await bot.fetch_user(user_id=user[0])
+            await change_joke_score(user_obj , user_obj, 10, "christmas present")
+        except discord.NotFound:
+            continue
 
     # get the info channel for the guild and send the message
     channel = await guild.fetch_channel(await read_guild_info_channel(guild.id))
@@ -65,20 +58,14 @@ async def new_years_event(guild: discord.Guild):
         file=discord.File(fp=file_io.construct_assets_path("stews/nyestew.png"), filename="newyearsstew.png")
         )
 
-async def halloween_event(guild: discord.Guild):
-    # give each registered user 5 points for halloween
-    await postgres.write(f"UPDATE public.joke_scores SET current_score = current_score + 5 WHERE guild_id = {guild.id} AND user_id != 99;")
-
-    # get all the users in the guild and update their highest score if they have a higher score than before
-    users = await postgres.read(f"SELECT * FROM public.joke_scores WHERE guild_id = {guild.id};")
+async def halloween_event(bot: discord.Client, guild: discord.Guild):
+    users = await postgres.read(f"SELECT user_id FROM public.joke_scores WHERE guild_id = {guild.id};")
     for user in users:
-        user_id = user[0]
-        guild_id = user[1]
-        score = user[2]
-        highest_score = user[3]
-
-        if highest_score < score:
-            await postgres.write(f"UPDATE public.joke_scores SET highest_score = {score} WHERE user_id = '{user_id}' AND guild_id = '{guild_id}';")
+        try:
+            user_obj = await bot.fetch_user(user_id=user[0])
+            await change_joke_score(user_obj , user_obj, 5, "halloween treat")
+        except discord.NotFound:
+            continue
 
     # get the info channel for the guild and send the message
     channel = await guild.fetch_channel(await read_guild_info_channel(guild.id))

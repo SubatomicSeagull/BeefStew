@@ -30,6 +30,8 @@ async def check_for_birthdays(bot):
 
             # give the user 15 poinbts for their birthday
             await postgres.write(f"UPDATE public.joke_scores SET current_score = current_score + 15 WHERE user_id = '{user_id}' AND guild_id = '{guild.id}';")
+            await change_joker_score.add_score_change_record(user_obj, user_obj, 15, "birthday gift")
+                
             await channel.send(content=f"Happy Birthday {user_obj.mention}\n +15 points for u :)", file=discord.File(fp=await party_pfp(user_obj), filename=f"happy bday {user_name}.png"))
 
             # make sure to update the highest and lowest score for the user
