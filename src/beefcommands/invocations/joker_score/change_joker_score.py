@@ -38,9 +38,9 @@ async def change_joke_score(scorer: discord.Member, victim: discord.Member, valu
             return (await get_joke_response_positive(victim))
         
         elif scorer.id == victim.id and value < 0:
-            return f"{scorer.mention} -2'd themselves for some reason... oh well!\n {await get_joke_response_negative(victim)}"
+            return f"{scorer.mention} -{value}'d themselves for some reason... oh well!\n {await get_joke_response_negative(victim)}"
         else:
-            print(f"> \033[32m{scorer.name} -2'd {victim.name}\033[0m")
+            print(f"> \033[32m{scorer.name} -{value}'d {victim.name}\033[0m")
             return (await get_joke_response_negative(victim))
         
     except Exception as e:

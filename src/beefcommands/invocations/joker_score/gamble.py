@@ -1,3 +1,4 @@
+import os
 import discord
 from beefutilities import TTS
 from data import postgres
@@ -30,7 +31,7 @@ async def gamble_points(interaction: discord.Interaction):
     outcomes = {
         range(1,3):((current_score*-1),"Return to zero...\n(Score set to 0)", "return_to_0.gif"),
         range(3,6):(((current_score*2)*-1),"Oh no...\n(Score set negative)", "negative.gif"),
-        range(6,9):(((current_score*-1)+1),"Points set to 1... you are forever cursed to have an odd score...", "curse.gif"),
+        range(6,9):(((current_score*-1)+2),"Points set to 1...", "curse.gif"),
         range(9,12):(((current_score/2)*-1),"Points halved...","-50%.gif"),
         range(12,17):(((current_score/4)*-1),"yikes...\n(Points reduced by 25%)","-25%.gif"),
         range(17,20):(-10,"ough,, bad luck...\n(-10)","-10.gif"),
@@ -42,7 +43,7 @@ async def gamble_points(interaction: discord.Interaction):
         range(74,84):(5,"You got your points back, and then some!\n(points back +4)","+4.gif"),
         range(84,90):(11,"wooo thats what its all about baby, dedication!!\n(points back +10)","+10.gif"),
         range(90,94):(20,"20 Points!","score_x1.5.gif"),
-        range(94,97):((current_score*2),"YOWZA!!!!\n(Points doubled!)", "score_x2.gif"),
+        range(94,97):((current_score+1),"YOWZA!!!!\n(Points doubled!)", "score_x2.gif"),
         range(97,100):((current_score*10),"OMGGGGG!!!\n(Points x10!!!)", "score_x3.gif"),
         range(100,101):(1001,"WOAHHH!!!!!!\n(ONE THOUSAND POINTS!!!)", "score_x10.gif")
     }
@@ -50,7 +51,7 @@ async def gamble_points(interaction: discord.Interaction):
     roll, (value, explanation, media) = roll_outcome(outcomes)
 
     # change the users score by adding the value of the gambling outcome minus the 1 point to play
-    await change_joke_score(user, user, value-1, "gambling")
+    await change_joke_score(await interaction.guild.fetch_member(os.getenv("CLIENTID")), user, value-1, f"gambling: {explanation}")
 
     # find the path to the media folder
     file_path = file_io.construct_media_path(f"slots/{media}")
