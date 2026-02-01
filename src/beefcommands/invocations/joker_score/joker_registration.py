@@ -42,4 +42,5 @@ async def register_score(user: discord.Member):
 
 
 async def deregister_user(user: discord.Member):
+    await postgres.write(f"DELETE FROM public.joke_scores WHERE user_id = {user.id} AND guild_id = {user.guild.id};")
     await postgres.write(f"DELETE FROM public.users WHERE user_id = {user.id};")

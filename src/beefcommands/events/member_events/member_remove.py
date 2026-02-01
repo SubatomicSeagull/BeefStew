@@ -1,5 +1,6 @@
 import discord
 from beefutilities.guilds.guild_text_channel import read_guild_log_channel
+from beefcommands.invocations.joker_score.joker_registration import deregister_user
 from datetime import datetime
 
 
@@ -15,6 +16,8 @@ async def member_remove_event(bot, member: discord.Member, kicked_members, banne
         channel_id = await read_guild_log_channel(member.guild.id)
         channel = await bot.fetch_channel(channel_id)
         await channel.send(embed=await leave_message_embed(member, bot, member.guild.name))
+        await deregister_user(member)
+        
 
 async def leave_message_embed(user: discord.Member, bot, guild_name):
     user = await bot.fetch_user(user.id)

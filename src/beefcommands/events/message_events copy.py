@@ -70,6 +70,7 @@ async def message_send_event(bot: discord.Client, message: discord.Message):
                     await change_nickname(message, user, newname, False)
                 except Exception as e:
                     await log_error(e)
+            return
 
     if any(phrase in message.content.lower() for phrase in ["they call me"]):
         if " me " in message.content.lower():
@@ -81,6 +82,7 @@ async def message_send_event(bot: discord.Client, message: discord.Message):
                 await change_nickname(message, message.author, newname, True)
             except Exception as e:
                 await log_error(e)
+        return
 
     if "deadly dice man" in message.content.lower():
         result = randint(1, 6)
