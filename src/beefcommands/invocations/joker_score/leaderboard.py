@@ -30,8 +30,11 @@ async def retrieve_top_scores(interaction: discord.Interaction, bot):
             else:
                 speech_content += f"Number {rank} is {row[3]} with {row[1]} points. \n"
             rank += 1
-        leaderboard_content += f"\n\n**Hawk Tuah Jar:** `{tuahjar[0][0]}` points"
-        speech_content += f"The Hawk Tuah Jar has {tuahjar[0][0]} points. \n"
+        try:
+            leaderboard_content += f"\n\n**Hawk Tuah Jar:** `{tuahjar[0][0]}` points"
+            speech_content += f"The Hawk Tuah Jar has {tuahjar[0][0]} points. \n"
+        except IndexError:
+            pass
         if highest[0][3] == None or highest[0][3] == "None":
             speech_content += f"and the top joker of all time is {highest[0][2]} with {highest[0][1]}` points."
         else:

@@ -16,7 +16,7 @@ import json
 from datetime import datetime
 from beefutilities.IO import file_io
 
-async def message_send_event(bot, message):
+async def message_send_event(bot: discord.Client, message: discord.Message):
     # dont respond if its a bot message
     if message.author.bot or not message.content:
         return
@@ -45,14 +45,14 @@ async def message_send_event(bot, message):
 
         # +2 logic
         if any(phrase in message.content.lower() for phrase in ["+2", "plus 2", "plus two"]):
-            response = await change_joke_score(message.author, user, 2)
+            response = await change_joke_score(message.author, user, 2, message.content)
             await message.channel.send(response)
             await TTS.speak_output(message, response)
             return
 
         # -2 logic
         elif any(phrase in message.content.lower() for phrase in ["-2", "minus 2", "minus two"]):
-            response = await change_joke_score(message.author, user, -2)
+            response = await change_joke_score(message.author, user, -2, message.content)
             await message.channel.send(response)
             await TTS.speak_output(message, response)
             return

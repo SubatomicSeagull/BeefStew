@@ -28,11 +28,17 @@ async def is_registered_score(user: discord.Member):
 
 async def register_user(user: discord.Member):
     # register the user into the users table
-    await postgres.write(f"INSERT INTO public.users(user_id, user_name, msg_flag) VALUES ({user.id}, '{user.global_name}', FALSE);")
+    if user.global_name:
+        await postgres.write(f"INSERT INTO public.users(user_id, user_name, msg_flag) VALUES ({user.id}, '{user.global_name}', FALSE);")
+    else:
+        await postgres.write(f"INSERT INTO public.users(user_id, user_name, msg_flag) VALUES ({user.id}, '{user.name}', FALSE);")
 
 async def register_score(user: discord.Member):
     # register the user into the joke_scores table with some default values
-    await postgres.write(f"INSERT INTO public.joke_scores(user_id, guild_id, current_score, highest_score, lowest_score, user_name, user_display_name) VALUES ({user.id}, {user.guild.id}, 0, 0, 0, '{user.global_name}', '{user.nick}');")
+    if user.global_name:
+        await postgres.write(f"INSERT INTO public.joke_scores(user_id, guild_id, current_score, highest_score, lowest_score, user_name, user_display_name) VALUES ({user.id}, {user.guild.id}, 0, 0, 0, '{user.global_name}', '{user.nick}');")
+    else:
+        await postgres.write(f"INSERT INTO public.joke_scores(user_id, guild_id, current_score, highest_score, lowest_score, user_name, user_display_name) VALUES ({user.id}, {user.guild.id}, 0, 0, 0, '{user.name}', '{user.nick}');")
 
 
 async def deregister_user(user: discord.Member):
