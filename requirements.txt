@@ -13,3 +13,4 @@ pytz
 tzdata
 py-trello
 piper-tts
+matplotlib
