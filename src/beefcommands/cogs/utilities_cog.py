@@ -119,6 +119,14 @@ class UtilitiesCog(commands.Cog):
         print(f"> \033[32m{interaction.user.name} set BeefStew's voice to {voice.name}\033[0m")
         tts_engine.set_voice(voice.value)
         await interaction.response.send_message(f"Voice set to **{voice.name}**", ephemeral=True)
+        
+    @discord.app_commands.command(name="test", description="l")
+    async def test(self, interaction: discord.Interaction):
+        print(f"> \033[32m{interaction.user.name} used /test\033[0m")
+        await interaction.response.send_message("running test command", ephemeral=True)
+        import beefcommands.events.tasks.holiday_check as holiday_check
+        await holiday_check.check_for_holiday(self.bot)
+        
 
 # cog setup
 async def setup(bot):

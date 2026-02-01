@@ -23,17 +23,17 @@ class TaskSchedulerCog(commands.Cog):
         await cleanup_tts.cleanup_tts_folder()
 
     # task is scheduled to check for birthdays every day at 10am
-    @tasks.loop(time=datetime.time(10, 0, 0, tzinfo=TIMEZONE))
+    @tasks.loop(time=datetime.time(9, 3, 0, tzinfo=TIMEZONE))
     async def scheduled_birthday_check(self):
         await birthday_check.check_for_birthdays(self.bot)
 
     # task is scheduled to check for holidays every day at 8am
-    @tasks.loop(time=datetime.time(8, 0, 0, tzinfo=TIMEZONE))
+    @tasks.loop(time=datetime.time(9, 34, 0, tzinfo=TIMEZONE))
     async def scheduled_holiday_check(self):
         await holiday_check.check_for_holiday(self.bot)
 
     # task is scheduled to check for IOTD every day at 9am
-    @tasks.loop(time=datetime.time(9, 0, 0, tzinfo=TIMEZONE))
+    @tasks.loop(time=datetime.time(9, 5, 0, tzinfo=TIMEZONE))
     async def image_of_the_day_check(self):
         await image_of_the_day.image_of_the_day(self.bot)
         return
