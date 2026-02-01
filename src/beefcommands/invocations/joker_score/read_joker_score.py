@@ -1,4 +1,6 @@
 import discord
+import datetime
+import matplotlib.dates
 from data import postgres
 from beefcommands.invocations.joker_score.joker_registration import is_registered_users, is_registered_score, register_user, register_score
 
@@ -44,8 +46,24 @@ async def get_score_history(user: discord.Member):
 
     joker_score_id = await (postgres.read(f"SELECT id FROM public.joke_scores WHERE user_id = '{user.id}' AND guild_id = '{user.guild.id}';"))
     print(joker_score_id)
-    score_history = await (postgres.read(f"SELECT id, score_after, date FROM public.joke_scores_history WHERE joke_score_id = {joker_score_id[0][0]};"))
-    return score_history
+    
+    x_axis = []
+    y_axis = []
+    
+    score_history_values = await (postgres.read(f"SELECT score_after FROM public.joke_scores_history WHERE joke_score_id = {joker_score_id[0][0]};"))
+    score_history_dates = await (postgres.read(f"SELECT date FROM public.joke_scores_history WHERE joke_score_id = {joker_score_id[0][0]};"))
+    
+    #print(score_history_values)
+    #print(f"/n/n{score_history_dates}")
+    
+    for score in score_history_values:
+        y_axis.append(int(score[0]))
+    print(y_axis)
+    
+    for date in score_history_dates:
+        x_axis.append(str(date[0].strftime("%m/%d %H:%M:%S")))
+    print(x_axis)
+    return[x_axis, y_axis]
 
 # probably not going to use this
 async def get_multiplier(user: discord.Member):
@@ -80,5 +98,9 @@ async def score(interaction: discord.Interaction, user: discord.Member):
         await interaction.followup.send(f"couldnt find {user.name}'s score :( ({e}))")
         
 async def generate_graph(data):
-    raise NotImplementedError()
+    print(data)
+    import matplotlib.pyplot as plt
+    plt.plot(data[0], data[1], marker='x')
+    plt.show()
+    
     return

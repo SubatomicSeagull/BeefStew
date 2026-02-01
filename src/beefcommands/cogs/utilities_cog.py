@@ -125,7 +125,7 @@ class UtilitiesCog(commands.Cog):
         print(f"> \033[32m{interaction.user.name} used /test\033[0m")
         await interaction.response.send_message("running test command", ephemeral=True)
         import beefcommands.invocations.joker_score.read_joker_score as read_joker_score
-        print(await read_joker_score.get_score_history(interaction.user))
+        print(await read_joker_score.generate_graph(await read_joker_score.get_score_history(interaction.user)))
 
 # cog setup
 async def setup(bot):
