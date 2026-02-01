@@ -13,7 +13,7 @@ async def check_for_holiday(bot: discord.Client):
     holidays = {
         (1, 1): "New Year's Day",
         (25, 12): "Christmas",
-        (1, 2): "Halloween"
+        (31, 10): "Halloween"
     }
 
     # fetch the guild object from the guild id

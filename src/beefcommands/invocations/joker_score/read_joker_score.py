@@ -35,6 +35,18 @@ async def get_user_lowest_score(user: discord.Member):
     score = lowest_score[0][0]
     return int(score)
 
+async def get_score_history(user: discord.Member):
+    if not await is_registered_users(user):
+        await register_user(user)
+        
+    if not await is_registered_score(user):
+        await register_score(user)
+    
+    joker_score_id = await (postgres.read(f"SELECT id FROM public.joke_scores WHERE user_id = '{user.id}' AND guild_id = '{user.guild.id}';"))
+    print(joker_score_id)
+    score_history = await (postgres.read(f"SELECT id, score_after, date FROM public.joke_scores_history WHERE joke_score_id = {joker_score_id[0][0]};"))
+    return score_history
+
 # probably not going to use this
 async def get_multiplier(user: discord.Member):
     winner = discord.utils.get(user.guild.roles, name = "the funniest person ever")
