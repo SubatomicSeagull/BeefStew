@@ -38,10 +38,10 @@ async def get_user_lowest_score(user: discord.Member):
 async def get_score_history(user: discord.Member):
     if not await is_registered_users(user):
         await register_user(user)
-        
+
     if not await is_registered_score(user):
         await register_score(user)
-    
+
     joker_score_id = await (postgres.read(f"SELECT id FROM public.joke_scores WHERE user_id = '{user.id}' AND guild_id = '{user.guild.id}';"))
     print(joker_score_id)
     score_history = await (postgres.read(f"SELECT id, score_after, date FROM public.joke_scores_history WHERE joke_score_id = {joker_score_id[0][0]};"))
@@ -78,3 +78,7 @@ async def score(interaction: discord.Interaction, user: discord.Member):
         await interaction.followup.send(f"{user.mention}'s joker score: **{score}**!")
     except Exception as e:
         await interaction.followup.send(f"couldnt find {user.name}'s score :( ({e}))")
+        
+async def generate_graph(data):
+    raise NotImplementedError()
+    return
