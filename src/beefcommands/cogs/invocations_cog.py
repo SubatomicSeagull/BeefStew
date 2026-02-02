@@ -29,6 +29,12 @@ class InvocationsCog(commands.Cog):
     async def score(self, interaction: discord.Interaction, joker: discord.Member):
         print(f"> \033[32m{interaction.user.name} used /score on {joker.name}\033[0m")
         await read_joker_score.score(interaction, joker)
+        
+    # generate a graph of the users score history over time
+    @discord.app_commands.command(name="history", description="haha funny line go up")
+    async def history(self, interaction: discord.Interaction, joker: discord.Member):
+        print(f"> \033[32m{interaction.user.name} used /history on {joker.name}\033[0m")
+        await read_joker_score.show_history(interaction, joker)
 
     @discord.app_commands.command(name="leaderboard", description="whos the funniest huh??")
     async def leaderboard(self, interaction: discord.Interaction):

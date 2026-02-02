@@ -2,6 +2,7 @@ import discord
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
 from data import postgres
+from io import BytesIO
 from beefcommands.invocations.joker_score.joker_registration import is_registered_users, is_registered_score, register_user, register_score
 
 async def retrieve_joke_score(user: discord.Member):
@@ -77,9 +78,7 @@ async def get_score_history(user: discord.Member):
     if not await is_registered_score(user):
         await register_score(user)
 
-    joker_score_id = await (postgres.read(f"SELECT id FROM public.joke_scores WHERE user_id = '{user.id}' AND guild_id = '{user.guild.id}';"))
-    print(joker_score_id)
-    
+    joker_score_id = await (postgres.read(f"SELECT id FROM public.joke_scores WHERE user_id = '{user.id}' AND guild_id = '{user.guild.id}';"))    
     x_axis = []
     y_axis = []
     
@@ -137,7 +136,27 @@ async def generate_graph(user: discord.Member):
     ax.set_xlabel('Date')
     ax.set_ylabel('Joker Score')
     ax.set_title(f'Joker Score History for {user.name}')
+    ax.margins(x=0)
 
     plt.tight_layout()
-    plt.show()
-    return
+    
+    # write to the image binary and return
+    image_binary = BytesIO()
+    plt.savefig(image_binary, format='png', dpi=150, bbox_inches='tight')
+    image_binary.seek(0)
+    return image_binary
+
+async def show_history(interaction: discord.Interaction, user: discord.Member):
+    await interaction.response.defer()
+
+    # dm restriction
+    if isinstance(interaction.channel, discord.DMChannel):
+        await interaction.followup.send("we are literally in DMs rn bro u cant do that here...")
+        return
+    try:
+        graph = await generate_graph(user)
+        await interaction.followup.send(file = discord.File(fp = graph, filename = f"{user.name}_joker_score_history.png"))
+        return
+    except Exception as e:
+        await interaction.followup.send(f"couldnt generate {user.name}'s score history :( ({e})")
+        return

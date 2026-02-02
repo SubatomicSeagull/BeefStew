@@ -4,7 +4,8 @@
 
 ## Features:
 - beefstew now tracks score changes
-- u can generate a graph of ur joker score over time with `/history`
+- u can generate a graph of joker score over time with `/history`
+- ccping now has nice new icons to tell u what service something is
 
 ## Fixes:
 - general bug fixes and improvemnets

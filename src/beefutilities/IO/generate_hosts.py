@@ -14,7 +14,6 @@ async def containers_json_reformat():
     if data:
         data = data.decode('utf-8')
         data = json.loads(data)
-        
         # add smb file share entry
         container_list.append({
             "name": "<:smb:1442510224345796619>  Files",
@@ -30,6 +29,7 @@ async def containers_json_reformat():
                         "name": (get_container_type(name) + "  " + beautify_name(name)),
                         "ports": get_first_port(ports)
                     })
+    container_list.sort(key=lambda x: x['name'].lower())
     return container_list
             
     
@@ -64,7 +64,9 @@ def get_container_type(name):
         case "srv":
             return "<:service:1442510214707417258>"
         case "dnd":
-            return "<:foundry:1442510184059764776>" 
+            return "<:foundry:1442510184059764776>"
+        case "vid":
+            return "<:video:1442510835015483402>"
     return "<:service:1442510214707417258>"
 
 
