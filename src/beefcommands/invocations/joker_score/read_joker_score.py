@@ -1,6 +1,6 @@
 import discord
-import datetime
-import matplotlib.dates
+import matplotlib.pyplot as plt
+from matplotlib.ticker import MaxNLocator
 from data import postgres
 from beefcommands.invocations.joker_score.joker_registration import is_registered_users, is_registered_score, register_user, register_score
 
@@ -37,33 +37,6 @@ async def get_user_lowest_score(user: discord.Member):
     score = lowest_score[0][0]
     return int(score)
 
-async def get_score_history(user: discord.Member):
-    if not await is_registered_users(user):
-        await register_user(user)
-
-    if not await is_registered_score(user):
-        await register_score(user)
-
-    joker_score_id = await (postgres.read(f"SELECT id FROM public.joke_scores WHERE user_id = '{user.id}' AND guild_id = '{user.guild.id}';"))
-    print(joker_score_id)
-    
-    x_axis = []
-    y_axis = []
-    
-    score_history_values = await (postgres.read(f"SELECT score_after FROM public.joke_scores_history WHERE joke_score_id = {joker_score_id[0][0]};"))
-    score_history_dates = await (postgres.read(f"SELECT date FROM public.joke_scores_history WHERE joke_score_id = {joker_score_id[0][0]};"))
-    
-    #print(score_history_values)
-    #print(f"/n/n{score_history_dates}")
-    
-    for score in score_history_values:
-        y_axis.append(int(score[0]))
-    print(y_axis)
-    
-    for date in score_history_dates:
-        x_axis.append(str(date[0].strftime("%m/%d %H:%M:%S")))
-    print(x_axis)
-    return[x_axis, y_axis]
 
 # probably not going to use this
 async def get_multiplier(user: discord.Member):
@@ -96,11 +69,75 @@ async def score(interaction: discord.Interaction, user: discord.Member):
         await interaction.followup.send(f"{user.mention}'s joker score: **{score}**!")
     except Exception as e:
         await interaction.followup.send(f"couldnt find {user.name}'s score :( ({e}))")
-        
-async def generate_graph(data):
-    print(data)
-    import matplotlib.pyplot as plt
-    plt.plot(data[0], data[1], marker='x')
-    plt.show()
+
+async def get_score_history(user: discord.Member):
+    if not await is_registered_users(user):
+        await register_user(user)
+
+    if not await is_registered_score(user):
+        await register_score(user)
+
+    joker_score_id = await (postgres.read(f"SELECT id FROM public.joke_scores WHERE user_id = '{user.id}' AND guild_id = '{user.guild.id}';"))
+    print(joker_score_id)
     
+    x_axis = []
+    y_axis = []
+    
+    score_history_values = await (postgres.read(f"SELECT score_after FROM public.joke_scores_history WHERE joke_score_id = {joker_score_id[0][0]};"))
+    score_history_dates = await (postgres.read(f"SELECT date FROM public.joke_scores_history WHERE joke_score_id = {joker_score_id[0][0]};"))
+    
+    for score in score_history_values:
+        y_axis.append(int(score[0]))
+            
+    for date in score_history_dates:
+        x_axis.append(date[0])
+        
+    return x_axis, y_axis
+
+async def generate_graph(user: discord.Member):
+    
+    x, y = await get_score_history(user)
+
+    x_pos = list(range(len(x)))
+
+    tick_positions = []
+    tick_labels = []
+
+    last_day = None
+
+    for i, dt in enumerate(x):
+        day = dt.date()
+        if day != last_day:
+            tick_positions.append(i)
+            tick_labels.append(dt.strftime('%d/%m'))
+            last_day = day
+        
+    
+
+    
+    fig, ax = plt.subplots()
+
+    x, y = await get_score_history(user)
+    x_pos = range(len(x))
+
+    ax.plot(x_pos, y, marker='o')
+
+    ax.set_xticks(tick_positions)
+    ax.set_xticklabels(tick_labels, rotation=45, ha='right')
+    
+    y_min = min(y)
+    y_max = max(y)
+
+    padding = max(2, int((y_max - y_min) * 0.2))
+
+    ax.set_ylim(y_min - padding, y_max + padding)
+    ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+    
+
+    ax.set_xlabel('Date')
+    ax.set_ylabel('Joker Score')
+    ax.set_title(f'Joker Score History for {user.name}')
+
+    plt.tight_layout()
+    plt.show()
     return
