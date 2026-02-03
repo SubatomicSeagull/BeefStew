@@ -15,6 +15,7 @@ from beefutilities.TTS import speak
 import json
 from datetime import datetime
 from beefutilities.IO import file_io
+from beefcommands.invocations.quote_react import quote_message
 
 async def message_send_event(bot: discord.Client, message: discord.Message):
     # dont respond if its a bot message
@@ -243,7 +244,7 @@ async def message_edit_event(bot: discord.Client, before, after):
     embed = discord.Embed(title=f"Message edited in {before.channel.mention}", color=discord.Color.yellow())
     embed.add_field(name="Original", value=f"```{before.content}```", inline=False)
     embed.add_field(name="Edited", value=f"```{after.content}```", inline=False)
-    embed.add_field(name="", value=f"{before.author.guild.name} - {datetime.now().strftime('%d/%m/%Y - %H:%M')}")
+    embed.add_field(name="", value=f"{before.author.guild.name} • {datetime.now().strftime('%d/%m/%Y - %H:%M')}")
     await channel.send(embed=embed)
 
 async def message_delete_event(bot: discord.Client, message: discord.Message):
@@ -277,9 +278,8 @@ async def message_delete_event(bot: discord.Client, message: discord.Message):
         for url in attachments:
             embed.add_field(name="File - ", value=f"{url}", inline=False)
     #embed footer
-    embed.add_field(name="", value=f"{message.author.guild.name} - {datetime.now().strftime('%d/%m/%Y - %H:%M')}")
+    embed.add_field(name="", value=f"{message.author.guild.name} • {datetime.now().strftime('%d/%m/%Y - %H:%M')}")
     await channel.send(embed=embed)
-
 
 async def get_response(message: discord.Message):
     # pathfind to the responses.json
@@ -306,4 +306,6 @@ async def get_response(message: discord.Message):
                 await TTS.speak_output(message, content)
                 return
 
-
+async def reaction_add_event(message, emoji, reactor):
+    if emoji.name == "⭐":
+        await quote_message(message, reactor)

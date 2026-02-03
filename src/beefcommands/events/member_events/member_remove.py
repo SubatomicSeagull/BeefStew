@@ -31,5 +31,5 @@ async def leave_message_embed(user: discord.Member, bot, guild_name):
     leaveembed.add_field(name="", value="", inline=False)
     leaveembed.set_author(name="Beefstew", icon_url=bot.user.avatar.url)
     # embed footer
-    leaveembed.add_field(name="", value=f"{guild_name} - {datetime.now().strftime('%d/%m/%Y - %H:%M')}")
+    leaveembed.add_field(name="", value=f"{guild_name} • {datetime.now().strftime('%d/%m/%Y - %H:%M')}")
     return leaveembed

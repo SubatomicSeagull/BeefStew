@@ -6,6 +6,8 @@
 - beefstew now tracks score changes
 - u can generate a graph of joker score over time with `/history`
 - ccping now has nice new icons to tell u what service something is
+- added some new trigger words
+- you can now react to a message with ⭐ and beefstew will immortalise the message in the quotes channel for furture generations to scorn at! 
 
 ## Fixes:
 - general bug fixes and improvemnets
