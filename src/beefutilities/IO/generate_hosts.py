@@ -14,6 +14,7 @@ async def containers_json_reformat():
     if data:
         data = data.decode('utf-8')
         data = json.loads(data)
+        print(data)
         # add smb file share entry
         container_list.append({
             "name": "<:smb:1442510224345796619>  Files",
@@ -30,6 +31,7 @@ async def containers_json_reformat():
                         "ports": get_first_port(ports)
                     })
     container_list.sort(key=lambda x: x['name'].lower())
+    print(container_list)
     return container_list
             
     
@@ -83,12 +85,8 @@ def get_first_port(ports_str):
     if not ports_str:
         return None
 
-    # match something like 0.0.0.0:8123->8123/tcp or just 20000/udp
-    match = re.search(r':(\d+)(?:->\d+)?', ports_str)
+    match = re.search(r':(\d+)->\d+/tcp\b', ports_str)
     if match:
         return int(match.group(1))
-    
-    match = re.search(r'(\d+)/\w+', ports_str)
-    if match:
-        return int(match.group(1))
+
     return None
