@@ -88,11 +88,6 @@ async def get_score_history(user: discord.Member):
     
     score_all = await (postgres.read(f"SELECT score_after, date FROM public.joke_scores_history WHERE joke_score_id = {joker_score_id[0][0]} ORDER BY date DESC LIMIT 30;"))
     
-    print(score_all)
-    
-    for i in range(len(score_all)):
-        print(f"score on {(score_all[i][1]).strftime('%d/%m')} was {score_all[i][0]}")
-    
     for i in range (len(score_all)):
         y_axis.append(int(score_all[i][0]))
         x_axis.append(score_all[i][1])
@@ -100,7 +95,6 @@ async def get_score_history(user: discord.Member):
     y_axis.reverse()
     x_axis.reverse()
         
-    print(f"x: {x_axis},\n y: {y_axis}")
     return x_axis, y_axis
 
 async def generate_graph(user: discord.Member):
@@ -119,10 +113,7 @@ async def generate_graph(user: discord.Member):
             tick_positions.append(i)
             tick_labels.append(dt.strftime('%d/%m'))
             last_day = day
-        
-    
 
-    
     fig, ax = plt.subplots()
     
     fig.patch.set_facecolor('#2b2b2b')

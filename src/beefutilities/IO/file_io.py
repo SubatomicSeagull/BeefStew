@@ -3,7 +3,7 @@ import discord
 import aiohttp
 import re
 from io import BytesIO
-from PIL import Image
+from PIL import Image, ImageSequence
 from beefutilities.users.user import get_avatar_image
 
 
@@ -22,18 +22,23 @@ def construct_root_path(*args):
 def construct_data_path(*args):
     return os.path.join((os.path.dirname(__file__)), "..", "..", "data", *args)
 
-# loop through attachments and find only image files, TODO add support for other images like .heic, webp, tiff, convert these to png before processing
+# loop through attachments and find only image files, TODO add support for those fake gifs that are actaully mp4s
+# but we'll neef ffmpeg for that and its a whooole thing just to convert an entire mp4 to a png sequence and take
+# the first frame..........
+
 async def get_attachment(message: discord.Message):
     if not message.attachments:
         url_pattern = re.compile("https?://\S+")
         urls = url_pattern.findall(message.content or "")
         for url in urls:
             lower = url.lower().split("?")[0]
-            if any(lower.endswith(ext) for ext in ['png', 'jpg', 'jpeg', 'gif']):
-                return await image_bytes(url)
+            if any(lower.endswith(ext) for ext in ['png', 'jpg', 'jpeg', 'gif', 'webp', 'tiff', 'heic', 'bmp', 'svg']):
+                img_bytes = await image_bytes(url)
+                return convert_to_png(img_bytes)
     else:
-        attachment = next((image for image in message.attachments if image.content_type.endswith(('png', 'jpg', 'jpeg', 'gif'))), None)
-        return await attachment.read()
+        attachment = next((image for image in message.attachments if image.content_type.endswith(('png', 'jpg', 'jpeg', 'gif', 'webp', 'tiff', 'heic', 'bmp', 'svg'))), None)
+        img_bytes = await attachment.read()
+        return convert_to_png(img_bytes)
 
 async def image_bytes(url):
     async with aiohttp.ClientSession() as session:
@@ -43,12 +48,30 @@ async def image_bytes(url):
 # fetch an image from a link, either a discotrd user avatar url or a link in a message
 async def fetch_from_source(source):
     if isinstance(source, discord.Member):
-        src = await get_avatar_image(source)
-    else:
-        attachment = await get_attachment(source)
-        try:
-            src = Image.open(BytesIO(attachment))
-            src = src.convert('RGBA')
-        except Exception as e:
-            return None
-    return src
+        return await get_avatar_image(source)
+
+    png_bytes = await get_attachment(source)
+    if not png_bytes:
+        return None
+
+    try:
+        return Image.open(BytesIO(png_bytes))
+    except Exception:
+        return None
+
+def convert_to_png(image_bytes: bytes):
+    with Image.open(BytesIO(image_bytes)) as img:
+        
+        if img.format == "GIF":
+            frame = next(ImageSequence.Iterator(img))
+            frame = frame.convert("RGBA")
+
+            out = BytesIO()
+            frame.save(out, format="PNG")
+            return out.getvalue()
+        
+        img = img.convert("RGBA")
+        out = BytesIO()
+        img.save(out, format="PNG")
+        
+        return out.getvalue()
