@@ -1,10 +1,11 @@
 import discord
 import requests
-from PIL import Image, ImageOps
+from PIL import Image, ImageOps, ImageEnhance
 from io import BytesIO
 from data import postgres
 from beefcommands.invocations.joker_score.joker_registration import is_registered_users, register_user
 import datetime
+import aiohttp
 
 async def get_avatar_image(victim: discord.Member):
     # retrieve the url of the users pfp
@@ -19,6 +20,29 @@ async def get_avatar_image(victim: discord.Member):
 
 async def get_user_avatar(user: discord.Member):
     return user.display_avatar.url
+
+async def get_average_avatar_color(user: discord.Member) -> str:
+    
+    url =  await get_user_avatar(user)
+
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as resp:
+            if resp.status != 200:
+                return "#ffcc00"
+
+            data = await resp.read()
+
+    img = Image.open(BytesIO(data)).convert("RGB")
+    img = img.resize((50, 50))
+    
+    img = ImageEnhance.Color(img).enhance(2)
+    pixels = list(img.getdata())
+    r = sum(p[0] for p in pixels) // len(pixels)
+    g = sum(p[1] for p in pixels) // len(pixels)
+    b = sum(p[2] for p in pixels) // len(pixels)
+
+    return f"#{r:02x}{g:02x}{b:02x}"
+
 
 async def register_user_bday(user: discord.Member, birthday):
     # check if the user is already registered

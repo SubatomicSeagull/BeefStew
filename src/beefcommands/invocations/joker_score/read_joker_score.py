@@ -4,6 +4,7 @@ from matplotlib.ticker import MaxNLocator
 from data import postgres
 from io import BytesIO
 from beefcommands.invocations.joker_score.joker_registration import is_registered_users, is_registered_score, register_user, register_score
+from beefutilities.users.user import get_average_avatar_color
 
 async def retrieve_joke_score(user: discord.Member):
     if not await is_registered_users(user):
@@ -82,23 +83,31 @@ async def get_score_history(user: discord.Member):
     x_axis = []
     y_axis = []
     
-    score_history_values = await (postgres.read(f"SELECT score_after FROM public.joke_scores_history WHERE joke_score_id = {joker_score_id[0][0]};"))
-    score_history_dates = await (postgres.read(f"SELECT date FROM public.joke_scores_history WHERE joke_score_id = {joker_score_id[0][0]};"))
+    #score_history_values = await (postgres.read(f"SELECT score_after FROM public.joke_scores_history WHERE joke_score_id = {joker_score_id[0][0]};"))
+    #score_history_dates = await (postgres.read(f"SELECT date FROM public.joke_scores_history WHERE joke_score_id = {joker_score_id[0][0]};"))
     
-    for score in score_history_values:
-        y_axis.append(int(score[0]))
-            
-    for date in score_history_dates:
-        x_axis.append(date[0])
+    score_all = await (postgres.read(f"SELECT score_after, date FROM public.joke_scores_history WHERE joke_score_id = {joker_score_id[0][0]} ORDER BY date DESC LIMIT 30;"))
+    
+    print(score_all)
+    
+    for i in range(len(score_all)):
+        print(f"score on {(score_all[i][1]).strftime('%d/%m')} was {score_all[i][0]}")
+    
+    for i in range (len(score_all)):
+        y_axis.append(int(score_all[i][0]))
+        x_axis.append(score_all[i][1])
         
+    y_axis.reverse()
+    x_axis.reverse()
+        
+    print(f"x: {x_axis},\n y: {y_axis}")
     return x_axis, y_axis
 
 async def generate_graph(user: discord.Member):
-    
+
     x, y = await get_score_history(user)
 
     x_pos = list(range(len(x)))
-
     tick_positions = []
     tick_labels = []
 
@@ -115,14 +124,18 @@ async def generate_graph(user: discord.Member):
 
     
     fig, ax = plt.subplots()
+    
+    fig.patch.set_facecolor('#2b2b2b')
+    ax.set_facecolor('#2b2b2b')
 
-    x, y = await get_score_history(user)
     x_pos = range(len(x))
 
-    ax.plot(x_pos, y, marker='o')
+    ax.plot(x_pos, y, marker='o', color=await get_average_avatar_color(user), linewidth=2, markersize=6)
 
     ax.set_xticks(tick_positions)
-    ax.set_xticklabels(tick_labels, rotation=45, ha='right')
+    ax.set_xticklabels(tick_labels, rotation=45, ha='right', color='white')
+    ax.tick_params(axis='x', colors='white')
+    ax.tick_params(axis='y', colors='white')
     
     y_min = min(y)
     y_max = max(y)
@@ -133,17 +146,25 @@ async def generate_graph(user: discord.Member):
     ax.yaxis.set_major_locator(MaxNLocator(integer=True))
     
 
-    ax.set_xlabel('Date')
-    ax.set_ylabel('Joker Score')
-    ax.set_title(f'Joker Score History for {user.name}')
+    ax.set_xlabel('Date', color='white')
+    ax.set_ylabel('Joker Score', color='white')
+    ax.set_title(f'Joker Score History for {user.name}', color='white')
     ax.margins(x=0)
 
+    for spine in ax.spines.values():
+        spine.set_color('white')
+    
+    plt.axhline(0, color='white', linewidth=0.8, linestyle='--', alpha=0.5)
+    
     plt.tight_layout()
     
     # write to the image binary and return
     image_binary = BytesIO()
     plt.savefig(image_binary, format='png', dpi=150, bbox_inches='tight')
     image_binary.seek(0)
+    
+    plt.close(fig)
+    
     return image_binary
 
 async def show_history(interaction: discord.Interaction, user: discord.Member):
