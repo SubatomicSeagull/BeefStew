@@ -84,7 +84,7 @@ async def minus2(interaction: discord.Interaction, member: discord.Member, reaso
 
     await interaction.followup.send(await change_joke_score(interaction.user, member, -2, reason))
 
-async def hawk_tuah_penalty(victim: discord.Member):
+async def swear_jar_penalty(victim: discord.Member):
     # register the user in the db if theyre not already
     if not await is_registered_users(victim):
         await register_user(victim)

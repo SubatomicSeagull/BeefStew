@@ -1,6 +1,6 @@
 import re
 import discord
-from beefcommands.invocations.joker_score.change_joker_score import change_joke_score, hawk_tuah_penalty
+from beefcommands.invocations.joker_score.change_joker_score import change_joke_score, swear_jar_penalty
 from beefcommands.invocations.nickname_rule import change_nickname
 from beefcommands.utilities.show_me import show
 from beefutilities import yt_utils
@@ -208,15 +208,18 @@ async def message_send_event(bot: discord.Client, message: discord.Message):
         await TTS.speak_output(message, "Crazy...? I was crazy once... They locked me in a room with rubber rats and the rubber rats made me go crazy!")
         return
 
+    # change the logic so that the jar is triggered when a phrase or word is said that is in swears.json
+    # also remember to change the gif so taht it doesnt say hawk tuah on it, do i stil haveb the blend file? 
+    # also remember to change the name of the jar in the database 
     if "tuah" in message.content.lower():
-        jar_total = await hawk_tuah_penalty(message.author)
+        jar_total = await swear_jar_penalty(message.author)
         file = discord.File(file_io.construct_media_path("hawktuahjar.gif"))
-        await message.reply(content=f"{message.author.mention} pays the Hawk Tuah Penalty!!! Another 2 points to the jar...\n**Jar Points: {jar_total}**", file=file)
+        await message.reply(content=f"{message.author.mention} Another 2 points to the swear jar...\n**Jar Points: {jar_total}**", file=file)
         
         if message.author.nick:
-            await TTS.speak_output(message, f"{message.author.nick} pays the Hawk Tuah Penalty!!! Another 2 points to the jar...")
+            await TTS.speak_output(message, f"{message.author.nick} Another 2 points to the swear jar...")
         else:
-            await TTS.speak_output(message, f"{message.author.name} pays the Hawk Tuah Penalty!!! Another 2 points to the jar...")
+            await TTS.speak_output(message, f"{message.author.name} Another 2 points to the swear jar...")
         return
 
     if any(phrase in message.content.lower() for phrase in ["why are we in ", "we are in "]):
