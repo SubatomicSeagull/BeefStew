@@ -9,7 +9,7 @@ async def update_patch_notes_info(interaction: discord.Interaction, bot):
     try:
         info = await parse_patch_update_file()
     except Exception as e:
-        await interaction.followup.send("Couldn't find the patch notes :(")
+        await interaction.followup.send(f"Couldn't find the patch notes :( {e}")
         return
 
     version = info["version"]
@@ -63,7 +63,7 @@ async def parse_patch_update_file():
     # construct the file path to patchnotes.md
     markdown_path = file_io.construct_root_path("patchnotes.md")
 
-    with open(markdown_path, "r") as file:
+    with open(markdown_path, "r", encoding="utf-8") as file:
         lines = file.read().splitlines()
 
     version = ""
