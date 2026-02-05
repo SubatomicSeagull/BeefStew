@@ -1,6 +1,6 @@
 import re
 import discord
-from beefcommands.invocations.joker_score.change_joker_score import change_joke_score, swear_jar_penalty
+from beefcommands.invocations.joker_score.change_joker_score import change_joke_score
 from beefcommands.invocations.nickname_rule import change_nickname
 from beefcommands.utilities.show_me import show
 from beefutilities import yt_utils
@@ -11,11 +11,14 @@ from beefutilities.guilds.guild_text_channel import read_guild_log_channel
 import beefcommands.invocations.channel_name_rule as channel_name_rule
 from beefutilities import TTS
 from beefcommands.utilities.tell_me import tell_me
-from beefutilities.TTS import speak
 import json
 from datetime import datetime
 from beefutilities.IO import file_io
 from beefcommands.invocations.quote_react import quote_message
+from beefcommands.invocations.joker_score.swear_jar import swear_jar_penalty, get_swear_jar_score, load_swears
+
+g_swears = load_swears()
+print(f"> loaded swear words, {g_swears}")
 
 async def message_send_event(bot: discord.Client, message: discord.Message):
     # dont respond if its a bot message
@@ -208,27 +211,14 @@ async def message_send_event(bot: discord.Client, message: discord.Message):
         await TTS.speak_output(message, "Crazy...? I was crazy once... They locked me in a room with rubber rats and the rubber rats made me go crazy!")
         return
 
-    # change the logic so that the jar is triggered when a phrase or word is said that is in swears.json
-    # also remember to change the gif so taht it doesnt say hawk tuah on it, do i stil haveb the blend file? 
-    # also remember to change the name of the jar in the database 
-    if "tuah" in message.content.lower():
-        jar_total = await swear_jar_penalty(message.author)
-        file = discord.File(file_io.construct_media_path("hawktuahjar.gif"))
-        await message.reply(content=f"{message.author.mention} Another 2 points to the swear jar...\n**Jar Points: {jar_total}**", file=file)
-        
-        if message.author.nick:
-            await TTS.speak_output(message, f"{message.author.nick} Another 2 points to the swear jar...")
-        else:
-            await TTS.speak_output(message, f"{message.author.name} Another 2 points to the swear jar...")
-        return
-
     if any(phrase in message.content.lower() for phrase in ["why are we in ", "we are in "]):
         channel_name_split = message.content.split(" in ", 1)
         if len(channel_name_split) > 1:
             newname = channel_name_split[1].strip()
             await channel_name_rule.invoke_channel_name_rule(message, newname)
             return
-
+        
+    await check_swear_jar(message)
     await get_response(message)
 
 async def message_edit_event(bot: discord.Client, before, after):
@@ -308,6 +298,23 @@ async def get_response(message: discord.Message):
                 await message.reply(content)
                 await TTS.speak_output(message, content)
                 return
+
+async def check_swear_jar(message: discord.Message):
+    global g_swears
+    # check for trigger words
+    print(g_swears)
+    for swear in g_swears:
+        if swear in message.content.lower():
+            await swear_jar_penalty(message.author)
+            jar_total = await get_swear_jar_score(message.guild)
+            file = discord.File(file_io.construct_media_path("hawktuahjar.gif"))
+            await message.reply(content=f"{message.author.mention} Another 2 points to the swear jar...\n**Jar Points: {jar_total}**", file=file)
+            
+            if message.author.nick:
+                await TTS.speak_output(message, f"{message.author.nick} Another 2 points to the swear jar...")
+            else:
+                await TTS.speak_output(message, f"{message.author.name} Another 2 points to the swear jar...")
+            return
 
 async def reaction_add_event(message, emoji, reactor):
     if emoji.name == "⭐":

@@ -3,7 +3,7 @@ from discord.ext import commands
 from beefcommands.invocations.joker_score import change_joker_score, read_joker_score, gamble, leaderboard
 from beefcommands.invocations.nickname_rule import invoke_nickname_rule
 from beefcommands.invocations.channel_name_rule import invoke_channel_name_rule
-from beefcommands.invocations.joker_score.joker_store import display_shop
+from beefcommands.invocations.joker_score.jokers_trick import display_shop
 
 class InvocationsCog(commands.Cog):
     def __init__(self, bot):

@@ -84,26 +84,6 @@ async def minus2(interaction: discord.Interaction, member: discord.Member, reaso
 
     await interaction.followup.send(await change_joke_score(interaction.user, member, -2, reason))
 
-async def swear_jar_penalty(victim: discord.Member):
-    # register the user in the db if theyre not already
-    if not await is_registered_users(victim):
-        await register_user(victim)
-        
-    if not await is_registered_score(victim):
-        await register_score(victim)
-
-    # take 2 points from the victim and update lowest score
-    await postgres.write(f"UPDATE public.joke_scores SET current_score = current_score - 2 WHERE user_id = '{victim.id}' AND guild_id = '{victim.guild.id}';")
-    await set_lowest_score(victim, await retrieve_joke_score(victim))
-
-    # give 2 points to the jar
-    await postgres.write(f"UPDATE public.joke_scores SET current_score = current_score + 2 WHERE user_id = '99' AND guild_id = '{victim.guild.id}';")
-    await postgres.write(f"UPDATE public.joke_scores SET user_display_name = '{victim.nick}' WHERE user_id = '{victim.id}' AND guild_id = '{victim.guild.id}';")
-
-    joke_score = await (postgres.read(f"SELECT current_score FROM public.joke_scores WHERE user_id = '99' AND guild_id = '{victim.guild.id}';"))
-    score = joke_score[0][0]
-    return score
-
 async def set_highest_score(user: discord.Member , score):
     if score > await get_user_highest_score(user):
         await postgres.write(f"UPDATE public.joke_scores SET highest_score = {score} WHERE user_id = '{user.id}' AND guild_id = '{user.guild.id}';")

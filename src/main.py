@@ -34,6 +34,7 @@ bot.executor = ThreadPoolExecutor(max_workers = 4)
 
 kicked_members = set()
 banned_members = set()
+
 # load the commands though the cogs
 async def load_cogs():
     print("> registering cogs...")
@@ -55,7 +56,7 @@ async def on_ready():
 
     # re-register all the commands
     await bot.tree.sync()
-
+    
     # go!
     print(f"> \033[1;91m{bot.user} is now online, may god help us all...\033[0m")
 
