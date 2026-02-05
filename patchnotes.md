@@ -15,3 +15,4 @@
 
 ## Misc:
 - fixed / tidied up some formatting issues
+- the hawk tuah jar is now simply "the swear jar" and theres more words in it so be careful!
