@@ -7,6 +7,7 @@ from concurrent.futures import ThreadPoolExecutor
 from spotipy.oauth2 import SpotifyClientCredentials
 import spotipy
 from trello import TrelloClient
+from beefcommands.invocations.joker_score.sacred_words import load_sacred_words, clear_sacred_words
 
 # start up the multithreading loop
 asyncloop = asyncio.new_event_loop()
@@ -56,6 +57,9 @@ async def on_ready():
 
     # re-register all the commands
     await bot.tree.sync()
+    
+    # generate new saint and sinner word for the day
+    load_sacred_words()
     
     # go!
     print(f"> \033[1;91m{bot.user} is now online, may god help us all...\033[0m")
