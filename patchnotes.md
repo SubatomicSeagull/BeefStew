@@ -9,6 +9,7 @@
 - added some new trigger words
 - you can now react to a message with ⭐ and beefstew will immortalise the message in the quotes channel for furture generations to scorn at!
 - visage commands now support more file types like gif and webp
+- new command `/jar`... yeah
 
 ## Fixes:
 - general bug fixes and improvemnets
