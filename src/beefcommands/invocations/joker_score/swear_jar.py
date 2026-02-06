@@ -41,13 +41,7 @@ async def swear_jar_payout(victims: list[discord.Member]):
     for victim in victims:
         await change_joke_score(await victim.guild.fetch_member(os.getenv("CLIENTID")), victim, scoreamount, "swear jar payout")
     await empty_swear_jar(victims[0].guild)
-    
-async def swear_jar_payout_embed(interaction: discord.Interaction, victims: list[discord.Member]):
-    await interaction.response.defer()
-    gif = await generate_payout_gif(victims)
-    await interaction.followup.send(content="swear jar payout!!!", file=discord.File(fp=gif, filename="payout.gif"))
     return
-
 
 async def generate_payout_gif(victims: list[discord.Member]):
     bg = Image.open(file_io.construct_media_path("payout.gif"))
