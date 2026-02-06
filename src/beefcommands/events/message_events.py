@@ -21,6 +21,9 @@ g_swears = load_swears()
 print(f"> loaded swear words, {g_swears}")
 
 async def message_send_event(bot: discord.Client, message: discord.Message):
+    
+    if not message.guild: return
+    
     # dont respond if its a bot message
     if message.author.bot or not message.content:
         return

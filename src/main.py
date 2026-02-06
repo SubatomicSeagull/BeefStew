@@ -77,13 +77,6 @@ async def _guild_only_interaction_check(interaction: discord.Interaction) -> boo
 
 bot.tree.interaction_check = _guild_only_interaction_check
 
-# blocking message listeners in DMs
-@bot.event
-async def on_message(message: discord.Message):
-    if message.guild is None:
-        return
-    await bot.process_commands(message)
-
 # entrypoint
 if __name__ == "__main__":
     bot.run(os.getenv("TOKEN"))
