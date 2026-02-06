@@ -35,17 +35,23 @@ bot.executor = ThreadPoolExecutor(max_workers = 4)
 kicked_members = set()
 banned_members = set()
 
-# load the commands though the cogs
+# cogs to be loaded
+cogs = (
+    "beefcommands.cogs.event_listener_cog",
+    "beefcommands.cogs.incantations_cog",
+    "beefcommands.cogs.invocations_cog",
+    "beefcommands.cogs.moderation_cog",
+    "beefcommands.cogs.utilities_cog",
+    "beefcommands.cogs.visage_cog",
+    "beefcommands.cogs.music_player_cog",
+    "beefcommands.cogs.task_scheduler_cog"
+)
+
+# load the commands through the cogs
 async def load_cogs():
     print("> registering cogs...")
-    await bot.load_extension("beefcommands.cogs.event_listener_cog")
-    await bot.load_extension("beefcommands.cogs.incantations_cog")
-    await bot.load_extension("beefcommands.cogs.invocations_cog")
-    await bot.load_extension("beefcommands.cogs.moderation_cog")
-    await bot.load_extension("beefcommands.cogs.utilities_cog")
-    await bot.load_extension("beefcommands.cogs.visage_cog")
-    await bot.load_extension("beefcommands.cogs.music_player_cog")
-    await bot.load_extension("beefcommands.cogs.task_scheduler_cog")
+    for cog in cogs:
+        await bot.load_extension(cog)
 
 @bot.event
 async def on_ready():
@@ -56,9 +62,27 @@ async def on_ready():
 
     # re-register all the commands
     await bot.tree.sync()
-    
+
     # go!
     print(f"> \033[1;91m{bot.user} is now online, may god help us all...\033[0m")
+
+# blocking prefix commands in DMs
+@bot.check
+async def globally_block_dms(ctx):
+    return ctx.guild is not None
+
+# blocking slash and context commands in DMs
+async def _guild_only_interaction_check(interaction: discord.Interaction) -> bool:
+    return interaction.guild is not None
+
+bot.tree.interaction_check = _guild_only_interaction_check
+
+# blocking message listeners in DMs
+@bot.event
+async def on_message(message: discord.Message):
+    if message.guild is None:
+        return
+    await bot.process_commands(message)
 
 # entrypoint
 if __name__ == "__main__":
