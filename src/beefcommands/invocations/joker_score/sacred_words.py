@@ -70,7 +70,7 @@ def clear_sacred_words():
 async def saint_word_blessing(victim: discord.Member, message: discord.Message):
     global g_saint_word
     print(f"{victim} said the saint word!")
-    await message.reply(content=f"{victim.mention} said the saint word **{g_saint_word}**! Blessing them with the swear jar payout!!!", file=discord.File(await swear_jar.generate_payout_gif([victim]), filename="payout.gif"))
+    await message.reply(content=f"{victim.mention} said the saint word **{g_saint_word}**! \nBlessing them with the swear jar payout!!!", file=discord.File(await swear_jar.generate_payout_gif([victim]), filename="payout.gif"))
     await swear_jar.swear_jar_payout([victim])
     load_sacred_words()
     
@@ -78,7 +78,7 @@ async def saint_word_blessing(victim: discord.Member, message: discord.Message):
 async def sinner_word_curse(victim: discord.Member, message: discord.Message):
     global g_sinner_word
     print(f"{victim} said the sinner word!")
-    await message.reply(content=f"{victim.mention} said the sinner word **{g_sinner_word}**! Cursing them by taking half their points and putting it in the swear jar!!!", file=discord.File(file_io.construct_media_path("hawktuahjar.gif"), filename="swearjar.gif"))
+    await message.reply(content=f"{victim.mention} said the sinner word **{g_sinner_word}**! \nCursing them by taking half their points and putting it in the swear jar!!!", file=discord.File(file_io.construct_media_path("sinner_jar.gif"), filename="swearjar.gif"))
     score = await retrieve_joke_score(victim)
     value = score//2
     await change_joke_score(await victim.guild.fetch_member(os.getenv("CLIENTID")), victim, -value, "sinner word curse")
