@@ -76,6 +76,7 @@ async def _guild_only_interaction_check(interaction: discord.Interaction) -> boo
     if interaction.guild is None:
         await interaction.response.send_message("you can only use commands in the server, nothing private between friends", ephemeral = True)
         return False
+    return True
 
 bot.tree.interaction_check = _guild_only_interaction_check
 
