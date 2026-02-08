@@ -97,5 +97,6 @@ async def set_lowest_score(user: discord.Member, score):
 async def add_score_change_record(scorer, victim, value, reason):
     # add a record of the score change inclyuding the before and after, as well as the score change value and a reason if there is any
     current = await postgres.read(f"SELECT id, current_score FROM public.joke_scores WHERE user_id = '{victim.id}' AND guild_id = '{victim.guild.id}';")
+    print(current)
     await postgres.write(f"INSERT INTO public.joke_scores_history (joke_score_id, sender_id, score_before, score_after, delta, reason, date) VALUES ({current[0][0]}, {scorer.id}, {current[0][1]-value}, {current[0][1]}, {value}, '{reason}', NOW());")
     return

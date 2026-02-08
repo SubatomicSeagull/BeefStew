@@ -88,6 +88,11 @@ async def get_score_history(user: discord.Member):
     
     score_all = await (postgres.read(f"SELECT score_after, date FROM public.joke_scores_history WHERE joke_score_id = {joker_score_id[0][0]} ORDER BY date DESC LIMIT 30;"))
     
+    print(score_all)
+    
+    if not score_all:
+        return None
+    
     for i in range (len(score_all)):
         y_axis.append(int(score_all[i][0]))
         x_axis.append(score_all[i][1])
@@ -101,6 +106,8 @@ async def generate_graph(user: discord.Member):
 
     x, y = await get_score_history(user)
 
+    if not x: return None
+    
     x_pos = list(range(len(x)))
     tick_positions = []
     tick_labels = []
@@ -167,7 +174,11 @@ async def show_history(interaction: discord.Interaction, user: discord.Member):
         return
     try:
         graph = await generate_graph(user)
-        await interaction.followup.send(file = discord.File(fp = graph, filename = f"{user.name}_joker_score_history.png"))
+        if graph:
+            await interaction.followup.send(file = discord.File(fp = graph, filename = f"{user.name}_joker_score_history.png"))
+        else:
+            await interaction.followup.send(f"dont have any record of {user.name} being funny.... try telling some jokes maybe ://")
+        
         return
     except Exception as e:
         await interaction.followup.send(f"couldnt generate {user.name}'s score history :( ({e})")

@@ -18,4 +18,5 @@
 - `/ccping` now has nice new icons to tell u what service something is.
 - fixed / tidied up some formatting issues.
 - the hawk tuah jar is now simply "the swear jar" and theres more words in it so be careful!
-- divine blessings have been wrought, the spirits of saints and sinners have been released. watch your tongue. 
+- divine blessings have been wrought, the spirits of saints and sinners have been released. watch your tongue.
+- beefstew has been banned from use in DM's because it was TOO HARD to figure out!
