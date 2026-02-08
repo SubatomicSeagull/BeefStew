@@ -73,7 +73,9 @@ async def globally_block_dms(ctx):
 
 # blocking slash and context commands in DMs
 async def _guild_only_interaction_check(interaction: discord.Interaction) -> bool:
-    return interaction.guild is not None
+    if interaction.guild is None:
+        await interaction.response.send_message("you can only use commands in the server, nothing private between friends", ephemeral = True)
+        return False
 
 bot.tree.interaction_check = _guild_only_interaction_check
 
