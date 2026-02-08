@@ -27,8 +27,8 @@ def load_sacred_words():
     
     g_sinner_word = get_random_word().strip()
     
-    print(f"The saint word for {datetime.datetime.now().strftime("%d/%m/%Y")} is {g_saint_word}")
-    print(f"The sinner word for {datetime.datetime.now().strftime("%d/%m/%Y")} is {g_sinner_word}")
+    print(f"The saint word for {datetime.datetime.now().strftime('%d/%m/%Y')} is {g_saint_word}")
+    print(f"The sinner word for {datetime.datetime.now().strftime('%d/%m/%Y')} is {g_sinner_word}")
     
     
 async def check_sacred_word(message: discord.Message):
