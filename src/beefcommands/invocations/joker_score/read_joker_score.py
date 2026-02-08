@@ -91,7 +91,7 @@ async def get_score_history(user: discord.Member):
     print(score_all)
     
     if not score_all:
-        return None
+        return None, None
     
     for i in range (len(score_all)):
         y_axis.append(int(score_all[i][0]))
