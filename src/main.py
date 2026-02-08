@@ -63,10 +63,10 @@ async def on_ready():
 
     # re-register all the commands
     await bot.tree.sync()
-    
+
     # generate new saint and sinner word for the day
     load_sacred_words()
-    
+
     # go!
     print(f"> \033[1;91m{bot.user} is now online, may god help us all...\033[0m")
 
