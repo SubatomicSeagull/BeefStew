@@ -20,17 +20,17 @@ async def change_nickname(ctx, victim: discord.Member, new_name: str, self_invok
                         print(f"> \033[32m{interaction.user.name} invoked the rule on {victim.name}\033[0m")
                         await victim.edit(nick=new_name)
                         response = await print_nickname(victim)
-                        await interaction.response.send_message(f"**{interaction.user.name}** invoked the rule on **{victim.global_name}**!\n{response}")
-                        await TTS.speak_output(interaction, f"{interaction.user.name} invoked the rule on {victim.global_name}!{response}")
+                        await interaction.response.send_message(f"**{interaction.user.name}** invoked the rule on **{victim.display_name}**!\n{response}")
+                        await TTS.speak_output(interaction, f"{interaction.user.name} invoked the rule on {victim.display_name}!{response}")
                     except discord.Forbidden as e:
                         print(f"\031[32mError while trying to invoke the rule: {e}\033[0m")
-                        await interaction.response.send_message(f"**{interaction.user.name}** tried to invoked the rule on **{victim.global_name}**!\nbut it didnt work :( next time get some permissions pal")
+                        await interaction.response.send_message(f"**{interaction.user.name}** tried to invoked the rule on **{victim.display_name}**!\nbut it didnt work :( next time get some permissions pal")
                     except Exception as e:
                         print(f"\031[32mError while trying to invoke the rule: {e}\033[0m")
 
             else:
-                await interaction.response.send_message(f"**{interaction.user.name}** tried to invoked the rule on **{victim.global_name}**!\nnice try fucker...")
-                await TTS.speak_output(interaction, f"{interaction.user.name} tried to invoked the rule on {victim.global_name}! nice try fucker...")
+                await interaction.response.send_message(f"**{interaction.user.name}** tried to invoked the rule on **{victim.display_name}**!\nnice try fucker...")
+                await TTS.speak_output(interaction, f"{interaction.user.name} tried to invoked the rule on {victim.display_name}! nice try fucker...")
 
         elif isinstance(ctx, discord.Message):
             message = ctx
@@ -44,21 +44,21 @@ async def change_nickname(ctx, victim: discord.Member, new_name: str, self_invok
                         print(f"> \033[32m{message.author.name} invoked the rule on {victim.name}\033[0m")
                         await victim.edit(nick=new_name)
                         response = await print_nickname(victim)
-                        await message.channel.send(f"**{message.author.name}** invoked the rule on **{victim.global_name}**!\n{response}")
-                        await TTS.speak_output(interaction, f"{interaction.user.name} invoked the rule on {victim.global_name}!{response}")
+                        await message.channel.send(f"**{message.author.name}** invoked the rule on **{victim.display_name}**!\n{response}")
+                        await TTS.speak_output(interaction, f"{interaction.user.name} invoked the rule on {victim.display_name}!{response}")
 
                     except Exception as e:
                         print(f"\031[32mError while trying to invoke the rule: {e}\033[0m")
-                        await message.channel.send(f"**{message.author.name}** tried to invoked the rule on **{victim.global_name}**!\nbut it didnt work :( next time get some permissions okay?")
+                        await message.channel.send(f"**{message.author.name}** tried to invoked the rule on **{victim.display_name}**!\nbut it didnt work :( next time get some permissions okay?")
             else:
-                await message.channel.send(f"**{message.author.name}** tried to invoked the rule on **{victim.global_name}**!\nnice try fucker...")
+                await message.channel.send(f"**{message.author.name}** tried to invoked the rule on **{victim.display_name}**!\nnice try fucker...")
 
 async def print_nickname(victim: discord.Member):
     # load responses.json
     responses = load_element("responses.json", "nickname_change_responses")
 
     chosen_response = random.choice(responses)
-    chosen_response = chosen_response.format(name = victim.global_name, tag = victim.mention)
+    chosen_response = chosen_response.format(name = victim.display_name, tag = victim.mention)
     return chosen_response
 
 async def invoke_nickname_rule(interaction: discord.Interaction, victim: discord.Member, new_name: str):

@@ -7,7 +7,7 @@ async def retrieve_top_scores(interaction: discord.Interaction, bot):
     # read all scores from the db, we'll limit in Python
     rows = await postgres.read(f"SELECT user_id, current_score, user_name, user_display_name FROM joke_scores WHERE guild_id = '{interaction.guild.id}' ORDER BY current_score DESC;")
     highest = await postgres.read(f"SELECT user_id, highest_score, user_name, user_display_name FROM joke_scores WHERE user_id != '99' AND guild_id = '{interaction.guild.id}' ORDER BY highest_score DESC LIMIT 1;")
-    tuahjar = await postgres.read(f"SELECT current_score FROM joke_scores WHERE guild_id = '{interaction.guild.id}' AND user_id = '99';")
+    swearjar = await postgres.read(f"SELECT current_score FROM joke_scores WHERE guild_id = '{interaction.guild.id}' AND user_id = '99';")
 
     leaderboard = discord.Embed(title = "Joke Score Leaderboard", color = discord.Color.gold())
     leaderboard.set_author(name = "Beefstew", icon_url = bot.user.avatar.url)
@@ -30,8 +30,11 @@ async def retrieve_top_scores(interaction: discord.Interaction, bot):
             else:
                 speech_content += f"Number {rank} is {row[3]} with {row[1]} points. \n"
             rank += 1
-        leaderboard_content += f"\n\n**Hawk Tuah Jar:** `{tuahjar[0][0]}` points"
-        speech_content += f"The Hawk Tuah Jar has {tuahjar[0][0]} points. \n"
+        try:
+            leaderboard_content += f"\n\n**Swear Jar:** `{swearjar[0][0]}` points"
+            speech_content += f"The Swear Jar has {swearjar[0][0]} points. \n"
+        except IndexError:
+            pass
         if highest[0][3] == None or highest[0][3] == "None":
             speech_content += f"and the top joker of all time is {highest[0][2]} with {highest[0][1]}` points."
         else:

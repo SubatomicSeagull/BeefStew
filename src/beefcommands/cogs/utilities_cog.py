@@ -119,6 +119,14 @@ class UtilitiesCog(commands.Cog):
         print(f"> \033[32m{interaction.user.name} set BeefStew's voice to {voice.name}\033[0m")
         tts_engine.set_voice(voice.value)
         await interaction.response.send_message(f"Voice set to **{voice.name}**", ephemeral=True)
+        
+    @discord.app_commands.command(name="test", description="l")
+    async def test(self, interaction: discord.Interaction):
+        print(f"> \033[32m{interaction.user.name} used /test\033[0m")
+        #await interaction.response.send_message("running test command", ephemeral=True)
+        import beefcommands.invocations.joker_score.swear_jar as swear_jar
+
+        await swear_jar.swear_jar_payout_embed(interaction, [member for member in interaction.guild.members])
 
 # cog setup
 async def setup(bot):

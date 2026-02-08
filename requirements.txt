@@ -1,5 +1,4 @@
 discord
-discord.py
 python-dotenv
 Pillow
 requests
@@ -13,3 +12,5 @@ pytz
 tzdata
 py-trello
 piper-tts
+matplotlib
+pysmb

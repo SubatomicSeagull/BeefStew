@@ -1,18 +1,11 @@
 FROM python:3.10-slim
 
-RUN apt-get update -y
-RUN apt-get upgrade -y
-RUN apt-get install git -y
-RUN apt-get install libpq-dev gcc -y
-RUN apt install -y ffmpeg libopus-dev
-RUN apt-get install espeak-ng -y
-
+RUN apt-get update -y && apt-get install -y git libpq-dev gcc ffmpeg libopus-dev espeak-ng && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /BeefStew
 
-COPY . .
-
-RUN pip install -r requirements.txt
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
 ENV PYTHONUNBUFFERED=1
 

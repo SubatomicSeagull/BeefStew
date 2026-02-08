@@ -123,6 +123,14 @@
     "bloke": {
       "type": "media",
       "content": "bloke.png"
+    },
+    "dart": {
+      "type": "media",
+      "content": "dart.png"
+    },
+    "87": {
+      "type": "media",
+      "content": "87.gif"
     }
   },
 
@@ -328,5 +336,80 @@
     "when are you going to address the allogations?",
     "are the rumours true?",
     "when are you going to address the rumours?"
+  ],
+  "swears": [
+    "tuah",
+    "67",
+    "lowkirkenuinly",
+    "genkirkenuinly"
+  ],
+
+  "painting_bodyparts":[
+    "arms was",
+    "left arm was",
+    "right arm was",
+    "legs were",
+    "left leg was",
+    "right leg was",
+    "eyes were",
+    "left eye was",
+    "right eye was",
+    "tongue was",
+    "lips were",
+    "forhead was",
+    "ears were",
+    "left ear was",
+    "right ear was",
+    "frontal cortex was",
+    "glabella was",
+    "nose was",
+    "left nostril was",
+    "right nostril was",
+    "hands were",
+    "right hand was",
+    "left hand was",
+    "fingers were",
+    "left little toe was",
+    "right big toe was",
+    "knees were",
+    "solar plexus was",
+    "left ass cheek was",
+    "funny bone was",
+    "skeleton was",
+    "skull was",
+    "ribcage was",
+    "pelvis was",
+    "tibia were",
+    "femur was",
+    "jaw was"
+  ],
+
+  "painting_aflictions":[
+    "cut off",
+    "cut off",
+    "cut off",
+    "cut off",
+    "cut off",
+    "cut off",
+    "cut off",
+    "cut off",
+    "cut off",
+    "cut off",
+    "destroyed",
+    "missing",
+    "rotated",
+    "now green",
+    "taken off",
+    "crushed",
+    "torn off",
+    "burned",
+    "frozen off",
+    "left on a plate nearby",
+    "found in a nearby bin",
+    "taken away",
+    "stolen by birds",
+    "sent flying",
+    "not there anymore"
   ]
+
 }

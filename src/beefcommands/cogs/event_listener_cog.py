@@ -36,6 +36,15 @@ class EventListenerCog(commands.Cog):
     async def on_message_delete(self, message: discord.Message):
         if not message.author.bot and not "/say" in message.content.lower(): print(f"> \033[32m{message.author.name} deleted a message in #{message.channel.name}\033[0m")
         await beefcommands.events.message_events.message_delete_event(self.bot, message)
+        
+    @commands.Cog.listener()
+    async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
+        reactor = payload.member
+        channel = self.bot.get_channel(payload.channel_id)
+        message = await channel.fetch_message(payload.message_id)
+        
+        print(f"> \033[32m{reactor.name} reacted '{payload.emoji}' to a message by {message.author.name} in #{channel.name}\033[0m")
+        await beefcommands.events.message_events.reaction_add_event(message, payload.emoji, payload.member)
 
 #    @commands.Cog.listener()
 #    async def on_command(self, ctx):

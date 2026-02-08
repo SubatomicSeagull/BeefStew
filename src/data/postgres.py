@@ -42,29 +42,13 @@ async def write(command: str, params: tuple = ()):
 
 # log an error to the error_logs table
 async def log_error(error_message: str):
-    try:
-        connection = await get_db_connection()
-
-        with connection.cursor() as cursor:
-            cursor.execute(
-                "INSERT INTO error_logs (error_message) VALUES (%s)",
-                (error_message,)
-            )
-
-        connection.commit()
-        connection.close()
-
-    except (Exception, psycopg2.Error) as error:
-        connection.close()
-
-    finally:
-        connection.close()
+    return
 
 # establish a connection to the database
 async def get_db_connection():
     try:
         db_config = {
-            "dbname": "bs_users_and_guilds",
+            "dbname": os.getenv("DBNAME"),
             "user": os.getenv("DBUSER"),
             "password": os.getenv("DBPASS"),
             "host": os.getenv("DBHOST"),
@@ -80,4 +64,3 @@ async def get_db_connection():
 
     except (Exception, psycopg2.Error) as error:
         print(f"Error while connecting to PostgreSQL: {error}")
-        await log_error(error)

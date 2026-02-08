@@ -1,0 +1,12 @@
+services:
+  beefstew:
+    build: .
+    container_name: beefstew-release-1.6.2
+    working_dir: /BeefStew
+    env_file:
+      - .env
+    volumes:
+      - ./src:/BeefStew/src
+      - ./cookies.txt:/BeefStew/cookies.txt
+      - ./patchnotes.md:/BeefStew/patchnotes.md:ro
+    restart: unless-stopped

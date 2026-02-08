@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from beefcommands.visage import JFK_image, boil_image, down_the_drain_image, explosion, gay_baby_jail_image, react, add_speech_bubble_pfp, bless_pfp, water_filter, mirror_img
+from beefcommands.visage import JFK_image, boil_image, down_the_drain_image, explosion, gay_baby_jail_image, in_the_jar, add_speech_bubble_pfp, bless_pfp, water_filter, mirror_img
 
 
 class VisageCog(commands.Cog):
@@ -60,6 +60,12 @@ class VisageCog(commands.Cog):
     async def explode(self, interaction: discord.Interaction, victim: discord.Member):
         print(f"> \033[32m{interaction.user.name} exploded {victim.name}\033[0m")
         await explosion.explode_img(interaction, victim)
+        
+    # puts the users pfp into a jar
+    @discord.app_commands.command(name="jar", description="ohn o")
+    async def jar(self, interaction: discord.Interaction, victim: discord.Member):
+        print(f"> \033[32m{interaction.user.name} put {victim.name} in the jar...\033[0m")
+        await in_the_jar.jar(interaction, victim)
 
 # cog startup
 async def setup(bot):

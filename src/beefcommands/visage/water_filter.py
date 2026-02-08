@@ -75,6 +75,6 @@ async def drown(interaction: discord.Interaction, source):
     except discord.HTTPException as e:
         await interaction.followup.send(f"file too big sorry :(")
     except AttributeError as e:
-        await interaction.followup.send(f"that didnt work sry :// gotta be png or jpg")
+        await interaction.followup.send(f"that didnt work sry :// gotta be an image")
     except Exception as e:
         await interaction.followup.send(f"uhhhhhhh something went wrong.... ({e})")

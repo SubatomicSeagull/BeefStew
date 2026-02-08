@@ -1,6 +1,6 @@
 import re
 import discord
-from beefcommands.invocations.joker_score.change_joker_score import change_joke_score, hawk_tuah_penalty
+from beefcommands.invocations.joker_score.change_joker_score import change_joke_score
 from beefcommands.invocations.nickname_rule import change_nickname
 from beefcommands.utilities.show_me import show
 from beefutilities import yt_utils
@@ -11,12 +11,20 @@ from beefutilities.guilds.guild_text_channel import read_guild_log_channel
 import beefcommands.invocations.channel_name_rule as channel_name_rule
 from beefutilities import TTS
 from beefcommands.utilities.tell_me import tell_me
-from beefutilities.TTS import speak
 import json
 from datetime import datetime
 from beefutilities.IO import file_io
+from beefcommands.invocations.quote_react import quote_message
+from beefcommands.invocations.joker_score.swear_jar import swear_jar_penalty, get_swear_jar_score, load_swears
+from beefcommands.invocations.joker_score.sacred_words import check_sacred_word
 
-async def message_send_event(bot, message):
+g_swears = load_swears()
+print(f"> loaded swear words, {g_swears}")
+
+async def message_send_event(bot: discord.Client, message: discord.Message):
+    
+    if not message.guild: return
+    
     # dont respond if its a bot message
     if message.author.bot or not message.content:
         return
@@ -45,14 +53,14 @@ async def message_send_event(bot, message):
 
         # +2 logic
         if any(phrase in message.content.lower() for phrase in ["+2", "plus 2", "plus two"]):
-            response = await change_joke_score(message.author, user, 2)
+            response = await change_joke_score(message.author, user, 2, message.content)
             await message.channel.send(response)
             await TTS.speak_output(message, response)
             return
 
         # -2 logic
         elif any(phrase in message.content.lower() for phrase in ["-2", "minus 2", "minus two"]):
-            response = await change_joke_score(message.author, user, -2)
+            response = await change_joke_score(message.author, user, -2, message.content)
             await message.channel.send(response)
             await TTS.speak_output(message, response)
             return
@@ -82,6 +90,8 @@ async def message_send_event(bot, message):
             except Exception as e:
                 await log_error(e)
 
+    await check_sacred_word(message)
+
     if "deadly dice man" in message.content.lower():
         result = randint(1, 6)
         result_filename = f"DDM-{result}.gif"
@@ -101,6 +111,7 @@ async def message_send_event(bot, message):
     ]):
         show_split = message.content.split("show me ", 1)
         await show(message, show_split[1])
+        return
 
     pattern = re.compile(
         r"(?:beefstew|<@1283805971524747304>)\s+(?:tell me about|what is|whats|what's|what are|what're)\s+(.+)",
@@ -112,6 +123,7 @@ async def message_send_event(bot, message):
         query = match.group(1).strip()
         if query:
             await tell_me(message, query)
+            return
 
     if any(phrase in message.content.lower() for phrase in [
         "i love you beefstew",
@@ -205,24 +217,14 @@ async def message_send_event(bot, message):
         await TTS.speak_output(message, "Crazy...? I was crazy once... They locked me in a room with rubber rats and the rubber rats made me go crazy!")
         return
 
-    if "tuah" in message.content.lower():
-        jar_total = await hawk_tuah_penalty(message.author)
-        file = discord.File(file_io.construct_media_path("hawktuahjar.gif"))
-        await message.reply(content=f"{message.author.mention} pays the Hawk Tuah Penalty!!! Another 2 points to the jar...\n**Jar Points: {jar_total}**", file=file)
-        
-        if message.author.nick:
-            await TTS.speak_output(message, f"{message.author.nick} pays the Hawk Tuah Penalty!!! Another 2 points to the jar...")
-        else:
-            await TTS.speak_output(message, f"{message.author.name} pays the Hawk Tuah Penalty!!! Another 2 points to the jar...")
-        return
-
     if any(phrase in message.content.lower() for phrase in ["why are we in ", "we are in "]):
         channel_name_split = message.content.split(" in ", 1)
         if len(channel_name_split) > 1:
             newname = channel_name_split[1].strip()
             await channel_name_rule.invoke_channel_name_rule(message, newname)
             return
-
+        
+    await check_swear_jar(message)
     await get_response(message)
 
 async def message_edit_event(bot: discord.Client, before, after):
@@ -238,11 +240,10 @@ async def message_edit_event(bot: discord.Client, before, after):
     # get the log channel
     channel = await bot.fetch_channel(await read_guild_log_channel(before.guild.id))
 
-    embed = discord.Embed(title=f"Message Edited in {before.channel.mention}", color=discord.Color.yellow())
+    embed = discord.Embed(title=f"Message edited in {before.channel.mention}", color=discord.Color.yellow())
     embed.add_field(name="Original", value=f"```{before.content}```", inline=False)
     embed.add_field(name="Edited", value=f"```{after.content}```", inline=False)
-    embed.set_author(name=before.author, icon_url=before.author.avatar.url)
-    embed.add_field(name="", value=f"{before.author.guild.name} - {datetime.now().strftime('%d/%m/%Y - %H:%M')}")
+    embed.add_field(name="", value=f"{before.author.guild.name} • {datetime.now().strftime('%d/%m/%Y - %H:%M')}")
     await channel.send(embed=embed)
 
 async def message_delete_event(bot: discord.Client, message: discord.Message):
@@ -266,7 +267,7 @@ async def message_delete_event(bot: discord.Client, message: discord.Message):
     print(attachments)
 
     #embed header
-    embed = discord.Embed(title=f"Message Deleted in {message.channel.mention}", color=discord.Color.orange())
+    embed = discord.Embed(title=f"Message by {message.author.name} deleted in {message.channel.mention}", color=discord.Color.orange())
     embed.set_author(name=message.author, icon_url=message.author.avatar.url)
     #embed body
     if message.content:
@@ -276,9 +277,8 @@ async def message_delete_event(bot: discord.Client, message: discord.Message):
         for url in attachments:
             embed.add_field(name="File - ", value=f"{url}", inline=False)
     #embed footer
-    embed.add_field(name="", value=f"{message.author.guild.name} - {datetime.now().strftime('%d/%m/%Y - %H:%M')}")
+    embed.add_field(name="", value=f"{message.author.guild.name} • {datetime.now().strftime('%d/%m/%Y - %H:%M')}")
     await channel.send(embed=embed)
-
 
 async def get_response(message: discord.Message):
     # pathfind to the responses.json
@@ -305,4 +305,22 @@ async def get_response(message: discord.Message):
                 await TTS.speak_output(message, content)
                 return
 
+async def check_swear_jar(message: discord.Message):
+    global g_swears
+    # check for trigger words
+    for swear in g_swears:
+        if swear in message.content.lower():
+            await swear_jar_penalty(message.author)
+            jar_total = await get_swear_jar_score(message.guild)
+            file = discord.File(file_io.construct_media_path("hawktuahjar.gif"))
+            await message.reply(content=f"{message.author.mention} Another 2 points to the swear jar...\n**Jar Points: {jar_total}**", file=file)
+            
+            if message.author.nick:
+                await TTS.speak_output(message, f"{message.author.nick} Another 2 points to the swear jar...")
+            else:
+                await TTS.speak_output(message, f"{message.author.name} Another 2 points to the swear jar...")
+            return
 
+async def reaction_add_event(message, emoji, reactor):
+    if emoji.name == "⭐":
+        await quote_message(message, reactor)
