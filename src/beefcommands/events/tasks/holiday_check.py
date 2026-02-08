@@ -13,7 +13,8 @@ async def check_for_holiday(bot: discord.Client):
     holidays = {
         (1, 1): "New Year's Day",
         (25, 12): "Christmas",
-        (31, 10): "Halloween"
+        (31, 10): "Halloween",
+        (14,2): "Valentines Day"
     }
 
     # fetch the guild object from the guild id
@@ -31,6 +32,9 @@ async def check_for_holiday(bot: discord.Client):
                 return
             elif holiday_name == "Halloween":
                 await halloween_event(guild)
+                return
+            elif holiday_name == "Valentines Day":
+                await valentines_event(guild)
                 return
 
 async def christmas_event(guild: discord.Guild):
@@ -76,4 +80,22 @@ async def halloween_event(guild: discord.Guild):
     await channel.send(
         content="ooOOOOoooOOooo.... BOO! AHHHH im so scared on halloween today!!\n...trick or treat..?\n my beefstew treat... +5 points for u!",
         file=discord.File(fp=file_io.construct_assets_path("stews/halloweenstew.png"), filename="halloweenstew.png")
+        )
+    
+async def valentines_event(guild: discord.Guild):
+    users = await postgres.read(f"SELECT user_id FROM public.joke_scores WHERE guild_id = {guild.id};")
+    for user in users:
+        try:
+            uid = int(user[0])
+            botuser = await guild.fetch_member(os.getenv("CLIENTID"))
+            user_obj = await guild.fetch_member(uid)
+            if uid != 99 and uid != os.getenv("CLIENTID"):
+                await change_joke_score(botuser , user_obj, 5, "valnetines treat")
+        except discord.NotFound:
+            continue
+    # get the info channel for the guild and send the message
+    channel = await guild.fetch_channel(await read_guild_info_channel(guild.id))
+    await channel.send(
+        content="i love you all mmmwah mwahg!!! +5 points coz ily!!!",
+        file=discord.File(fp=file_io.construct_assets_path("stews/valentines.png"), filename="valentines.png")
         )
