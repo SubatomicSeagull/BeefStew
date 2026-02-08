@@ -1,4 +1,4 @@
-discord.py
+discord
 python-dotenv
 Pillow
 requests
@@ -13,3 +13,4 @@ tzdata
 py-trello
 piper-tts
 matplotlib
+pysmb
