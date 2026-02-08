@@ -35,15 +35,16 @@ async def check_sacred_word(message: discord.Message):
     global g_saint_word
     global g_sinner_word
     
-    if g_sinner_word.lower() in message.content.lower():
-        await sinner_word_curse(message.author, message)
-        return
-    elif g_saint_word.lower() in message.content.lower():
-        await saint_word_blessing(message.author, message)
-        return
-    else:
-        return
-    
+    if g_sinner_word != "" or g_saint_word != "":
+        if g_sinner_word.lower() in message.content.lower():
+            await sinner_word_curse(message.author, message)
+            return
+        elif g_saint_word.lower() in message.content.lower():
+            await saint_word_blessing(message.author, message)
+            return
+        else:
+            return
+    return
 
 def get_random_word():
     with open(file_io.construct_assets_path("dictionary.txt"), "r") as f:
