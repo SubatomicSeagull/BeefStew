@@ -16,6 +16,7 @@ from datetime import datetime
 from beefutilities.IO import file_io
 from beefcommands.invocations.quote_react import quote_message
 from beefcommands.invocations.joker_score.swear_jar import swear_jar_penalty, get_swear_jar_score, load_swears
+from beefcommands.invocations.joker_score.sacred_words import check_sacred_word
 
 g_swears = load_swears()
 print(f"> loaded swear words, {g_swears}")
@@ -88,6 +89,8 @@ async def message_send_event(bot: discord.Client, message: discord.Message):
                 await change_nickname(message, message.author, newname, True)
             except Exception as e:
                 await log_error(e)
+
+    await check_sacred_word(message)
 
     if "deadly dice man" in message.content.lower():
         result = randint(1, 6)
@@ -305,7 +308,6 @@ async def get_response(message: discord.Message):
 async def check_swear_jar(message: discord.Message):
     global g_swears
     # check for trigger words
-    print(g_swears)
     for swear in g_swears:
         if swear in message.content.lower():
             await swear_jar_penalty(message.author)

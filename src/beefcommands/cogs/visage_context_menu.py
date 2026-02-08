@@ -1,6 +1,6 @@
 import os
 import discord
-from beefcommands.visage import explosion, react, boil_image, down_the_drain_image, gay_baby_jail_image, JFK_image, mirror_img, water_filter
+from beefcommands.visage import explosion, react, boil_image, down_the_drain_image, gay_baby_jail_image, JFK_image, mirror_img, water_filter, in_the_jar
 
 # resends the picture but with a reaction
 @discord.app_commands.context_menu(name="🔴React")
@@ -45,10 +45,18 @@ async def drown(interaction: discord.Interaction, message: discord.Message):
     await water_filter.drown(interaction, message)
     return
 
+@discord.app_commands.guild_only()
 @discord.app_commands.context_menu(name="💥Explode")
 async def explode(interaction: discord.Interaction, message: discord.Message):
     print(f"> \033[32m{interaction.user.name} used /explode on {message.author.name}'s image\033[0m")
     await explosion.explode_img(interaction, message)
+    return
+
+
+@discord.app_commands.context_menu(name="🫙Jar")
+async def jar(interaction: discord.Interaction, message: discord.Message):
+    print(f"> \033[32m{interaction.user.name} used /jar on {message.author.name}'s image\033[0m")
+    await in_the_jar.jar(interaction, message)
     return
 
 
@@ -63,7 +71,7 @@ async def setup(bot: discord.Client):
     bot.tree.add_command(jfk, guild=guild)
     bot.tree.add_command(drown)
     bot.tree.add_command(mirror)
-    #bot.tree.add_command(rainbow)
+    bot.tree.add_command(jar)
     bot.tree.add_command(explode)
     #bot.tree.add_command(bacteria)
     await bot.tree.sync(guild=guild)
