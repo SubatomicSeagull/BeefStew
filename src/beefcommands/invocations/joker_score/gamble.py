@@ -29,23 +29,20 @@ async def gamble_points(interaction: discord.Interaction):
     current_score = current_score[0][0]
 
     outcomes = {
-        range(1,3):((current_score*-1),"Return to zero...\n(Score set to 0)", "return_to_0.gif"),
-        range(3,6):(((current_score*2)*-1),"Oh no...\n(Score set negative)", "negative.gif"),
-        range(6,9):(((current_score*-1)+2),"Points set to 1...", "curse.gif"),
-        range(9,12):(((current_score/2)*-1),"Points halved...","-50%.gif"),
-        range(12,17):(((current_score/4)*-1),"yikes...\n(Points reduced by 25%)","-25%.gif"),
-        range(17,20):(-10,"ough,, bad luck...\n(-10)","-10.gif"),
-        range(20,30):(0,"Nothing happens...", "nothing01.gif"),
-        range(30,40):(0,"Nothing happens...", "nothing02.gif"),
-        range(40,50):(0,"Nothing happens...", "nothing03.gif"),
-        range(50,60):(0,"Nothing happens...", "nothing04.gif"),
-        range(60,74):(3,"You got your points back plus some more!\n(points back +2)", "+2.gif"),
-        range(74,84):(5,"You got your points back, and then some!\n(points back +4)","+4.gif"),
-        range(84,90):(11,"wooo thats what its all about baby, dedication!!\n(points back +10)","+10.gif"),
-        range(90,94):(20,"20 Points!","score_x1.5.gif"),
-        range(94,97):((current_score+1),"YOWZA!!!!\n(Points doubled!)", "score_x2.gif"),
-        range(97,100):((current_score*10),"OMGGGGG!!!\n(Points x10!!!)", "score_x3.gif"),
-        range(100,101):(1001,"WOAHHH!!!!!!\n(ONE THOUSAND POINTS!!!)", "score_x10.gif")
+        range(1, 11):     ((current_score * -1), "Return to zero...\n(Score set to 0)", "return_to_0.gif"),
+        range(11, 18):    (((current_score * 2) * -1), "Oh no...\n(Score set negative)", "negative.gif"),
+        range(18, 28):    (((current_score * -1) + 2), "Points set to 1...", "curse.gif"),
+        range(28, 58):    (((current_score / 2) * -1), "Points halved...", "-50%.gif"),
+        range(58, 98):    (((current_score / 4) * -1), "Points reduced by 25%", "-25%.gif"),
+        range(98, 153):   (-10, "ough, bad luck...\n(-10)", "-10.gif"),
+        range(153, 743):  (0, "Nothing happens...", "nothing.gif"),
+        range(743, 843):  (3, "You got your points back plus some more!\n(+2)", "+2.gif"),
+        range(843, 923):  (5, "You got your points back, and then some!\n(+4)", "+4.gif"),
+        range(923, 963):  (11, "wooo dedication!!\n(+10)", "+10.gif"),
+        range(963, 983):  (20, "20 Points!", "score_x1.5.gif"),
+        range(983, 993):  ((current_score + 1), "Points doubled!", "score_x2.gif"),
+        range(993, 998):  ((current_score * 10), "Points x10!!!", "score_x3.gif"),
+        range(998, 1001): (1001, "ONE THOUSAND POINTS!!!", "score_x10.gif"),
     }
 
     roll, (value, explanation, media) = roll_outcome(outcomes)
@@ -69,7 +66,7 @@ async def gamble_points(interaction: discord.Interaction):
     return
 
 def roll_outcome(outcomes):
-    roll = randint(1,100)
+    roll = randint(1,1000)
     for range_, outcome in outcomes.items():
         if roll in range_:
             return roll, outcome
