@@ -123,10 +123,11 @@ class UtilitiesCog(commands.Cog):
     @discord.app_commands.command(name="test", description="l")
     async def test(self, interaction: discord.Interaction):
         print(f"> \033[32m{interaction.user.name} used /test\033[0m")
+        await interaction.response.defer()
         #await interaction.response.send_message("running test command", ephemeral=True)
-        import beefcommands.invocations.joker_score.swear_jar as swear_jar
-
-        await swear_jar.swear_jar_payout_embed(interaction, [member for member in interaction.guild.members])
+        import beefcommands.utilities.yownload as yownload
+        title, link = yownload.yownload("https://www.youtube.com/watch?v=uFzPW2mlg28", 1080, False)
+        await interaction.followup.send(f"Yownloaded {title} available at\n{link}")
 
 # cog setup
 async def setup(bot):
