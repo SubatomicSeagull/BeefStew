@@ -10,6 +10,8 @@ from beefcommands.visage.sniff import sniff_user
 from beefutilities.users import user
 from beefcommands.utilities.suggest_feature import create_suggestion
 from beefutilities.TTS import speak, tts_engine
+from beefcommands.utilities import yownload
+
 
 # gerate enumeration object for the tts voices dropdown
 VoiceList = tts_engine.generate_voice_enum()
@@ -125,10 +127,14 @@ class UtilitiesCog(commands.Cog):
         print(f"> \033[32m{interaction.user.name} used /test\033[0m")
         await interaction.response.defer()
         #await interaction.response.send_message("running test command", ephemeral=True)
-        import beefcommands.utilities.yownload as yownload
-        title, link = yownload.yownload("https://www.youtube.com/watch?v=uFzPW2mlg28", 1080, False)
-        await interaction.followup.send(f"Yownloaded {title} available at\n{link}")
 
+    @discord.app_commands.command(name="yownload", description="yowwwnn")
+    async def yownload(self, interaction: discord.Interaction, url: str, quality: int, video: bool):
+        print(f"> \033[32m{interaction.user.name} requested to download {url} at {quality}p\033[0m")
+        await interaction.response.defer()
+        title, link = await yownload.yownload(url, quality, video)
+        await interaction.followup.send(f"Yownloaded {title} available at\n{link}")
+        
 # cog setup
 async def setup(bot):
     print("- \033[32mbeefcommands.cogs.utilities_cog\033[0m")
