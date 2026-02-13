@@ -9,10 +9,13 @@ from beefcommands.music_player import link_parser
 from main import bot, sp_client
 import math
 import zipfile
+import time
 
+# TODO, get a js runtime and find out why spotipy isnt working now
 
 
 async def fetch_source(src_url, quality, video):
+    print("fetching from source")
     try:
         return await asyncio.to_thread(_fetch_source_sync, src_url, quality, video)
     except DownloadError:
@@ -24,48 +27,65 @@ def _fetch_source_sync(src_url, quality, video):
     ffmpeg_path = os.getenv("FFMPEGEXE")
     outputpath = file_io.construct_root_path("src/beefcommands/music_player/temp")
     cookies = file_io.construct_root_path("cookies.txt")
-
-    ydl_opts = {
+    
+    base_ydl_opts = {
         "cookiefile": cookies,
-        "format": "bestaudio[protocol!=m3u8][protocol!=dash]/bestaudio/best",
         "outtmpl": "%(title).200B_%(epoch)s.%(ext)s",
         "restrictfilenames": True,
         "paths": {"home": outputpath},
+        "enable_ejs": True,
+        "js_runtimes": {
+            "deno": {
+                "path": os.getenv("JSRUNTIME"),
+            }
+        },
+        "remote_components": ["ejs:github"],
+        "extractor_args": {
+            "youtube": {
+                "player_client": ["web"]
+            }
+        },
+        "ffmpeg_location": ffmpeg_path,
+        "ratelimit": 2 * 1024 * 1024,
         "sleep_interval": 2,
-        "max_sleep_interval": 5,
+        "max_sleep_interval": 6,
         "sleep_interval_requests": 2,
         "concurrent_fragment_downloads": 1,
-        
-        "impersonate": "chrome",
-
+    }
+    
+    audio_opts = {
+        "format": "bestaudio[protocol!=m3u8][protocol!=dash]/bestaudio/best",
         "postprocessors": [{
             "key": "FFmpegExtractAudio",
             "preferredcodec": "mp3",
-            "preferredquality": "192"
-        }]
+            "preferredquality": "192",
+        }],
     }
+    
+    video_opts = {
+        "format": f"bestvideo[height={quality}]+bestaudio/best",
+        "merge_output_format": "mp4",
+        "verbose": True,
+    }
+    
+    ydl_opts = dict(base_ydl_opts)
 
     if video:
-        ydl_opts = {
-            "format": f"bestvideo[height={quality}]+bestaudio/best",
-            "outtmpl": "%(title).200B_%(epoch)s.%(ext)s",
-            "restrictfilenames": True,
-            "noplaylist": True,
-            "playlist_items": "1",
-            "paths": {"home": outputpath},
-            "merge_output_format": "mp4",
-            "ffmpeg_location": ffmpeg_path,
-        }
+        ydl_opts.update(video_opts)
+    else:
+        ydl_opts.update(audio_opts)
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        print("extracting info")
         info = ydl.extract_info(src_url, download=True)
+        print("preparing filename")
         local_path = ydl.prepare_filename(info)
 
         if not video:
             base, ext = os.path.splitext(local_path)
             if ext.lower() == ".mp4":
                 local_path = base + ".mp3"
-
+        print(f"returning info {info}")
         return info["title"], local_path
 
 
@@ -186,7 +206,7 @@ async def generate_zip(urls, title):
     # Open a zip file at the given filepath. If it doesn't exist, create one.
     # If the directory does not exist, it fails with FileNotFoundError
     
-    cleantitle = ''.join([char for char in title if char.isalnum()])
+    cleantitle = ''.join([char for char in title if char.isalnum()]) + str(int(time.time()))
 
     # create the empty archive
     filepath = file_io.construct_root_path(f"src/beefcommands/music_player/temp/{cleantitle}.zip")
