@@ -131,9 +131,7 @@ class UtilitiesCog(commands.Cog):
     @discord.app_commands.command(name="yownload", description="yowwwnn")
     async def yownload(self, interaction: discord.Interaction, url: str, quality: int, video: bool):
         print(f"> \033[32m{interaction.user.name} requested to download {url} at {quality}p\033[0m")
-        await interaction.response.defer()
-        title, link = await yownload.yownload(url, quality, video)
-        await interaction.followup.send(f"Yownloaded {title} available at\n{link}")
+        await yownload.handle_download(interaction, url, quality, video)
         
 # cog setup
 async def setup(bot):

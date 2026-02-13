@@ -9,10 +9,8 @@ from beefcommands.music_player import link_parser
 from main import bot, sp_client
 import math
 import zipfile
+import discord
 import time
-
-# TODO, get a js runtime and find out why spotipy isnt working now
-
 
 async def fetch_source(src_url, quality, video):
     print("fetching from source")
@@ -51,6 +49,9 @@ def _fetch_source_sync(src_url, quality, video):
         "max_sleep_interval": 6,
         "sleep_interval_requests": 2,
         "concurrent_fragment_downloads": 1,
+        "progress_hooks": [],
+        "noprogress": True,
+        "quiet": True
     }
     
     audio_opts = {
@@ -65,7 +66,6 @@ def _fetch_source_sync(src_url, quality, video):
     video_opts = {
         "format": f"bestvideo[height={quality}]+bestaudio/best",
         "merge_output_format": "mp4",
-        "verbose": True,
     }
     
     ydl_opts = dict(base_ydl_opts)
@@ -87,7 +87,6 @@ def _fetch_source_sync(src_url, quality, video):
                 local_path = base + ".mp3"
         print(f"returning info {info}")
         return info["title"], local_path
-
 
 def generate_link(path):
     host = os.getenv("HOSTNAME")
@@ -130,7 +129,7 @@ async def yownload(url, quality, video):
         return title, generate_link(path)
     else:
         return None
-    
+
 async def spotify_link_parser(url):
     # retrieve the thread executor pool
     loop = asyncio.get_running_loop()
@@ -173,8 +172,7 @@ async def spotify_link_parser(url):
         pages = math.ceil(total / 100)
         
         for i in range(pages):
-            print(i)
-            page = sp_client.playlist_tracks(url, offset = i * 100)
+            page = await loop.run_in_executor(bot.executor, lambda: sp_client.playlist_tracks(url, offset=i * 100))
             fetch_page = await asyncio.gather(*[link_parser.process_spotify_track(item["track"]) for item in page["items"]])
             for result in fetch_page:
                 if result is not None:
@@ -182,7 +180,7 @@ async def spotify_link_parser(url):
         return await fetch_playlist(urls, 720, False, playlist_name)
     else:
         return None
-    
+
 async def fetch_playlist(src_urls, quality, video, title):
     
     urls = []
@@ -229,3 +227,15 @@ async def generate_zip(urls, title):
             print(f"wrote {track[0]} to the zip archive from {track[1]}")
             cleanup(track[1])
     return title, filepath
+
+async def handle_download(interaction: discord.Interaction, url, quality, video):
+    
+    channel = interaction.channel
+    user = interaction.user
+    
+    await interaction.response.send_message("on it boss o7 this will take a while so ill notify u when ur yownload is ready!", ephemeral=True)
+    title, link = await yownload(url, quality, video)
+    await notify_user(channel, user, title, link)
+
+async def notify_user(channel: discord.TextChannel, user: discord.Member, title, link):
+    await channel.send(f"{user.mention} ding!! all done fetching **{title}**\nclick [HERE]({link}) to yownload!")
