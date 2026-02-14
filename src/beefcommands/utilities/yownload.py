@@ -11,6 +11,27 @@ import math
 import zipfile
 import discord
 import time
+import threading
+
+download_queue = asyncio.Queue()
+
+def download_worker(loop):
+    asyncio.set_event_loop(loop)
+    loop.run_until_complete(ytdl_thread())
+    
+async def ytdl_thread():
+    while True:
+        job = await download_queue.get()
+        url, quality, video, channel, user = job
+        try:
+        # Replace this with your current download function
+            title, path = await fetch_source(url, quality, video)
+            await write_to_server(path)
+            await notify_user(channel, user, title, path)
+        except Exception as e:
+            print(f"Download failed: {e}")
+        finally:
+            download_queue.task_done()
 
 async def fetch_source(src_url, quality, video):
     print("fetching from source")
@@ -201,8 +222,6 @@ def cleanup(path):
     os.remove(path)
 
 async def generate_zip(urls, title):
-    # Open a zip file at the given filepath. If it doesn't exist, create one.
-    # If the directory does not exist, it fails with FileNotFoundError
     
     cleantitle = ''.join([char for char in title if char.isalnum()]) + str(int(time.time()))
 
@@ -214,7 +233,7 @@ async def generate_zip(urls, title):
 
     print("opening zip archive")
     with zipfile.ZipFile(filepath, "a", compression=zipfile.ZIP_DEFLATED) as zipf:
-        # Add a file located at the source_path to the destination within the zip
+        # add a file located at the source_path to the destination within the zip
         index = 0
         for track in urls:
             index +=1
@@ -234,7 +253,7 @@ async def handle_download(interaction: discord.Interaction, url, quality, video)
     user = interaction.user
     
     await interaction.response.send_message("on it boss o7 this will take a while so ill notify u when ur yownload is ready!", ephemeral=True)
-    title, link = await yownload(url, quality, video)
+    title, link = await download_queue.put((url, quality, video))
     await notify_user(channel, user, title, link)
 
 async def notify_user(channel: discord.TextChannel, user: discord.Member, title, link):
