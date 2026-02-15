@@ -7,14 +7,8 @@ from concurrent.futures import ThreadPoolExecutor
 from spotipy.oauth2 import SpotifyClientCredentials
 import spotipy
 from trello import TrelloClient
-from beefcommands.invocations.joker_score.sacred_words import (
-    load_sacred_words,
-    clear_sacred_words,
-)
+from beefcommands.invocations.joker_score.sacred_words import load_sacred_words
 
-# -------------------------
-# ENV
-# -------------------------
 try:
     load_dotenv()
 except Exception:
@@ -61,15 +55,12 @@ intents.message_content = True
 
 bot = BeefStew(command_prefix="/", intents=intents)
 
-# executor for blocking APIs (Spotify, Trello, etc)
+# executor for blocking apis like spotify & ytdl
 bot.executor = ThreadPoolExecutor(max_workers=4)
 
 kicked_members = set()
 banned_members = set()
 
-# -------------------------
-# Events
-# -------------------------
 @bot.event
 async def on_ready():
     await bot.change_presence(status=discord.Status.online,activity=discord.Activity(type=discord.ActivityType.watching,name="you...",),)
