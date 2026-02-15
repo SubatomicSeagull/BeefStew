@@ -123,10 +123,10 @@ class UtilitiesCog(commands.Cog):
         await interaction.response.send_message(f"Voice set to **{voice.name}**", ephemeral=True)
         
     @discord.app_commands.command(name="test", description="l")
-    async def test(self, interaction: discord.Interaction):
+    async def test(self, interaction: discord.Interaction, url: str, quality: int, video: bool):
         print(f"> \033[32m{interaction.user.name} used /test\033[0m")
-        await interaction.response.defer()
-        #await interaction.response.send_message("running test command", ephemeral=True)
+        import beefcommands.utilities.yownload as yownload
+        await yownload.run_download(interaction, url, quality, video)
 
     @discord.app_commands.command(name="yownload", description="yowwwnn")
     async def yownload(self, interaction: discord.Interaction, url: str, quality: int, video: bool):
