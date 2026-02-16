@@ -11,7 +11,6 @@ from beefutilities.IO import file_io
 from beefcommands.music_player import link_parser
 from main import bot, sp_client
 
-
 async def run_download( url: str, quality: int, video: bool):
     
     outputpath = os.path.join("src", "beefcommands", "music_player", "temp")
@@ -24,7 +23,7 @@ import yt_dlp
 def main():
     src_url = sys.argv[1]
     quality = int(sys.argv[2])
-    video = bool(int(sys.argv[3]))s
+    video = bool(int(sys.argv[3]))
     outputpath = sys.argv[4]
     cookiefile = sys.argv[5]
 
@@ -71,7 +70,12 @@ def main():
     }}
 
     video_opts = {{
-        "format": f"bestvideo[height={{quality}}]+bestaudio/best",
+        "format": (
+            f"bestvideo[height<={quality}][ext=mp4]/"
+            f"bestvideo[height<={quality}]/"
+            f"best[height<={quality}]"
+            f"+bestaudio/best"
+        ),
         "merge_output_format": "mp4",
     }}
 
@@ -153,7 +157,6 @@ async def resolve_interaction(interaction: discord.Interaction, url: str, qualit
     
     await interaction.response.send_message(f"{interaction.user.mention} Download started. I'll post the result here once it's finished.")
 
-
 async def spotify_link_parser(url):
     loop = asyncio.get_running_loop()
 
@@ -183,7 +186,7 @@ async def spotify_link_parser(url):
             page = await loop.run_in_executor(bot.executor, lambda: sp_client.playlist_tracks(url, offset=i*100))
             processed = await asyncio.gather(*[link_parser.process_spotify_track(item["track"]) for item in page["items"]])
             urls.extend([x for x in processed if x])
-        return await fetch_playlist(urls, 720, False, playlist_name)
+        return await fetch_playlist(urls, 240, False, playlist_name)
 
     else:
         return None
