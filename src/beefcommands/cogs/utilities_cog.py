@@ -126,7 +126,7 @@ class UtilitiesCog(commands.Cog):
     async def test(self, interaction: discord.Interaction, url: str, quality: int, video: bool):
         print(f"> \033[32m{interaction.user.name} used /test\033[0m")
         import beefcommands.utilities.yownload as yownload
-        await yownload.run_download(interaction, url, quality, video)
+        await yownload.yownload(interaction, url, quality, video)
 
     @discord.app_commands.command(name="yownload", description="yowwwnn")
     async def yownload(self, interaction: discord.Interaction, url: str, quality: int, video: bool):
