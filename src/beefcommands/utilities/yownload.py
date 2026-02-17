@@ -11,11 +11,15 @@ from beefutilities.IO import file_io
 from beefcommands.music_player import link_parser
 from main import bot, sp_client
 
-async def run_download( url: str, quality: int, video: bool):
+# in order to not get tkinter to NOT get the GC to eat the main bot loop we have to run ytdl in a subprocess
+# why does ytdl even use tkinter if its a CLI app?????
+# anyways this code is shit but i cant really make it any better soz
+# does have the benefit that its isolated
+async def run_download(url: str, quality: int, video: bool):
     
-    outputpath = os.path.join("src", "beefcommands", "music_player", "temp")
-    cookiefile = os.path.join("src", "beefcommands", "music_player", "cookies.txt")
-
+    outputpath = file_io.construct_root_path("src", "beefcommands", "music_player", "temp")
+    cookiefile = file_io.construct_root_path("src", "beefcommands", "music_player", "cookies.txt")
+    
     python_code = f'''
 import sys, json, os, os.path
 import yt_dlp
@@ -24,44 +28,37 @@ def main():
     src_url = sys.argv[1]
     quality = int(sys.argv[2])
     video = bool(int(sys.argv[3]))
+    
     outputpath = sys.argv[4]
     cookiefile = sys.argv[5]
 
     ffmpeg_path = os.getenv("FFMPEGEXE")
     js_runtime = os.getenv("JSRUNTIME")
 
+    print("FFMPEG PATH:", ffmpeg_path, file=sys.stderr)
+
+    if not ffmpeg_path or not os.path.exists(ffmpeg_path):
+        print("ERROR: FFmpeg not found or invalid path", file=sys.stderr)
+        sys.exit(3)
+
     base_ydl_opts = {{
         "cookiefile": cookiefile if cookiefile and cookiefile != "None" else None,
         "outtmpl": "%(title).200B_%(epoch)s.%(ext)s",
         "restrictfilenames": True,
         "paths": {{"home": outputpath}},
-        "enable_ejs": True,
-        "js_runtimes": {{
-            "deno": {{
-                "path": js_runtime,
-            }}
-        }},
-        "remote_components": ["ejs:github"],
-        "extractor_args": {{
-            "youtube": {{
-                "player_client": ["web"]
-            }}
-        }},
         "ffmpeg_location": ffmpeg_path,
-        "ratelimit": 2 * 1024 * 1024,
-        "sleep_interval": 2,
-        "max_sleep_interval": 6,
-        "sleep_interval_requests": 2,
-        "concurrent_fragment_downloads": 1,
-        "progress_hooks": [],
-        "noprogress": True,
+        "merge_output_format": "mp4",
+        "quiet": False,
+        "verbose": False,
+        "logger": None,
+        "progress_with_newline": False,
+        "logtostderr": True,
+        "noprogress": False,
         "noplaylist": True,
-        "playlist_items": "1",
-        "quiet": True
     }}
 
     audio_opts = {{
-        "format": "bestaudio[protocol!=m3u8][protocol!=dash]/bestaudio/best",
+        "format": "bestaudio/best",
         "postprocessors": [{{
             "key": "FFmpegExtractAudio",
             "preferredcodec": "mp3",
@@ -71,70 +68,80 @@ def main():
 
     video_opts = {{
         "format": (
-            f"bestvideo[height<={quality}][ext=mp4]/"
-            f"bestvideo[height<={quality}]/"
-            f"best[height<={quality}]"
+            f"bestvideo[height<={{quality}}]/bestvideo/best"
             f"+bestaudio/best"
         ),
         "merge_output_format": "mp4",
     }}
 
     ydl_opts = dict(base_ydl_opts)
-    if video:
-        ydl_opts.update(video_opts)
-    else:
-        ydl_opts.update(audio_opts)
+    ydl_opts.update(video_opts if video else audio_opts)
 
-    try:
-        os.makedirs(outputpath, exist_ok=True)
-    except Exception:
-        pass
+    os.makedirs(outputpath, exist_ok=True)
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(src_url, download=True)
         local_path = ydl.prepare_filename(info)
-        if not video:
-            base, ext = os.path.splitext(local_path)
-            if ext.lower() == ".mp4":
-                local_path = base + ".mp3"
-        result = {{"title": info.get("title"), "path": local_path}}
-        sys.stdout.write(json.dumps(result))
+
+        if not video and local_path.endswith(".mp4"):
+            local_path = os.path.splitext(local_path)[0] + ".mp3"
+
+        sys.stdout.write(json.dumps({{"title": info.get("title"), "path": local_path}}))
 
 if __name__ == "__main__":
     try:
         main()
-    except Exception as e:
+    except Exception:
         import traceback
         traceback.print_exc()
         sys.exit(2)
 '''
+    # execution stars here
+    proc = await asyncio.create_subprocess_exec(sys.executable, "-u", "-c", python_code,
+        url, 
+        str(quality), 
+        "1" if video else "0", 
+        outputpath, 
+        cookiefile,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE
+    )
 
-    try:
-        proc = await asyncio.create_subprocess_exec(
-            sys.executable, "-c", python_code,
-            url, str(quality), "1" if video else "0", outputpath, cookiefile,
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE
-        )
+    stdout_lines = []
+    # ytdl logs are all output to err coz we need out for the actual output there might be a way around that but i cba atp
+    stderr_lines = []
 
-        stdout, stderr = await proc.communicate()
-        stdout_text = stdout.decode().strip()
-        stderr_text = stderr.decode().strip()
-        
-        if proc.returncode != 0:
-            return False, stderr_text
-    except Exception as e:
-            return False, e
+    # reads stderr and prints it to the console so we can see whats going on! probably could turn it off in prod
+    async def read_stream(stream, collector):
+        while True:
+            line = await stream.readline()
+            if not line:
+                break
+            text = line.decode(errors="replace").rstrip()
+            collector.append(text)
+            print(f"ytdl: {text}")
+
+    await asyncio.gather(read_stream(proc.stdout, stdout_lines, "stdout"), read_stream(proc.stderr, stderr_lines, "stderr"))
+
+    returncode = await proc.wait()
+
+    stdout_text = "\n".join(stdout_lines)
+    stderr_text = "\n".join(stderr_lines)
+
+    # TODO currently no way to handle this if it does even happen
+    if returncode != 0:
+        return False, stderr_text or f"yt-dlp exited with code {returncode}"
 
     data = json.loads(stdout_text)
-    title = data.get("title")
-    path = data.get("path")
-    return title, path
+    return data["title"], data["path"]
+
 
 async def yownload(interaction: discord.Interaction, url: str, quality: int, video: bool):
+    # grab the user and channel from the interaction to respond to later
     channel = interaction.channel
     user = interaction.user
 
+    # resolve the interaction to allow us to run the logic independently of the webhook
     await resolve_interaction(interaction, url, quality)
     urltype = await validate_inputs(url, quality)
     
@@ -142,11 +149,13 @@ async def yownload(interaction: discord.Interaction, url: str, quality: int, vid
         title, path = await run_download(url, quality, video)
     elif urltype == "spotify":
         title, path = await spotify_link_parser(url)
+    # more types to come!
 
     await write_to_server(path)
     cleanup(path)
 
-    await channel.send(f"{user.mention} Download finished: **{title}**\nPath: {generate_link(path)}")
+    await channel.send(f"{user.mention} ding ding!!! ur yownload is finished! click here to get it: [**{title}**]({generate_link(path)})")
+
 
 async def resolve_interaction(interaction: discord.Interaction, url: str, quality: int):
     urltype = await validate_inputs(url, quality)
@@ -155,8 +164,9 @@ async def resolve_interaction(interaction: discord.Interaction, url: str, qualit
         await interaction.response.send_message(content=urltype)
         return
     
-    await interaction.response.send_message(f"{interaction.user.mention} Download started. I'll post the result here once it's finished.")
+    await interaction.response.send_message(f"{interaction.user.mention} on it boss o7 ill lyk when its completed!")
 
+# p much the same code as in the music player sorryyyyyyy
 async def spotify_link_parser(url):
     loop = asyncio.get_running_loop()
 
@@ -192,6 +202,7 @@ async def spotify_link_parser(url):
         return None
 
 async def fetch_playlist(src_urls, quality, video, title):
+    # limit to 5 concurrent steams
     sem = asyncio.Semaphore(5)
 
     async def _fetch_with_limit(track):
@@ -202,28 +213,34 @@ async def fetch_playlist(src_urls, quality, video, title):
     return await generate_zip(urls, title)
 
 async def generate_zip(urls, title):
+    #limit to alphanumeric chars only
+    #TODO other language characters will just be blank so mayb open it up a bit
     cleantitle = ''.join([c for c in title if c.isalnum()]) + str(int(time.time()))
     filepath = file_io.construct_root_path(f"src/beefcommands/music_player/temp/{cleantitle}.zip")
 
+    # create empty zip archive
     with zipfile.ZipFile(filepath, 'w'):
         pass
 
+    # populate zip archive with tracks in the array
     with zipfile.ZipFile(filepath, 'a', compression=zipfile.ZIP_DEFLATED) as zipf:
         for i, track in enumerate(urls, start=1):
             try:
                 source_path = track[1]
                 destination = f"{i}-{os.path.basename(track[1])}"
                 zipf.write(source_path, destination)
+                # delete them after copying, same as mv operation ig?
                 cleanup(track[1])
             except Exception:
                 continue
     return title, filepath
 
-async def validate_inputs(url, quality):
+async def validate_inputs(url, quality):#
     urltype = link_parser.validate_input(url)
     if urltype != "youtube" and urltype != "spotify":
         return "invalid link"
     
+    # no 4k for u
     valid_qualitites = [1080, 720, 480, 360, 240]
     
     if not quality in valid_qualitites:
@@ -252,9 +269,11 @@ def _write_to_server_sync(local_path):
     remote_dir = "/download/beefstew"
     remote_name = os.path.basename(local_path)
 
+    # connect to smb server
     smb = SMBConnection(username, password, "local_client", server, use_ntlm_v2=True, is_direct_tcp=True)
     if not smb.connect(server, 445):
         raise RuntimeError("SMB connection failed")
+    
     with open(local_path, "rb") as f:
         smb.storeFile(share, f"{remote_dir}/{remote_name}", f)
     smb.close()

@@ -21,14 +21,21 @@ api_key=os.getenv("TRELLOAPIKEY"),api_secret=os.getenv("TRELLOAPISECRET"),token=
 
 bot_loop: asyncio.AbstractEventLoop | None = None
 
+# setup changed to a class so we could use the setup_hook which looks to be convention now? 
+# https://stackoverflow.com/questions/68582472/what-is-the-difference-between-having-a-main-bot-class-versus-no-class-on-discor
+# https://discordpy.readthedocs.io/en/latest/api.html?highlight=setup#discord.Client.setup_hook
+# also means we can more easily pass and keep control of the main async loop
+# might have to change this is the music player not sure how well itll play with it
+
 class BeefStew(commands.Bot):
     async def setup_hook(self):
+        
+        # sync the main bot event loop
         global bot_loop
         bot_loop = asyncio.get_running_loop()
-        print("> bot event loop captured")
 
         # load cogs
-        await self.load_all_cogs()
+        await self.load_cogs()
 
         # sync commands
         await self.tree.sync()
@@ -37,12 +44,13 @@ class BeefStew(commands.Bot):
 
         print("> setup complete")
 
-    async def load_all_cogs(self):
-        print("> registering cogs…")
+    async def load_cogs(self):
+        print("> registering cogs...")
         base = os.path.join("src", "beefcommands", "cogs")
         for filename in os.listdir(base):
             if not filename.endswith(".py"):
                 continue
+            
             # visage context menu is set up as an extention of the visage cog
             if filename == "visage_context_menu.py":
                 continue
