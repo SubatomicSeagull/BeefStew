@@ -10,6 +10,8 @@ from smb.SMBConnection import SMBConnection
 from beefutilities.IO import file_io
 from beefcommands.music_player import link_parser
 from main import bot, sp_client
+import re
+import unicodedata
 
 # in order to not get tkinter to NOT get the GC to eat the main bot loop we have to run ytdl in a subprocess
 # why does ytdl even use tkinter if its a CLI app?????
@@ -44,7 +46,6 @@ def main():
     base_ydl_opts = {{
         "cookiefile": cookiefile if cookiefile and cookiefile != "None" else None,
         "outtmpl": "%(title).200B_%(epoch)s.%(ext)s",
-        "restrictfilenames": True,
         "paths": {{"home": outputpath}},
         "ffmpeg_location": ffmpeg_path,
         "merge_output_format": "mp4",
@@ -83,7 +84,7 @@ def main():
         info = ydl.extract_info(src_url, download=True)
         local_path = ydl.prepare_filename(info)
 
-        if not video and local_path.endswith(".mp4"):
+        if not video:
             local_path = os.path.splitext(local_path)[0] + ".mp3"
 
         sys.stdout.write(json.dumps({{"title": info.get("title"), "path": local_path}}))
@@ -97,7 +98,8 @@ if __name__ == "__main__":
         sys.exit(2)
 '''
     # execution stars here
-    proc = await asyncio.create_subprocess_exec(sys.executable, "-u", "-c", python_code,
+    proc = await asyncio.create_subprocess_exec(sys.executable, "-u", "-c", 
+        python_code,
         url, 
         str(quality), 
         "1" if video else "0", 
@@ -121,7 +123,7 @@ if __name__ == "__main__":
             collector.append(text)
             print(f"ytdl: {text}")
 
-    await asyncio.gather(read_stream(proc.stdout, stdout_lines, "stdout"), read_stream(proc.stderr, stderr_lines, "stderr"))
+    await asyncio.gather(read_stream(proc.stdout, stdout_lines), read_stream(proc.stderr, stderr_lines))
 
     returncode = await proc.wait()
 
@@ -212,10 +214,23 @@ async def fetch_playlist(src_urls, quality, video, title):
     urls = await asyncio.gather(*[_fetch_with_limit(t) for t in src_urls])
     return await generate_zip(urls, title)
 
+def clean_title(title):
+    # removing anything that not valid in a windows file name
+    title = ''.join(c for c in title if unicodedata.category(c)[0] in {'L', 'N', 'Z'})
+    title = re.sub(r'[<>:"/\\|?*]', '_', title)
+
+    # remove acsii control characters
+    title = title.translate({ord(c): None for c in map(chr, range(32))})
+    title = re.sub(r'\s+', ' ', title).strip()
+
+    # add unix epoch
+    return f"{title}_{int(time.time())}"
+
+
 async def generate_zip(urls, title):
-    #limit to alphanumeric chars only
-    #TODO other language characters will just be blank so mayb open it up a bit
-    cleantitle = ''.join([c for c in title if c.isalnum()]) + str(int(time.time()))
+    
+    cleantitle = clean_title(title)
+    
     filepath = file_io.construct_root_path(f"src/beefcommands/music_player/temp/{cleantitle}.zip")
 
     # create empty zip archive
