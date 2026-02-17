@@ -1,6 +1,7 @@
 import enum
 import discord
 from discord.ext import commands
+from discord.app_commands import Choice
 from beefcommands.utilities.ccping import ccping
 from beefutilities.TTS import speak
 from beefutilities.guilds.guild_text_channel import set_info, set_logs, set_quotes
@@ -121,17 +122,16 @@ class UtilitiesCog(commands.Cog):
         print(f"> \033[32m{interaction.user.name} set BeefStew's voice to {voice.name}\033[0m")
         tts_engine.set_voice(voice.value)
         await interaction.response.send_message(f"Voice set to **{voice.name}**", ephemeral=True)
-        
-    @discord.app_commands.command(name="test", description="l")
-    async def test(self, interaction: discord.Interaction):
-        print(f"> \033[32m{interaction.user.name} used /test\033[0m")
-        await interaction.response.defer()
-        #await interaction.response.send_message("running test command", ephemeral=True)
 
     @discord.app_commands.command(name="yownload", description="yowwwnn")
-    async def yownload(self, interaction: discord.Interaction, url: str, quality: int, video: bool):
-        print(f"> \033[32m{interaction.user.name} requested to download {url} at {quality}p\033[0m")
-        await yownload.handle_download(interaction, url, quality, video)
+    @discord.app_commands.choices(quality=[
+    Choice(name='1080p', value=1080),
+    Choice(name='720p', value=720),
+    Choice(name='480p', value=480),
+    Choice(name='360p', value=360)])
+    async def yownload(self, interaction: discord.Interaction, url: str, quality: Choice[int], video: bool):
+        print(f"> \033[32m{interaction.user.name} requested to download {url} at {quality.name}\033[0m")
+        await yownload.yownload(interaction, url, quality.value, video)
         
 # cog setup
 async def setup(bot):
