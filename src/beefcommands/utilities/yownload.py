@@ -18,11 +18,10 @@ import unicodedata
 # anyways this code is shit but i cant really make it any better soz
 # does have the benefit that its isolated
 async def run_download(url: str, quality: int, video: bool):
-    
     outputpath = file_io.construct_root_path("src", "beefcommands", "music_player", "temp")
     cookiefile = file_io.construct_root_path("src", "beefcommands", "music_player", "cookies.txt")
-    
-    python_code = f'''
+
+    python_code = r'''
 import sys, json, os, os.path
 import yt_dlp
 
@@ -30,113 +29,100 @@ def main():
     src_url = sys.argv[1]
     quality = int(sys.argv[2])
     video = bool(int(sys.argv[3]))
-    
     outputpath = sys.argv[4]
     cookiefile = sys.argv[5]
 
     ffmpeg_path = os.getenv("FFMPEGEXE")
-    js_runtime = os.getenv("JSRUNTIME")
-
-    print("FFMPEG PATH:", ffmpeg_path, file=sys.stderr)
 
     if not ffmpeg_path or not os.path.exists(ffmpeg_path):
-        print("ERROR: FFmpeg not found or invalid path", file=sys.stderr)
-        sys.exit(3)
+        sys.stdout.write(json.dumps({
+            "ok": False,
+            "error": "FFmpeg not found or invalid path"
+        }, ensure_ascii=False))
+        sys.exit(1)
 
-    base_ydl_opts = {{
+    base_ydl_opts = {
         "cookiefile": cookiefile if cookiefile and cookiefile != "None" else None,
-        "outtmpl": "%(title).200B_%(epoch)s.%(ext)s",
-        "paths": {{"home": outputpath}},
+        "outtmpl": "%(title).200B.%(ext)s",
+        "paths": {"home": outputpath},
         "ffmpeg_location": ffmpeg_path,
         "merge_output_format": "mp4",
-        "quiet": False,
-        "verbose": False,
-        "logger": None,
-        "progress_with_newline": False,
         "logtostderr": True,
-        "noprogress": False,
         "noplaylist": True,
-    }}
+    }
 
-    audio_opts = {{
+    audio_opts = {
         "format": "bestaudio/best",
-        "postprocessors": [{{
+        "postprocessors": [{
             "key": "FFmpegExtractAudio",
             "preferredcodec": "mp3",
             "preferredquality": "192",
-        }}],
-    }}
+        }],
+    }
 
-    video_opts = {{
+    video_opts = {
         "format": (
-            f"bestvideo[height<={{quality}}]/bestvideo/best"
+            f"bestvideo[height<={quality}]/bestvideo/best"
             f"+bestaudio/best"
         ),
         "merge_output_format": "mp4",
-    }}
+    }
 
     ydl_opts = dict(base_ydl_opts)
     ydl_opts.update(video_opts if video else audio_opts)
 
     os.makedirs(outputpath, exist_ok=True)
 
-    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        info = ydl.extract_info(src_url, download=True)
-        local_path = ydl.prepare_filename(info)
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(src_url, download=True)
+            local_path = ydl.prepare_filename(info)
 
-        if not video:
-            local_path = os.path.splitext(local_path)[0] + ".mp3"
+            if not video:
+                local_path = os.path.splitext(local_path)[0] + ".mp3"
 
-        sys.stdout.write(json.dumps({{"title": info.get("title"), "path": local_path}}))
+            sys.stdout.write(json.dumps({
+                "ok": True,
+                "title": info.get("title"),
+                "path": local_path
+            }, ensure_ascii=False))
+
+    except Exception as e:
+        sys.stdout.write(json.dumps({
+            "ok": False,
+            "error": str(e)
+        }, ensure_ascii=False))
+        sys.exit(1)
 
 if __name__ == "__main__":
-    try:
-        main()
-    except Exception:
-        import traceback
-        traceback.print_exc()
-        sys.exit(2)
+    main()
 '''
-    # execution stars here
-    proc = await asyncio.create_subprocess_exec(sys.executable, "-u", "-c", 
+
+    proc = await asyncio.create_subprocess_exec(
+        sys.executable, "-u", "-c", 
         python_code,
-        url, 
-        str(quality), 
-        "1" if video else "0", 
-        outputpath, 
+        url,
+        str(quality),
+        "1" if video else "0",
+        outputpath,
         cookiefile,
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE
     )
 
-    stdout_lines = []
-    # ytdl logs are all output to err coz we need out for the actual output there might be a way around that but i cba atp
-    stderr_lines = []
+    stdout, stderr = await proc.communicate()
+    stdout_text = stdout.decode(errors="replace").strip()
+    stderr_text = stderr.decode(errors="replace").strip()
 
-    # reads stderr and prints it to the console so we can see whats going on! probably could turn it off in prod
-    async def read_stream(stream, collector):
-        while True:
-            line = await stream.readline()
-            if not line:
-                break
-            text = line.decode(errors="replace").rstrip()
-            collector.append(text)
-            print(f"ytdl: {text}")
+    if not stdout_text:
+        return False, stderr_text # or "yt-dlp failed without output"
 
-    await asyncio.gather(read_stream(proc.stdout, stdout_lines), read_stream(proc.stderr, stderr_lines))
+    try:
+        data = json.loads(stdout_text)
+    except json.JSONDecodeError:
+        return False, "Invalid response from yt-dlp subprocess"
 
-    returncode = await proc.wait()
-
-    stdout_text = "\n".join(stdout_lines)
-    stderr_text = "\n".join(stderr_lines)
-
-    # TODO currently no way to handle this if it does even happen
-    if returncode != 0:
-        return False, stderr_text or f"yt-dlp exited with code {returncode}"
-
-    data = json.loads(stdout_text)
-    return data["title"], data["path"]
-
+    return True, data["title"], data["path"]
 
 async def yownload(interaction: discord.Interaction, url: str, quality: int, video: bool):
     # grab the user and channel from the interaction to respond to later
@@ -144,29 +130,50 @@ async def yownload(interaction: discord.Interaction, url: str, quality: int, vid
     user = interaction.user
 
     # resolve the interaction to allow us to run the logic independently of the webhook
-    await resolve_interaction(interaction, url, quality)
-    urltype = await validate_inputs(url, quality)
+    urltype = await resolve_interaction(interaction, url, quality)
     
-    if urltype == "youtube":
-        title, path = await run_download(url, quality, video)
-    elif urltype == "spotify":
-        title, path = await spotify_link_parser(url)
-    # more types to come!
+    # stop if nothing to yownload
+    if not urltype:
+        return
+    
+    try:
+        if urltype == "youtube":
+            status, *result = await run_download(url, quality, video)
+        elif urltype == "spotify":
+            status, *result = await spotify_link_parser(url)
+        else:
+            return
+        # more types to come!
 
-    await write_to_server(path)
-    cleanup(path)
+        # catch errors in ytdl subprocess
+        if not status:
+            error = result[0]
+            await channel.send(f"{user.mention} ghuhhh i bungled it sorryyy :\n```{error}```")
+            return
 
-    await channel.send(f"{user.mention} ding ding!!! ur yownload is finished! click here to get it: [**{title}**]({generate_link(path)})")
+        title, path = result
 
+        await write_to_server(path)
+        cleanup(path)
+
+        await channel.send(f"{user.mention} ding ding!!! ur yownload is finished! click here to get it: [**{title}**]({generate_link(path)})")
+        return
+    
+    # catch errors in anything else like spotipy
+    except Exception as e:
+        await channel.send(
+            f"{user.mention} ghhh something broke hard D: \n```{e}```"
+        )
 
 async def resolve_interaction(interaction: discord.Interaction, url: str, quality: int):
     urltype = await validate_inputs(url, quality)
     
     if urltype != "youtube" and urltype != "spotify":
         await interaction.response.send_message(content=urltype)
-        return
+        return False
     
     await interaction.response.send_message(f"{interaction.user.mention} on it boss o7 ill lyk when its completed!")
+    return urltype
 
 # p much the same code as in the music player sorryyyyyyy
 async def spotify_link_parser(url):
@@ -253,13 +260,13 @@ async def generate_zip(urls, title):
 async def validate_inputs(url, quality):#
     urltype = link_parser.validate_input(url)
     if urltype != "youtube" and urltype != "spotify":
-        return "invalid link"
+        return "paste a valid link plzzz"
     
     # no 4k for u
     valid_qualitites = [1080, 720, 480, 360, 240]
     
     if not quality in valid_qualitites:
-        return "invalid quality format"
+        return "idk how u managed it but u broke the quality format can u be more normal when running commands plz"
     return urltype
 
 def cleanup(path):
