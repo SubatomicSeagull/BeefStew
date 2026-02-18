@@ -1,7 +1,7 @@
 from discord.ext import commands, tasks
 import datetime
 from zoneinfo import ZoneInfo
-from beefcommands.events.tasks import cleanup_tts, holiday_check, birthday_check, image_of_the_day, random_swing
+from beefcommands.events.tasks import cleanup_tts, holiday_check, birthday_check, image_of_the_day, random_swing, cleanup_downloads
 class TaskSchedulerCog(commands.Cog):
 
     TIMEZONE = ZoneInfo("Europe/London")
@@ -15,8 +15,15 @@ class TaskSchedulerCog(commands.Cog):
         self.image_of_the_day_check.start()
         self.random_swing_check.start()
         self.clean_temp_tts_files.start()
+        self.cleanup_downloads_foler.start()
         print(f"\033[32mall tasks scheduled successfully!\033[0m")
 
+
+    # task to clean out files older than 1 hour in the downloads folder
+    @tasks.loop(hours=1)
+    async def cleanup_downloads_foler(self):
+        await cleanup_downloads.cleanup_downloads()
+    
     # task to clean out any old temp tts files that might have been left every day at midnight
     @tasks.loop(time=datetime.time(0, 0, 0, tzinfo=TIMEZONE))
     async def clean_temp_tts_files(self):
