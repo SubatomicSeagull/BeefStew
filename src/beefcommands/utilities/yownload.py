@@ -150,8 +150,12 @@ async def yownload(interaction: discord.Interaction, url: str, quality: int, vid
             error = result[0]
             await channel.send(f"{user.mention} ghuhhh i bungled it sorryyy :\n```{error}```")
             return
-
+        print("process ended with status " + status)
+        print(result)
         title, path = result
+        
+        print("title:" + title)
+        print("path: " + path)
 
         await write_to_server(path)
         cleanup(path)
@@ -192,7 +196,11 @@ async def spotify_link_parser(url):
         urls = []
         processed = await asyncio.gather(*[link_parser.process_spotify_track(t) for t in album_tracks["items"]])
         urls.extend([x for x in processed if x])
-        return await fetch_playlist(urls, 720, False, album_name)
+        title, path = await fetch_playlist(urls, 240, False, album_name)
+        print("from fetchalbum")
+        print(title)
+        print(path)
+        return "ok", title, path 
 
     elif "playlist" in url:
         playlist = await loop.run_in_executor(bot.executor, sp_client.playlist, url)
@@ -205,7 +213,11 @@ async def spotify_link_parser(url):
             page = await loop.run_in_executor(bot.executor, lambda: sp_client.playlist_tracks(url, offset=i*100))
             processed = await asyncio.gather(*[link_parser.process_spotify_track(item["track"]) for item in page["items"]])
             urls.extend([x for x in processed if x])
-        return await fetch_playlist(urls, 240, False, playlist_name)
+        title, path = await fetch_playlist(urls, 240, False, playlist_name)
+        print("from fetchplaylist")
+        print(title)
+        print(path)
+        return "ok", title, path 
 
     else:
         return None
@@ -222,16 +234,26 @@ async def fetch_playlist(src_urls, quality, video, title):
     return await generate_zip(urls, title)
 
 def clean_title(title):
+    
+    # strip and store file extension if there is one
+    name, ext = os.path.splitext(title)
+    title = name
+    
     # removing anything that not valid in a windows file name
     title = ''.join(c for c in title if unicodedata.category(c)[0] in {'L', 'N', 'Z'})
     title = re.sub(r'[<>:"/\\|?*]', '_', title)
 
     # remove acsii control characters
     title = title.translate({ord(c): None for c in map(chr, range(32))})
-    title = re.sub(r'\s+', ' ', title).strip()
+    title = re.sub(r'\s+', '_', title).strip()
 
     # add unix epoch
-    return f"{title}_{int(time.time())}"
+    title = f"{title}_{int(time.time())}"
+    
+    # re-add extension if there isn't one
+    if ext: title = f"{title}{ext}"
+    
+    return title
 
 
 async def generate_zip(urls, title):
@@ -248,13 +270,16 @@ async def generate_zip(urls, title):
     with zipfile.ZipFile(filepath, 'a', compression=zipfile.ZIP_DEFLATED) as zipf:
         for i, track in enumerate(urls, start=1):
             try:
-                source_path = track[1]
-                destination = f"{i}-{os.path.basename(track[1])}"
+                source_path = track[2]
+                destination = f"{i}-{clean_title(os.path.basename(track[2]))}"
                 zipf.write(source_path, destination)
                 # delete them after copying, same as mv operation ig?
-                cleanup(track[1])
+                cleanup(track[2])
             except Exception:
                 continue
+    print("fromzip")
+    print(title)
+    print(filepath)
     return title, filepath
 
 async def validate_inputs(url, quality):#
@@ -284,6 +309,7 @@ def generate_link(path):
     return f"https://www.{host}/download/beefstew/{filename}"
 
 def _write_to_server_sync(local_path):
+    
     server = os.getenv("SERVERIP")
     username = os.getenv("SMBUSER")
     password = os.getenv("SMBPASS")
@@ -297,6 +323,7 @@ def _write_to_server_sync(local_path):
         raise RuntimeError("SMB connection failed")
     
     with open(local_path, "rb") as f:
+        print(f"writing to server from localpath: {local_path}\nwriting: {remote_name} to {remote_dir}")
         smb.storeFile(share, f"{remote_dir}/{remote_name}", f)
     smb.close()
 
