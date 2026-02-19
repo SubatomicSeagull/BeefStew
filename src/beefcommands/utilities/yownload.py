@@ -21,6 +21,8 @@ async def run_download(url: str, quality: int, video: bool):
     outputpath = file_io.construct_root_path("src", "beefcommands", "music_player", "temp")
     cookiefile = file_io.construct_root_path("src", "beefcommands", "music_player", "cookies.txt")
 
+    print(f"attempting to download video at {str(quality)} with video: {str(video)} from {url}")
+    
     python_code = r'''
 import sys, json, os, os.path
 import yt_dlp
@@ -44,6 +46,7 @@ def main():
     base_ydl_opts = {
         "cookiefile": cookiefile if cookiefile and cookiefile != "None" else None,
         "outtmpl": "%(title).200B.%(ext)s",
+        "restrictfilenames": True,
         "paths": {"home": outputpath},
         "ffmpeg_location": ffmpeg_path,
         "merge_output_format": "mp4",
@@ -98,6 +101,7 @@ if __name__ == "__main__":
     main()
 '''
 
+    print("starting the downloader subprocess")
     proc = await asyncio.create_subprocess_exec(
         sys.executable, "-u", "-c", 
         python_code,
@@ -122,7 +126,17 @@ if __name__ == "__main__":
     except json.JSONDecodeError:
         return False, "Invalid response from yt-dlp subprocess"
 
-    return True, data["title"], data["path"]
+    print("donwload completed.")
+    
+    path = data["path"]
+    title = os.path.basename(path)
+
+    
+    print("outputs from the downloader:")
+    print(f"title: {title}")
+    print(f"path: {path}")
+    
+    return True, title, path
 
 async def yownload(interaction: discord.Interaction, url: str, quality: int, video: bool):
     # grab the user and channel from the interaction to respond to later
@@ -130,6 +144,7 @@ async def yownload(interaction: discord.Interaction, url: str, quality: int, vid
     user = interaction.user
 
     # resolve the interaction to allow us to run the logic independently of the webhook
+    print("resolving interaciton")
     urltype = await resolve_interaction(interaction, url, quality)
     
     # stop if nothing to yownload
@@ -138,8 +153,10 @@ async def yownload(interaction: discord.Interaction, url: str, quality: int, vid
     
     try:
         if urltype == "youtube":
+            print("running youtube downloader")
             status, *result = await run_download(url, quality, video)
         elif urltype == "spotify":
+            print("running spotify downloader")
             status, *result = await spotify_link_parser(url)
         else:
             return
@@ -150,7 +167,7 @@ async def yownload(interaction: discord.Interaction, url: str, quality: int, vid
             error = result[0]
             await channel.send(f"{user.mention} ghuhhh i bungled it sorryyy :\n```{error}```")
             return
-        print("process ended with status " + status)
+        print("process ended with status: " + str(status))
         print(result)
         title, path = result
         
@@ -170,13 +187,16 @@ async def yownload(interaction: discord.Interaction, url: str, quality: int, vid
         )
 
 async def resolve_interaction(interaction: discord.Interaction, url: str, quality: int):
+    print("validating input")
     urltype = await validate_inputs(url, quality)
     
     if urltype != "youtube" and urltype != "spotify":
         await interaction.response.send_message(content=urltype)
         return False
-    
+    print(f"received valid input of: {urltype}")
+
     await interaction.response.send_message(f"{interaction.user.mention} on it boss o7 ill lyk when its completed!")
+    print("interaciton resolved")
     return urltype
 
 # p much the same code as in the music player sorryyyyyyy
@@ -234,26 +254,27 @@ async def fetch_playlist(src_urls, quality, video, title):
     return await generate_zip(urls, title)
 
 def clean_title(title):
-    
-    # strip and store file extension if there is one
+    print("sanitising title: " + title)
+    # normalize unicode
+    title = unicodedata.normalize("NFKC", title)
+
+    # split and store the extension if there is one
     name, ext = os.path.splitext(title)
-    title = name
-    
-    # removing anything that not valid in a windows file name
-    title = ''.join(c for c in title if unicodedata.category(c)[0] in {'L', 'N', 'Z'})
-    title = re.sub(r'[<>:"/\\|?*]', '_', title)
 
-    # remove acsii control characters
-    title = title.translate({ord(c): None for c in map(chr, range(32))})
-    title = re.sub(r'\s+', '_', title).strip()
+    # remove ASCII control characters
+    name = name.translate({i: None for i in range(32)})
 
-    # add unix epoch
-    title = f"{title}_{int(time.time())}"
-    
-    # re-add extension if there isn't one
-    if ext: title = f"{title}{ext}"
-    
-    return title
+    # remove windows invalid chars
+    name = re.sub(r'[<>:"/\\|?*]', '_', name)
+
+    # remove other punctiation
+    name = re.sub(r'[^\w\s.\-]', '', name, flags=re.UNICODE)
+
+    # replace spaces with underscores
+    name = re.sub(r'\s+', '_', name).strip('._')
+
+    print(f"sanitised name: {name}{ext}")
+    return f"{name}{ext}" if ext else name
 
 
 async def generate_zip(urls, title):
@@ -282,7 +303,7 @@ async def generate_zip(urls, title):
     print(filepath)
     return title, filepath
 
-async def validate_inputs(url, quality):#
+async def validate_inputs(url, quality):
     urltype = link_parser.validate_input(url)
     if urltype != "youtube" and urltype != "spotify":
         return "paste a valid link plzzz"
