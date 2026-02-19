@@ -42,6 +42,15 @@ class BeefStew(commands.Bot):
 
         load_sacred_words()
 
+
+        # TODO make a boarder .env checker
+        ffmpeg_path = os.getenv("FFMPEGEXE")
+        if not ffmpeg_path or not os.path.exists(ffmpeg_path):
+            print("Warning!!! could not find ffmpeg executable, some vc features like the music player or downloader might not work.")
+        jsruntime_path = os.getenv("JSRUNTIME")
+        if not jsruntime_path or not os.path.exists(jsruntime_path):
+            print("Warning!!! could not find javascript runtime binary, some vc features like the music player or downloader might not work.")
+
         print("> setup complete")
 
     async def load_cogs(self):

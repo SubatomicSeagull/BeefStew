@@ -15,13 +15,13 @@ class TaskSchedulerCog(commands.Cog):
         self.image_of_the_day_check.start()
         self.random_swing_check.start()
         self.clean_temp_tts_files.start()
-        self.cleanup_downloads_foler.start()
+        self.cleanup_downloads_folder.start()
         print(f"\033[32mall tasks scheduled successfully!\033[0m")
 
 
     # task to clean out files older than 1 hour in the downloads folder
     @tasks.loop(hours=1)
-    async def cleanup_downloads_foler(self):
+    async def cleanup_downloads_folder(self):
         await cleanup_downloads.cleanup_downloads()
     
     # task to clean out any old temp tts files that might have been left every day at midnight

@@ -27,4 +27,4 @@ async def cleanup_downloads():
                 print(file.filename + " is not older than an hour, skipping")
                 continue
                 
-    print(f"> \033[95mscheduled downloads cleanup ran at {datetime.datetime.now()} removing {removed} files\033[0m")
+    print(f"> \033[95mscheduled downloads cleanup ran at {datetime.now()} removing {removed} files\033[0m")

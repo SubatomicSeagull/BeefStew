@@ -1,6 +1,7 @@
 import discord
 import datetime
 from beefutilities.guilds.guild_text_channel import read_guild_quotes_channel
+from beefcommands.invocations.joker_score import change_joker_score
 
 async def quote_embed(message, quoter):
     # construct the embed
@@ -14,7 +15,7 @@ async def quote_embed(message, quoter):
     return quote_embed
 
 
-async def quote_message(message, quoter):
+async def quote_message(message: discord.Message, quoter):
     # retrieve the guild's quote channel
     quote_channel_id = await read_guild_quotes_channel(message.guild.id)
     if not quote_channel_id:
@@ -24,6 +25,9 @@ async def quote_message(message, quoter):
     if not quote_channel:
         return None
     
+    if message.author.id != quoter.id:
+        await message.reply(f"{message.author.mention} yip yahoo! u got quoted and got some points!!")
+        await change_joker_score.change_joke_score(quoter, message.author, 2, message.content)
     embed = await quote_embed(message, quoter)
     if quote_channel and embed:
         await quote_channel.send(embed = embed)
