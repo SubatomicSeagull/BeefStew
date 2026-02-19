@@ -24,8 +24,18 @@ async def run_download(url: str, quality: int, video: bool):
     print(f"attempting to download video at {str(quality)} with video: {str(video)} from {url}")
     
     python_code = r'''
-import sys, json, os, os.path
+import sys, json, os, time, re, unicodedata
 import yt_dlp
+
+def safe_basename(title: str) -> str:
+    title = unicodedata.normalize("NFKC", title)
+    title = title.translate({i: None for i in range(32)})
+    title = re.sub(r'[<>:"/\\|?*]', '_', title)
+    title = re.sub(r'[^\w\s.\-]', '', title, flags=re.UNICODE)
+    title = re.sub(r'\s+', '_', title).strip('._')
+    if not title:
+        title = "file"
+    return f"{title}"
 
 def main():
     src_url = sys.argv[1]
@@ -34,67 +44,65 @@ def main():
     outputpath = sys.argv[4]
     cookiefile = sys.argv[5]
 
-    ffmpeg_path = os.getenv("FFMPEGEXE")
+    os.makedirs(outputpath, exist_ok=True)
 
+    ffmpeg_path = os.getenv("FFMPEGEXE")
     if not ffmpeg_path or not os.path.exists(ffmpeg_path):
-        sys.stdout.write(json.dumps({
-            "ok": False,
-            "error": "FFmpeg not found or invalid path"
-        }, ensure_ascii=False))
+        sys.stdout.write(json.dumps({"ok": False, "error": "FFmpeg not found"}, ensure_ascii=False))
         sys.exit(1)
 
-    base_ydl_opts = {
+    ydl_opts = {
         "cookiefile": cookiefile if cookiefile and cookiefile != "None" else None,
-        "outtmpl": "%(title).200B.%(ext)s",
-        "restrictfilenames": True,
         "paths": {"home": outputpath},
         "ffmpeg_location": ffmpeg_path,
         "merge_output_format": "mp4",
         "logtostderr": True,
+        "nopart": True,
         "noplaylist": True,
+        "restrictfilenames": True,
+        "nopart": True,
+        "continuedl": False,
+        "outtmpl": os.path.join(outputpath, "%(title)s.%(ext)s"),
     }
 
-    audio_opts = {
-        "format": "bestaudio/best",
-        "postprocessors": [{
+    if video:
+        ydl_opts["format"] = f"bestvideo[height<={quality}]+bestaudio/best"
+    else:
+        ydl_opts["format"] = "bestaudio/best"
+        ydl_opts["postprocessors"] = [{
             "key": "FFmpegExtractAudio",
             "preferredcodec": "mp3",
             "preferredquality": "192",
-        }],
-    }
-
-    video_opts = {
-        "format": (
-            f"bestvideo[height<={quality}]/bestvideo/best"
-            f"+bestaudio/best"
-        ),
-        "merge_output_format": "mp4",
-    }
-
-    ydl_opts = dict(base_ydl_opts)
-    ydl_opts.update(video_opts if video else audio_opts)
-
-    os.makedirs(outputpath, exist_ok=True)
+        }]
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(src_url, download=True)
-            local_path = ydl.prepare_filename(info)
 
+            ext = ".mp3" if not video else os.path.splitext(ydl.prepare_filename(info))[1]
+            safe_name = safe_basename(info.get("title") or "untitled")
+            final_path = os.path.join(outputpath, f"{safe_name}{ext}")
+
+            downloaded_path = ydl.prepare_filename(info)
             if not video:
-                local_path = os.path.splitext(local_path)[0] + ".mp3"
+                downloaded_path = os.path.splitext(downloaded_path)[0] + ".mp3"
 
+            if os.path.exists(downloaded_path) and os.path.normcase(downloaded_path) != os.path.normcase(final_path):
+                for _ in range(10):
+                    try:
+                        os.rename(downloaded_path, final_path)
+                        break
+                    except PermissionError:
+                        time.sleep(0.2)
+            
             sys.stdout.write(json.dumps({
                 "ok": True,
-                "title": info.get("title"),
-                "path": local_path
+                "title": safe_name,
+                "path": final_path
             }, ensure_ascii=False))
 
     except Exception as e:
-        sys.stdout.write(json.dumps({
-            "ok": False,
-            "error": str(e)
-        }, ensure_ascii=False))
+        sys.stdout.write(json.dumps({"ok": False, "error": str(e)}, ensure_ascii=False))
         sys.exit(1)
 
 if __name__ == "__main__":
@@ -119,7 +127,7 @@ if __name__ == "__main__":
     stderr_text = stderr.decode(errors="replace").strip()
 
     if not stdout_text:
-        return False, stderr_text # or "yt-dlp failed without output"
+        return False, stderr_text
 
     try:
         data = json.loads(stdout_text)
@@ -129,13 +137,31 @@ if __name__ == "__main__":
     print("donwload completed.")
     
     path = data["path"]
-    title = os.path.basename(path)
+    dir_ = os.path.dirname(path)
+    base, ext = os.path.splitext(os.path.basename(path))
 
-    
+    safe_base = clean_title(base)
+    timestamp = str(int(time.time()))
+    new_name = f"{safe_base}{timestamp}{ext}"
+    new_path = os.path.join(dir_, new_name)
+
+    if os.path.normcase(path) != os.path.normcase(new_path):
+        for _ in range(10):
+            try:
+                os.rename(path, new_path)
+                path = new_path
+                break
+            except PermissionError:
+                time.sleep(0.2)
+        else:
+            raise RuntimeError("Failed to rename downloaded file")
+
+    title = safe_base + timestamp
+
     print("outputs from the downloader:")
     print(f"title: {title}")
     print(f"path: {path}")
-    
+
     return True, title, path
 
 async def yownload(interaction: discord.Interaction, url: str, quality: int, video: bool):
@@ -258,23 +284,22 @@ def clean_title(title):
     # normalize unicode
     title = unicodedata.normalize("NFKC", title)
 
-    # split and store the extension if there is one
-    name, ext = os.path.splitext(title)
-
     # remove ASCII control characters
-    name = name.translate({i: None for i in range(32)})
+    title = title.translate({i: None for i in range(32)})
 
     # remove windows invalid chars
-    name = re.sub(r'[<>:"/\\|?*]', '_', name)
+    title = re.sub(r'[<>:"/\\|?*]', '_', title)
 
     # remove other punctiation
-    name = re.sub(r'[^\w\s.\-]', '', name, flags=re.UNICODE)
+    title = re.sub(r'[^\w\s.\-]', '', title, flags=re.UNICODE)
 
     # replace spaces with underscores
-    name = re.sub(r'\s+', '_', name).strip('._')
+    title = re.sub(r'\s+', '_', title).strip('._')
 
-    print(f"sanitised name: {name}{ext}")
-    return f"{name}{ext}" if ext else name
+    if not title or title == "_":
+        title = "untitled"
+        
+    return title
 
 
 async def generate_zip(urls, title):
