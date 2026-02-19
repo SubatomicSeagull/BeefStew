@@ -1,6 +1,7 @@
-FROM python:3.10-slim
+FROM python:3.13-slim
 
 RUN apt-get update -y && apt-get install -y git libpq-dev gcc ffmpeg libopus-dev espeak-ng && rm -rf /var/lib/apt/lists/*
+RUN curl -fsSL https://deno.land/install.sh | sh
 
 WORKDIR /BeefStew
 

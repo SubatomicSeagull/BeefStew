@@ -223,9 +223,23 @@ async def message_send_event(bot: discord.Client, message: discord.Message):
             newname = channel_name_split[1].strip()
             await channel_name_rule.invoke_channel_name_rule(message, newname)
             return
-        
+    
+    
     await check_swear_jar(message)
     await get_response(message)
+
+
+def sanitise_message(message):
+    # remove links
+    message = re.sub(r'https?://\S+', '', message)
+    # remove discord mentions
+    message = re.sub(r'<[@!&#][^>]*>', '', message)
+    # remove bot emotes
+    message = re.sub(r'<:\w+:\d+>', '', message)
+    # remove regular emotes
+    message = re.sub(r':\w+:', '', message)
+    return message.strip()
+
 
 async def message_edit_event(bot: discord.Client, before, after):
     # dont alert to bot edits
@@ -288,7 +302,7 @@ async def get_response(message: discord.Message):
 
     # check for trigger words
     for trigger_phrase, response in responses["trigger_phrases"].items():
-        if trigger_phrase in message.content.lower():
+        if trigger_phrase in sanitise_message(message.content.lower()):
 
             # get the type and content
             response_type = response.get("type")
@@ -309,7 +323,7 @@ async def check_swear_jar(message: discord.Message):
     global g_swears
     # check for trigger words
     for swear in g_swears:
-        if swear in message.content.lower():
+        if swear in sanitise_message(message.content.lower()):
             await swear_jar_penalty(message.author)
             jar_total = await get_swear_jar_score(message.guild)
             file = discord.File(file_io.construct_media_path("hawktuahjar.gif"))

@@ -1,7 +1,7 @@
 services:
   beefstew:
     build: .
-    container_name: beefstew-release-1.6.2
+    container_name: beefstew-release-1.6.3
     working_dir: /BeefStew
     env_file:
       - .env

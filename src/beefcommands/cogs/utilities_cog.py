@@ -1,6 +1,7 @@
 import enum
 import discord
 from discord.ext import commands
+from discord.app_commands import Choice
 from beefcommands.utilities.ccping import ccping
 from beefutilities.TTS import speak
 from beefutilities.guilds.guild_text_channel import set_info, set_logs, set_quotes
@@ -10,6 +11,8 @@ from beefcommands.visage.sniff import sniff_user
 from beefutilities.users import user
 from beefcommands.utilities.suggest_feature import create_suggestion
 from beefutilities.TTS import speak, tts_engine
+from beefcommands.utilities import yownload
+
 
 # gerate enumeration object for the tts voices dropdown
 VoiceList = tts_engine.generate_voice_enum()
@@ -119,15 +122,17 @@ class UtilitiesCog(commands.Cog):
         print(f"> \033[32m{interaction.user.name} set BeefStew's voice to {voice.name}\033[0m")
         tts_engine.set_voice(voice.value)
         await interaction.response.send_message(f"Voice set to **{voice.name}**", ephemeral=True)
+
+    @discord.app_commands.command(name="yownload", description="yowwwnn")
+    @discord.app_commands.choices(quality=[
+    Choice(name='1080p', value=1080),
+    Choice(name='720p', value=720),
+    Choice(name='480p', value=480),
+    Choice(name='360p', value=360)])
+    async def yownload(self, interaction: discord.Interaction, url: str, quality: Choice[int], video: bool):
+        print(f"> \033[32m{interaction.user.name} requested to download {url} at {quality.name}\033[0m")
+        await yownload.yownload(interaction, url, quality.value, video)
         
-    @discord.app_commands.command(name="test", description="l")
-    async def test(self, interaction: discord.Interaction):
-        print(f"> \033[32m{interaction.user.name} used /test\033[0m")
-        #await interaction.response.send_message("running test command", ephemeral=True)
-        import beefcommands.invocations.joker_score.swear_jar as swear_jar
-
-        await swear_jar.swear_jar_payout_embed(interaction, [member for member in interaction.guild.members])
-
 # cog setup
 async def setup(bot):
     print("- \033[32mbeefcommands.cogs.utilities_cog\033[0m")
